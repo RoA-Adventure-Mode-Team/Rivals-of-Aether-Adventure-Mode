@@ -1,0 +1,41 @@
+//article4_init, Area Triggers
+
+sprite_index = asset_get("empty_sprite");
+
+
+_init = 0;
+state = 0;
+state_old = 0;
+state_timer = 0;
+debug = true;
+
+anim_speed  = [.1,.1,.3];
+anim_type = 0;
+event_id = spawn_variables[0];
+active_scene = spawn_variables[1];
+trigger_obj_type = spawn_variables[2];
+trigger_player = spawn_variables[3];
+//trigger_obj_type = oPlayer;
+trigger_shape = spawn_variables[4];
+trigger_w = spawn_variables[5];
+trigger_h = spawn_variables[6];
+cur_scene = 0;
+
+trigger_var = noone;
+//trigger_objects = [pHitBox];
+//trigger_player = [all];
+collis_obj = noone;
+destroy_on_trigger = true;
+destroy_effect = asset_get("sfx_ice_shatter_big");
+
+
+switch trigger_obj_type {
+    case 0:
+        trigger_obj_type = oPlayer;
+        break;
+    case 1:
+        trigger_obj_type = pHitBox;
+        break;
+    case 2: //Set yer own, customly from the scene manager
+        break;
+}
