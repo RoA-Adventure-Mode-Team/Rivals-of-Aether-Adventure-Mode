@@ -8,6 +8,8 @@ state = 0;
 state_old = 0;
 state_timer = 0;
 debug = true;
+init_pos = [0,0];
+debug_color = c_red;
 
 anim_speed  = [.1,.1,.3];
 anim_type = 0;

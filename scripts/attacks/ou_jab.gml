@@ -50,3 +50,5 @@ set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_GROUND_BEHAVIOR, 2);
 set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_ENEMY_BEHAVIOR, 1);
 set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_PARRY_STUN, true);
 set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_DOES_NOT_REFLECT, true);
+
+

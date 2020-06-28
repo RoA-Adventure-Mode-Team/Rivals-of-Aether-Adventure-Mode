@@ -1,33 +1,46 @@
 //draw stuff for enemy
-
+draw_set_alpha(1);
 if !_init exit; //Only draw stuff after initializing
-
-if debug {
-    draw_sprite_ext(collision_box,0,x,y,1,1,0,c_white,.6);
-    draw_debug_text(x-128,y,string(attack_down));
-    draw_debug_text(x-128,y+16,string(down_down));
-    draw_debug_text(x-128,y-16,string(up_down));
-    draw_debug_text(x-112,y,string(right_down));
-    draw_debug_text(x-144,y,string(left_down));
-    draw_debug_text(x-100,y,string(jump_down));
-    draw_debug_text(x-100,y-32,string(shield_down));
-    draw_debug_text(x,y-32,string(get_state_name(art_state)));
-    //draw_debug_text(x-64,y+32,string(get_attack_name(attack)));
-    draw_debug_text(x-64,y+32,string(kb_angle));
-    draw_debug_text(x+32,y,string(window));
-    draw_debug_text(x+32,y+32,string(window_timer));
-    /*draw_debug_text(x+16,y+32,string(!(place_meeting(x,y+1,asset_get("solid_32_obj")) || 
-                  place_meeting(x,y+1,asset_get("jumpthrough_32_obj")) || 
-                  place_meeting(x,y+1,obj_stage_article_solid) ||
-                  place_meeting(x,y+1,obj_stage_article_platform))));*/
-
+if in_render {
+    if debug {
+        draw_sprite_ext(collision_box,0,x,y,1,1,0,c_white,.6);
+        draw_debug_text(x-128,y,string(attack_down));
+        draw_debug_text(x-128,y+16,string(down_down));
+        draw_debug_text(x-128,y-16,string(up_down));
+        draw_debug_text(x-112,y,string(right_down));
+        draw_debug_text(x-144,y,string(left_down));
+        draw_debug_text(x-100,y,string(jump_down));
+        draw_debug_text(x-100,y-32,string(shield_down));
+        draw_debug_text(x,y-32,string(get_state_name(art_state)));
+        //draw_debug_text(x-64,y+32,string(get_attack_name(attack)));
+        //if instance_exists(last_hitbox) draw_debug_text(x-64,y+32,string(last_hitbox.hbox_group));
+        //if instance_exists(hit_id) draw_debug_text(x-64,y+32,string(hit_id.hbox_group));
+        draw_debug_text(x+32,y,string(kb_angle));
+        draw_debug_text(x+32,y+32,string(is_free));
+        draw_debug_text(x+64,y,string([hsp,vsp]));
+        /*draw_debug_text(x+16,y+32,string(!(place_meeting(x,y+1,asset_get("solid_32_obj")) || 
+                      place_meeting(x,y+1,asset_get("jumpthrough_32_obj")) || 
+                      place_meeting(x,y+1,obj_stage_article_solid) ||
+                      place_meeting(x,y+1,obj_stage_article_platform))));*/
+        if array_length_1d(custom_args) > 1 && custom_args[1] != 0 {
+        draw_sprite(custom_args[1],0,x,y);
+    }
+    
+    }
+    //Contributed by Harbige
+    if (hitpoints_max > 0) {
+        if (char_healthbar != noone) {
+            var hbar_fill = lerp(1, 0, percent / hitpoints_max);
+            draw_sprite_ext(char_healthbar,0,x - 34,y-char_height*2-22,1,1,0,c_white,1);
+            draw_sprite_part_ext(char_healthbar, 1, 0, 0, 64 * hbar_fill, 16, x - 34, y-char_height*2-22, 1, 1, char_hud_color, 1);
+        }
+    }
+    else draw_debug_text(x-10,y-(char_height*2)-20,string(percent)+"%");
+    //
+    draw_sprite_ext(char_arrow,0,x-10,y-char_height*2-6,1,1,0,c_white,1);
+    
+    
 }
-
-draw_debug_text(x-10,y-(char_height*2)-20,string(percent)+"%");
-
-draw_sprite_ext(char_arrow,0,x-10,y-char_height*2-6,1,1,0,c_white,1);
-
-
 #define get_attack_name(_attack) //get the name of an attack
 
 switch _attack {

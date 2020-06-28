@@ -22,73 +22,90 @@ enum WIN {
 #macro TG_BUTTON 2 //Triggers upon button press (any button, attack, shield, taunt, etc)
 #macro TG_TIME 3 //Triggers after frame count
 
-//
 
 //Scene Data Here
 
-switch cur_room {
+//Global Scenes
+scene_add(1,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Hello! Welcome to RoA Adventure Mode Update 7!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 2,  tutorial_default_scroll]);
+    //[TG_COMPLETE, -1,  999999999999999]);
+scene_add(2,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It's been a hot minute, but a lot of work has been done and discoveries made!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 3, tutorial_default_scroll]);
+scene_add(3,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We have a debug console now - with custom commands that can be added pretty quickly!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 4, tutorial_default_scroll]);
+scene_add(4,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It let's you set variables, toggle/change debug information, etc.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 5, tutorial_default_scroll]);
+scene_add(5,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "For example, we can switch scenes pretty easily...", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    //[TG_COMPLETE, 6, tutorial_default_scroll]);
+    [TG_COMPLETE, -1,  999999999999999]);
+scene_add(6,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We also discovered that precise collision on articles is possible!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 7, tutorial_default_scroll*2]);
+scene_add(7,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_sideglance"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It works pretty well for solid articles, but platforms have issues.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 8, tutorial_default_scroll]);
+scene_add(8,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "This still means that we can make it easier on every front AND save processing resources.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 9, tutorial_default_scroll]);
+scene_add(9,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_sideglance"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We've also been working on the example level. But, I want to keep that a secret until we're ready.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 10, tutorial_default_scroll]);
+scene_add(10,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "@CptTechnicality in the background has been working on the tools - can't wait to show it off!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 11, tutorial_default_scroll]);
+scene_add(11,[
+    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
+    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We plan on getting the engine finished and enter the beta phase soon! - Archytas", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+    
+    ],
+    [TG_COMPLETE, 12, tutorial_default_scroll]);
+    
+switch cur_room { //Room Specific Scenes
     case 1:
-        scene_add(1,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Hello! Welcome to RoA Adventure Mode Update 3!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 2, tutorial_default_scroll]);
-        scene_add(2,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It's been a while since the last one - been busy with other projects on top of this one.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 3, tutorial_default_scroll]);
-        scene_add(3,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "And this one is taking some time due to the complexity of it! It's enemies!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 4, tutorial_default_scroll]);
-        scene_add(4,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It's Ou there, been programming them in as an example enemy. Let's switch control over and show what I've gotten done so far...", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 5, tutorial_default_scroll]);
-        scene_add(5,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Enemies right now have collision, attacks, ans control override. Still need to finish writing all the player states and the actual AI.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 6, tutorial_default_scroll]);
-        scene_add(6,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_sideglance"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "I've also refined quick terrain a bit, made collisions a bit better. There's some niche issues still with other configurations.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 7, tutorial_default_scroll]);
-        scene_add(7,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Since user_events now work, all custom code is running in there instead of in the scource scripts. A lot cleaner and less prone to messing up!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 8, tutorial_default_scroll]);
-        scene_add(8,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Thank you to everyone who's been keeping up with the updates ~ I'm opening up a development discord so people can contribute to the project.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 9, tutorial_default_scroll]);
-        scene_add(9,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_sideglance"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Even if you don't program, I recommend joining so you can get an early look at it and provide feedback to make it better and easier to use.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 10, tutorial_default_scroll]);
-        scene_add(10,[
-            [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "There should be an open invite below, if you have any questions/inqueries you can always DM me anywhere. - Archytas", 680, tutorial_default_text_speed, asset_get("mfx_hp")]], //window 1, textbox
-            [400,800,3,[1,follow_player,20,[0,40]]], //window 3, camera control
-            ],
-            [TG_COMPLETE, 11, tutorial_default_scroll]);
+        
         break;
+    /*case 1:
+        scene_add(1,[
+            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "SCROLLING ROOM TEST", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 0, textbox
+            //[400,800,3,[0,follow_player,20,[0,40]]], //window 1, camera control
+            ],
+            [TG_CUSTOM, 2, tutorial_default_scroll]);
+        break;*/
 }
 
 //
@@ -184,7 +201,7 @@ Draw Sprite, Synced with an object:
     path: [x,y],
     init_pos: [x,y]
 
-Camera Controller:
+Camera Controller: *USE ONLY IN CUTSCENES*
     _x: __x,
     _y: __y,
     content_type,

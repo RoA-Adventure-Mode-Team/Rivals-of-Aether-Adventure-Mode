@@ -1,6 +1,15 @@
 //draw_debug_text(x,y,"HELLO, GORDON! "+string(timer))
 //draw_windows();
+/*if array_length_1d(custom_args) > 1 && custom_args[1] != 0 {
+    draw_sprite(custom_args[1],0,x,y);
+}*/
+//Background Controller
 
+
+for (var i = 0; i < ds_list_size(bg_data);i++) { //bg_data = {}
+    draw_sprite(bg_data[| i].sprite,cur_scene_time*bg_speed,400,400);
+}
+//
 #define draw_windows()
 var i = 0;
 repeat ds_list_size(list_window) {

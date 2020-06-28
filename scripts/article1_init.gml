@@ -1,16 +1,22 @@
 //article1_init, target spawner
 sprite_index = asset_get("empty_sprite");
 
-_init = 0;
 
-marker = array_create(2);
-current_marker = 1;
+custom_args = array_create(0);
+
+_init = 0;
+group = 0;
+debug = 0;
+init_pos = [0,0];
+
+spr_name = "";
+spr_ = 0;
 
 wait_time = 20;
 wait_time_max = 20;
 anim_speed = 0;
 spe = 0;
 
-//print_debug(string([x,y]));
-//max_speed = [5,5];
-range = [20,20];
+
+image_xscale = 2;
+image_yscale = 2;

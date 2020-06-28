@@ -38,13 +38,6 @@ update_scene();
 
 #define scene_custom_trigger()
 
-switch cur_scene {
-    case 2:
-        //if !instance_exists(tutorial_target) && cur_scene_time > 60 scene_switch(1);
-        break;
-        
-    
-}
 user_event(4);
 
 #define event_trigger()
@@ -62,6 +55,7 @@ array_scene_ID = array_create(0);
 array_scene_triggers = array_create(0);
 
 user_event(0);
+//print_debug(string(array_scene_data));
 #define instance_window(__x,__y,_content_type,_container)
 var _vari;
 while array_length_1d(_container) < 11 {
@@ -201,7 +195,6 @@ switch _content_type {
 }
 
 ds_list_add(list_window, window_obj);
-
 
 #define update_windows()
 
@@ -347,10 +340,10 @@ if cur_scene != 0 {
 
 with obj_stage_article if num == 5 && other.cur_room != cur_room {
     other.cur_room = cur_room;
-    with other {
+    /*with other {
         reload_scenes();
         scene_switch(1);
-    }
+    }*/
 }
 
 

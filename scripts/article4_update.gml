@@ -1,4 +1,4 @@
-//
+//article4_update, Trigger Zones
 
 if !_init {
     anim_speed  = [.1,.1,.3];
@@ -28,6 +28,7 @@ if !_init {
             trigger_obj_type = pHitBox;
             break;
         case 2: //Set yer own, customly from the scene manager
+            trigger_obj_type = all;
             break;
     }
     _init = 1;

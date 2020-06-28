@@ -1,18 +1,27 @@
-//article6_init, target spawner
+//article6_init, Enemy
 
 
 _init = 0;
 collision_box = asset_get("ex_guy_crouch_box");
+colis_width = sprite_get_width(collision_box);
+colis_height = sprite_get_height(collision_box);
 sprite_index = sprite_get("ou_idle");
 mask_index =  collision_box; // Collision Mask
-marker = array_create(2);
-current_marker = 0;
-debug = false;
+debug = true;
+init_pos = [0,0];
+can_be_grounded = true;
+ignores_walls = false;
+
+custom_args = array_create(0);
 
 stage_main = asset_get("obj_stage_main");
 
-can_be_grounded = true;
 
+
+
+//Physics Delta
+physics_range = 800; //Range that physics live-updates
+in_render = false;
 
 //State Actions
 art_state = 0;
@@ -22,6 +31,7 @@ state_timer = 0;
 next_state = 0;
 prev_state = 0;
 state_free = 1;
+test = noone;
 
 //Character Variables
 enem_id = spawn_variables[0];
@@ -33,8 +43,11 @@ committed = false;
 sprite_default_offset = [56, 102];
 
 crouch_timer = 0;
-//AI Variables
+sprite_name = "none";
 
+hitpoints_max = 0; //If this is zero, percentage knockback will be used. - Harbige
+
+//AI Variables
 player_controller = 0;
 ai_target = noone;
 target_dir = 0;
@@ -47,9 +60,22 @@ attack_time = 30;
 range_low = 32;
 range_far = 200;
 
+//Contributed by Harbige
+able_to_crouch = true;
+able_to_shield = true;
+able_to_jump = true;
+able_to_djump = true;
+able_to_dash = true;
+attack_time = 30;
+//
+
 //Animation Actions
 char_height = 25;
 char_arrow = sprite_get("char_arrow");
+//Contributed by Harbige
+char_healthbar = sprite_get("char_healthbar");
+char_hud_color = make_color_rgb(163, 77, 253);
+//
 anim_speed = .02;
 idle_anim_speed = .15;
 crouch_anim_speed = .1;
@@ -160,8 +186,13 @@ has_hit_en = 0;
 enem = 0;
 invincible = 0;
 last_hitbox = noone;
-
 should_die = false;
+horiz_col = false;
+vert_col = false;
+hbox_group = -1;
+hit_player_id = noone;
+old_hsp = 0;
+old_vsp = 0;
 
 //Pathing Variables
 x_dist = 0;

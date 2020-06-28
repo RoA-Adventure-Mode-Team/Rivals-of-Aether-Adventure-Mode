@@ -1,6 +1,8 @@
 //article3_init, cutscene manager
 sprite_index = asset_get("empty_sprite");
 debug = true;
+init_pos = [0,0];
+custom_args = array_create(0);
 //Only One Thing to Exist
 instance_num = 0;
 with obj_stage_article if num == other.num other.instance_num++;
@@ -44,7 +46,18 @@ obj_triggered = noone;
 player_snap_range = 10;
 
 cam_deathbox_bounds = [50,50,50,50];
-//
+// Bg controller
+bg_data = ds_list_create();
+/*bg_data = {
+    sprite: noone,
+    parallax: [0,0]
+};*/
+ds_list_add(bg_data, {
+    sprite: sprite_get("bg_1"),
+    parallax: [0,0]
+});
+
+bg_speed = .1;
 
 //
 tutorial_target = noone;

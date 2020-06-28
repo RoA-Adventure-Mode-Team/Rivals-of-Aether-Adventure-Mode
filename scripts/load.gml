@@ -11,3 +11,5 @@ sprite_change_offset("enemy_0_PS_LAND",56, 102);
 sprite_change_offset("enemy_0_PS_CROUCH",56, 102);
 sprite_change_offset("enemy_0_PS_WAVELAND",56, 102);
 sprite_change_offset("ou_jab",56, 102);
+
+

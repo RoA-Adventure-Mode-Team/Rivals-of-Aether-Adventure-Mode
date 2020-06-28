@@ -10,24 +10,27 @@ enum TR {
 
 if !_init {
     enem_id = spawn_variables[0];
-    //attack_start(attacks[0]);
     //player_controller = 1;
+    user_event(6);
     _init = 1;
     //print_debug(get_attack_name(attacks[0]));
 } else {
-    
-    if player_controller != 0 {
-        with oPlayer {
-            if player == other.player_controller set_state(PS_IDLE_AIR);
+    in_render = (point_distance(x,y,view_get_xview()+view_get_wview()/2,view_get_yview()+view_get_hview()/2) < physics_range);
+    if in_render {
+        if player_controller != 0 {
+            with oPlayer {
+                if player == other.player_controller set_state(PS_IDLE_AIR);
+            }
+            with obj_stage_article if num == 5 && follow_player != other follow_player = other.id;
+            get_inputs(player_controller);
         }
-        get_inputs(player_controller);
+        if instance_exists(ai_target) frame_update();
+        ai_update();
+        input_process();
+        state_machine();
+        physics_update();
+        
     }
-    if instance_exists(ai_target) frame_update();
-    ai_update();
-    input_process();
-    state_machine();
-    physics_update();
-    
 }
 
 #define ai_update()
@@ -37,13 +40,30 @@ if hitstun <= 0 {
     if art_state != next_state {
         prev_state = art_state;
         art_state = next_state;
-        if art_state != 5 && art_state != 6 {
+        if art_state != 5 && art_state != 6 && art_state != PS_DEAD {
             sprite_index = enemy_sprite_get(enem_id,get_state_name(art_state));
         }
         state_timer = 0;
     }
-} else art_state = PS_HITSTUN;
-//Default AI behavior
+} else {
+    //Contributed by Harbige
+    right_down = false;
+    left_down = false;
+    jump_down = false;
+    left_hard_pressed = false;
+    right_hard_pressed = false;
+    down_hard_pressed = false;
+    
+    if !is_free art_state = PS_HITSTUN_LAND; 
+    else art_state = PS_HITSTUN;
+    if hitpoints_max > 0 {
+        if (percent >= hitpoints_max) {
+            art_state = PS_DEAD;
+        }
+    }
+    //
+}
+//Default AI Targeting
 switch target_behavior {
     case TR.NEAR:
         ai_target = instance_nearest(x,y,oPlayer);
@@ -66,13 +86,6 @@ switch target_behavior {
         break;
 }
 
-switch pos_behavior {
-    case TR.FAR:
-        break;
-    case TR.NEAR:
-        break;
-}
-
 
 user_event(6); //Custom behavior
 
@@ -81,8 +94,8 @@ if next_attack != -1 attack_start(next_attack);
 x_dist = abs(x-ai_target.x);
 y_dist = abs(y-ai_target.y);
 target_dir = sign(x-ai_target.x);
-
 is_ai = (player_controller == 0);
+
 #define state_machine() //Player-esque State Machine
 
 switch art_state { //Gameplay Logic
@@ -134,16 +147,17 @@ switch art_state { //Gameplay Logic
         break;
     case PS_JUMPSQUAT:
         committed = 1;
-            if state_timer >= jump_start_time {
-                if !shield_down && shield_held == 0 {
-                    if jump_down vsp = -jump_speed;
-                    else vsp = -short_hop_speed;
-                    next_state = PS_FIRST_JUMP;
-                    sound_play(jump_sound);
-                } else next_state = PS_WAVELAND;
-            }
+        if state_timer >= jump_start_time {
+            if !shield_down && shield_held == 0 {
+                if jump_down vsp = -jump_speed;
+                else vsp = -short_hop_speed;
+                next_state = PS_FIRST_JUMP;
+                sound_play(jump_sound);
+            } else next_state = PS_WAVELAND;
+        }
         break;
     case PS_IDLE_AIR:
+        committed = 0;
         art_state = PS_FIRST_JUMP;
         sprite_index = enemy_sprite_get(enem_id,get_state_name(art_state));
     case PS_FIRST_JUMP:
@@ -163,11 +177,13 @@ switch art_state { //Gameplay Logic
         if state_timer > double_jump_time next_state = PS_FIRST_JUMP;
         break;
     case PS_WALK_TURN:
+        committed = 0;
         if state_timer > walk_turn_time {
             next_state = PS_WALK;
             spr_dir = to_dir;
         }
     case PS_WALK:
+        committed = 0;
         if is_free next_state = PS_IDLE_AIR; 
         if spr_dir != to_dir next_state = PS_WALK_TURN;
         hsp = clamp(hsp -walk_accel*left_down + walk_accel*right_down, -walk_speed, walk_speed);
@@ -207,9 +223,12 @@ switch art_state { //Gameplay Logic
         committed = 0;
         if is_free next_state = PS_IDLE_AIR;
         if (left_hard_pressed || right_hard_pressed) {
-            if (left_down || right_down) next_state = PS_DASH_START;
-        } else if (left_down || right_down) next_state = PS_WALK;
-        if down_down next_state = PS_CROUCH;
+            if (left_down || right_down) && able_to_dash next_state = PS_DASH_START;
+        } else if (left_down || right_down) {
+            next_state = PS_WALK;
+            if spr_dir != to_dir next_state = PS_WALK_TURN;
+        }
+        if down_down && able_to_crouch next_state = PS_CROUCH;
         break;
     case PS_CROUCH:
         if !down_down {
@@ -218,7 +237,9 @@ switch art_state { //Gameplay Logic
         } else crouch_timer = 0;
         break;
     case PS_HITSTUN:
+    case PS_HITSTUN_LAND:
     case PS_TUMBLE:
+        sprite_index = enemy_sprite_get(enem_id,get_state_name(art_state));
         if hitpause > 0 {
             hitpause--;
             state_timer = 0;
@@ -227,13 +248,20 @@ switch art_state { //Gameplay Logic
         } else {
             if state_timer == 2 {
                 //is_free = 1;
-                vsp = -kb_power*sin(kb_angle);
-                hsp = kb_power*cos(kb_angle);
-                spr_dir = -sign(hsp);
+                if !is_free && kb_angle > 3.14159 && kb_angle < 3.14159*2 vsp = kb_power*sin(kb_angle);
+                else if !is_free vsp = -abs(kb_power*dsin(kb_angle));
+                else vsp = -kb_power*dsin(kb_angle);
+                hsp = kb_power*dcos(kb_angle);
+                if hsp != 0 spr_dir = -sign(hsp);
                 
             }
+            if !horiz_col && !vert_col {
+                old_hsp = hsp;
+                old_vsp = vsp;
+            }
+            if horiz_col hsp = -old_hsp*.7;
             hitstun--;
-            if !is_free next_state = PS_LANDING_LAG;
+            if !is_free && art_state != PS_HITSTUN_LAND next_state = PS_HITSTUN_LAND;
             if hitstun <= 0 {
                 hitstun = 0;
                 next_state = PS_IDLE_AIR;
@@ -246,7 +274,7 @@ switch art_state { //Gameplay Logic
         break;
 }
 
-switch art_state { //Display Logic
+if hitpause <= 0 switch art_state { //Display Logic
     case PS_IDLE:
         image_index += idle_anim_speed;
         break;
@@ -292,14 +320,14 @@ else down_held = 0;
 
 
 if !committed {
-    if jump_down {
+    if jump_down && able_to_jump {
         if is_free {
-            if jump_held == 1 && djumps > 0 { 
+            if jump_held == 1 && djumps > 0 && able_to_djump {
                 next_state = PS_DOUBLE_JUMP;
                 djumps--;
             }
         } else next_state = PS_JUMPSQUAT;
-    } else if shield_down {
+    } else if shield_down && able_to_shield {
         if is_free next_state = PS_AIR_DODGE;
         else next_state = PS_PARRY_START;
     }
@@ -307,20 +335,14 @@ if !committed {
 
 if down_hard_pressed && !committed can_fallthrough = 1;
 else if !down_down can_fallthrough = 0;
-//if (can_fallthrough && !place_meet_plat(x,y)) can_fallthrough = 0;
 
 #define physics_update() //Physics updates, every frame
-//is_free = (vsp < 0 || (vsp >= 0 && ((place_meeting(x,y+1,asset_get("solid_32_obj")) || (lace_meeting(x,y+1,asset_get("jumpthrough_32_obj")))) && !(place_meeting(x,y-10,asset_get("solid_32_obj")) || (place_meeting(x,y-10,asset_get("jumpthrough_32_obj")))))));
-/*is_free = (vsp < 0 || !(place_meeting(x,y+1,asset_get("solid_32_obj")) || 
-              place_meeting(x,y+1,asset_get("jumpthrough_32_obj")) || 
-              place_meeting(x,y+1,obj_stage_article_solid) ||
-              place_meeting(x,y+1,obj_stage_article_platform)));*/
-//is_free = (vsp < 0 || !place_meet(x,y+1) || (place_meet_plat(x,y+1) && !place_meet_solid(x,y+1) && can_fallthrough));
-//is_free = vsp < 0 || (!place_meet_solid(x,y+1) && !(place_meet_plat(x,y+1) && !can_fallthrough));
-is_free = (vsp < 0 || (!place_meet_solid(x,y+1) && !(get_plat(x,y+1) && !can_fallthrough)));
-//if is_free == 0 && vsp < 0 is_free = 1;
-var _y = 0;
-var _y_limit = 16;
+horiz_col = false;
+vert_col = false;
+is_free = (vsp < 0 || (!place_meet_solid(x,y+2) && !(get_plat(x,y+2) && !can_fallthrough)));
+//free = true;
+//var _y = 0;
+//var _y_limit = 32;
 
 //Physics Friction
 if is_free {
@@ -336,74 +358,120 @@ if is_free {
     hsp *= 1-ground_friction/5;
     has_air_dodge = 1;
 }
+vert_col = (place_meet_solid(x,y+2));
 
+if !vert_col && (place_meet_solid(x+5,y) || place_meet_solid(x-5,y)) horiz_col = true;
 //Fix Clipping
-//if (art_state == PS_LAND || art_state == PS_WAVELAND) && !is_free {
-if !is_free {
-    while (place_meet(x,y-_y) && _y < _y_limit+1)  _y++;
-    if _y < _y_limit y -= _y;
+if !is_free && vsp <= 0 && place_meet(x,y+1) y--;
+/*if !is_free && vsp <= 0 {
+//if state == PS_LAND || state == PS_LANDING_LAG || state == PS_WAVELAND {
+    while (place_meet(x,y-_y+1) && _y < _y_limit+1)  _y++;
+    if _y < _y_limit {
+        y -= _y;
+        if _y > 0 && debug print_debug("SHIFTED: "+string(_y));
+        vsp = 0;
+    } else if _y > 0 && debug print_debug("TOO FAR");
+}*/
+
+
+/*if vert_col {
+    _y = 0;
+    while (place_meet_solid(x,y+_y-1) && _y < _y_limit+1)  _y++;
+    if _y < _y_limit {
+        //y += _y;
+        //vsp = 0;
+    } else vert_col = false; //If it's greater than this, it's probably against a wall.
 }
+
+
 //Horizontal Collision Detection
-if place_meet_solid(x+3,y-1) {
-    while place_meet_solid(x,y-1) x--;
-    if hsp < 0 hsp = 0; 
+if !vert_col {
+    if place_meet_solid(x+5,y) {
+        //while place_meet_solid(x+1,y-1) x--;
+        //if state != PS_HITSTUN hsp = 0; 
+        horiz_col = true;
+    }
+    if place_meet_solid(x-5,y) {
+        //while place_meet_solid(x-1,y-1) x++;
+        //if state != PS_HITSTUN hsp = 0; 
+        horiz_col = true;
+    }
+}*/
+//print_debug(string(vert_col));
+
+if hit_player_id != noone && hit_player_id.object_index == oPlayer.object_index && ((hit_player_id.state != 5 &&  hit_player_id.state != 6) || hit_player_id.window == 1) {
+    hbox_group = -1;
+    hit_player_id = noone;
 }
-if place_meet_solid(x-3,y-1) {
-    while place_meet_solid(x,y-1) x++;
-    if hsp < 0 hsp = 0; 
-}
-    
 
 if invincible == 0 {
     last_hitbox = hit_id;
     hit_id = instance_place(x,y,pHitBox);
     if hit_id == noone has_hit = 0;
     if hit_lockout > 0 hit_lockout--;
-    if hit_id != noone && (!("hit_owner" in hit_id) || hit_id.hit_owner != id) && hit_lockout == 0 && last_hitbox != hit_id {
+    if hit_id != noone && (!("hit_owner" in hit_id) || hit_id.hit_owner != id) && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
         with hit_id {
-            if kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
+            if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
                 other.spr_dir = -spr_dir;
                 other.percent += damage;
                 other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
-                //
+                //DEPRICATED BECAUSE get_hitbox_angle() EXISTS TY GIIK
                 
-                if kb_angle == 361 && other.free other.kb_angle = 45;
+                /*if kb_angle == 361 && other.free other.kb_angle = 45;
                 else if kb_angle == 361 && !other.free other.kb_angle = 40;
                 var _kb_angle = kb_angle;
-                if player_id.spr_dir == 1 other.kb_angle = (kb_angle)*3.14159/180;
+                var true_dir = player_id.spr_dir;
+                if attack == AT_BAIR true_dir = !true_dir; //I swear to god Dan
+                if true_dir == 1 other.kb_angle = (kb_angle)*3.14159/180;
                 else other.kb_angle = (180-kb_angle)*3.14159/180;
-                var _x_hcenter = sign(other.x-x);
-                var _y_hcenter = sign(other.y-y);
-                var _x_pcenter = sign(other.x-player_id.x);
-                var _y_pcenter = sign(other.y-player_id.y);
+                
+                var _x_hcenter = other.x-x;
+                var _y_hcenter = other.y-y;
+                var _x_pcenter = other.x-player_id.x;
+                var _y_pcenter = other.y-player_id.y;
                 switch hit_flipper {
-                    case 1: // Send Away from the enemy
-                        
+                    case 1: // Send away from the enemy
+                        other.kb_angle = tan(_y_hcenter/_x_hcenter);
                         break;
-                }
+                    case 2: // Send toward from the enemy
+                        other.kb_angle = tan(_y_hcenter/_x_hcenter)+3.14159/2;
+                        break;
+                    case 3: // Horizontal away
+                        other.kb_angle = tan(arcsin(other.kb_angle)/(sign(_x_hcenter)*arccos(other.kb_angle)));
+                        break;
+                    case 4: // Horizontal towards
+                        other.kb_angle = tan(arcsin(other.kb_angle)/(-sign(_x_hcenter)*arccos(other.kb_angle)));
+                        break;
+                }*/
                 //
+                
                 other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
                 other.hitpause = hitpause + other.percent*hitpause_growth*0.05;
                 other.old_hsp = other.hsp;
                 other.old_vsp = other.vsp;
                 if no_other_hit != 0 other.hit_lockout = no_other_hit;
-                else other.hit_lockout = 10;
+                else other.hit_lockout = hitpause;
                 other.hit_sound = sound_effect;
                 other.hit_visual = hit_effect;
+                other.hbox_group = hbox_group;
             }
         }
+        kb_angle = get_hitbox_angle(hit_id);
         if hit_id.player_id != 0 with hit_id.player_id {
             has_hit = 1;
             old_vsp = vsp;
             old_hsp = hsp;
-            hitstop = other.hitpause;
+            if other.hit_id.type == 1 hitstop = other.hitpause;
             hitpause = 1;
             hsp = 0;
             vsp = 0;
+            
         }
+        hit_player_id = hit_id.player_id;
         if has_hit == 0 {
             sound_play(hit_sound);
-            spawn_hit_fx(x,y,hit_visual);
+            test = spawn_hit_fx(x,y,hit_visual);
+            //test = hit_visual.sprite_index;
         }
         has_hit = 1;
     }
@@ -411,19 +479,28 @@ if invincible == 0 {
 
 
 #define place_meet(__x,__y) //get place_meeting for the usual suspects
+/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (place_meeting(__x,__y,asset_get("solid_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_solid) || 
         place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_platform));
 #define place_meet_solid(__x,__y) //get place_meeting for the usual suspects
+/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true));*/
 return (place_meeting(__x,__y,asset_get("solid_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_solid));
 #define place_meet_plat(__x,__y) //get place_meeting for the usual suspects
+/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_platform));
 #define get_plat(__x,__y)
+//var _plat = collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true);
 var _plat = instance_place(__x,__y,obj_stage_article_platform);
-if instance_exists(_plat) return instance_place(__x,__y,obj_stage_article_platform);
+if instance_exists(_plat) return _plat;
 else return instance_place(__x,__y,asset_get("jumpthrough_32_obj"));
 #define attack_update() //Attack update script during attacks
 //if debug print_debug("[EM] Attack Updating..."+string(window)+":"+string(window_timer));
@@ -562,6 +639,24 @@ with asset_get("oPlayer") {
         other.joy_pad_idle = joy_pad_idle;
     }
 }
+clear_button_buffer(PC_LEFT_HARD_PRESSED);
+clear_button_buffer(PC_RIGHT_HARD_PRESSED);
+clear_button_buffer(PC_UP_HARD_PRESSED);
+clear_button_buffer(PC_DOWN_HARD_PRESSED);
+clear_button_buffer(PC_LEFT_STRONG_PRESSED);
+clear_button_buffer(PC_RIGHT_STRONG_PRESSED);
+clear_button_buffer(PC_UP_STRONG_PRESSED);
+clear_button_buffer(PC_DOWN_STRONG_PRESSED);
+clear_button_buffer(PC_LEFT_STICK_PRESSED);
+clear_button_buffer(PC_RIGHT_STICK_PRESSED);
+clear_button_buffer(PC_UP_STICK_PRESSED);
+clear_button_buffer(PC_DOWN_STICK_PRESSED);
+clear_button_buffer(PC_JUMP_PRESSED);
+clear_button_buffer(PC_ATTACK_PRESSED);
+clear_button_buffer(PC_SHIELD_PRESSED);
+clear_button_buffer(PC_SPECIAL_PRESSED);
+clear_button_buffer(PC_STRONG_PRESSED);
+clear_button_buffer(PC_TAUNT_PRESSED);
 #define enemy_sprite_get(_num,_sprite) //Get the sprite of this article
 return sprite_get("enemy_"+string(_num)+"_"+string(_sprite));
 

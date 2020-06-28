@@ -3,27 +3,35 @@
 switch cur_room {
     case 1:
         switch cur_scene {
-            case 1:
+            /*case 1:
                 if cur_scene_time == 2 list_window[| 0].path = [50,400];
                 if cur_scene_time == 5 list_window[| 1].path = [150,400];
                 if cur_scene_time < 30 list_window[| 1].vis_chars = 0;
-                break;
+                break;*/
+            /*case 4:
+                follow_player.initial_dash_speed = 40;
+                follow_player.dash_speed = 40;
+                follow_player.air_max_speed = 40;
+                follow_player.leave_ground_max = 40;
+                follow_player.air_accel= 1;*/
             case 5:
             case 6:
             case 7:
-                
-                if cur_scene_time == 1 with obj_stage_article if num == 6 {
-                    player_controller = 1; //Change who controls the enemy (player 1)
-                    other.list_window[| 2].follow_var = id; //change the camera to follow the enemy instead of the player
-                }
-                break;
             case 8:
-                if cur_scene_time == 1 with obj_stage_article if num == 6 player_controller = 0;
+                //if cur_scene_time == 1 with obj_stage_article if num == 6 player_controller = 0;
                 break;
                 
         }
         break;
 }
+
+/*
+with oPlayer {
+    if attack_down && shield_down && other.cur_room == 1 with other {
+        room_switch(2);
+    }
+    if taunt_down && other.cur_room == 2 with other room_switch(1);
+}*/
 //
 
 /*
