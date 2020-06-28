@@ -239,6 +239,7 @@ switch room_switch_type {
 		if room_switch_timer == floor(room_switch_time/2) {
 			despawn_room();
 			room_render(cur_room);
+			switch_room_position(switch_to_room_pos);
 			with obj_stage_article if num == 3 {
 				event_id = other.room_switch_event;
 				event_triggered = true;
@@ -253,6 +254,7 @@ switch room_switch_type {
 		if room_switch_timer == floor(room_switch_time/2) {
 			despawn_room();
 			room_render(cur_room);
+			switch_room_position(switch_to_room_pos);
 			with obj_stage_article if num == 3 {
 				event_id = other.room_switch_event;
 				event_triggered = true;
@@ -268,6 +270,7 @@ switch room_switch_type {
 		room_switch_on = false;
 		despawn_room();
 		room_render(cur_room);
+		switch_room_position(switch_to_room_pos);
 		break;
 }
 room_switch_timer++;
