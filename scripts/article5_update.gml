@@ -5,35 +5,47 @@ if get_gameplay_time() == 2 {
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
     init_cam_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
+    reload_rooms();
+    switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
+    room_switch(follow_player.respawn_point[2]);
+   
     last_pos[0] = follow_player.x;
     last_pos[1] = follow_player.y;
-	
-    reload_rooms();
-    room_switch(1);
 }
-if room_switch_on room_switch_update();
-if switch_to_room != cur_room room_switch(switch_to_room);
 
-//Respawn Code
-with oPlayer {
+if switch_to_room != cur_room room_switch(switch_to_room);
+if room_switch_on room_switch_update();
+
+with follow_player {
 	if state == PS_DEAD || state == PS_RESPAWN {
-		with other {
-			//var true_pos_new = cell_to_grid(other.respawn_point[0],other.respawn_point[1]);
-			//true_pos = true_pos_new;
-			follow_point.x = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[0];
-			follow_point.y = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[1];
-			other.x = follow_point.x;
-			other.y = follow_point.y;
-			/*follow_point.x = true_pos[0];
-			follow_point.y = true_pos[1];*/
-			//last_pos[0] = follow_point.x;
-    		//last_pos[1] = follow_point.y;
+		if (state_timer == 89 && state == PS_RESPAWN) {
+			smoothing = 1;
+			visible = false;
+			set_state(PS_IDLE_AIR);
+			with other {
+				//var true_pos_new = cell_to_grid(other.respawn_point[0],other.respawn_point[1]);
+				//true_pos = true_pos_new;
+				room_switch_type = 1;
+    			switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
+			    room_switch(follow_player.respawn_point[2]);
+		        room_switch_on = true;
+		        room_switch_timer = 0;
+				/*follow_point.x = true_pos[0];
+				follow_point.y = true_pos[1];*/
+			}
+		}
+		if (state_timer < 89 && state == PS_RESPAWN) || state == PS_DEAD  {
+			with other {
+				//var true_pos_new = cell_to_grid(other.respawn_point[0],other.respawn_point[1]);
+				//true_pos = true_pos_new;
+				follow_player.x = init_cam_pos[0];
+				follow_player.y = init_cam_pos[1];
+				/*follow_point.x = true_pos[0];
+				follow_point.y = true_pos[1];*/
+			}
 		}
 	}
 }
-
-
-
 
 if get_gameplay_time() > 3 && room_type == 1 { //Scrolling Room
     set_view_position(init_cam_pos[0],init_cam_pos[1]);
@@ -48,7 +60,7 @@ if get_gameplay_time() > 3 && room_type == 1 { //Scrolling Room
     scroll_horiz = true;
     scroll_vert = true;
 }
-	
+
 /*if get_gameplay_time() < 120 {
     follow_player.vsp = 0;
     follow_player.hsp = 0;
@@ -345,3 +357,13 @@ for (var i = 0; i < ds_list_size(list_room); i++) {
     if instance_exists(list_room[| i]) instance_destroy(list_room[| i]);
 }
 ds_list_clear(list_room);*/
+#define switch_room_position(_pos) //Switches the room position in grid space (Harbige12)
+if (_pos[0] != -1) {
+	follow_point.x = _pos[0];
+	follow_player.x = follow_point.x;
+}
+if (_pos[1] != -1) {
+	follow_point.y = _pos[1];
+	follow_player.y = follow_point.y;
+}
+follow_player.visible = true;
