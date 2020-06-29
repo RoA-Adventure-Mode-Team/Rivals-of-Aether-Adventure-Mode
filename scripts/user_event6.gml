@@ -121,7 +121,22 @@ if !_init {
     //#endregion
     
 } else {
-	//#region Enemy attacks
+	//#region Enemy update
+    switch enem_id {
+        case EN.OU:
+            if !committed && attack_down next_attack = AT_JAB;
+            //Custom State Stuff
+            switch art_state {
+                case PS_DOUBLE_JUMP:
+                    sprite_index = enemy_sprite_get(enem_id,"PS_FIRST_JUMP");
+                    break;
+            }
+        break;
+    }
+    //
+    //#endregion
+	
+    //#region Enemy attacks
 	if (next_attack >= 0) {
 		with (obj_stage_main) {
 			switch(other.enem_id) {
@@ -188,22 +203,6 @@ if !_init {
 		}
 	}
 	//#endregion
-	
-	//#region Enemy update
-    switch enem_id {
-        case EN.OU:
-            if !committed && attack_down next_attack = AT_JAB;
-            //Custom State Stuff
-            switch art_state {
-                case PS_DOUBLE_JUMP:
-                    sprite_index = enemy_sprite_get(enem_id,"PS_FIRST_JUMP");
-                    break;
-            }
-        break;
-    }
-    //
-    //#endregion
-    
 }
 
 

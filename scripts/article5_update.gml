@@ -16,6 +16,8 @@ if get_gameplay_time() == 2 {
 if switch_to_room != cur_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
 
+smoothing = .3;
+
 with follow_player {
 	if state == PS_DEAD || state == PS_RESPAWN {
 		if (state_timer == 89 && state == PS_RESPAWN) {
