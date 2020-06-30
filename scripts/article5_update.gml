@@ -14,33 +14,24 @@ if get_gameplay_time() == 2 {
 if room_switch_on room_switch_update();
 if switch_to_room != cur_room room_switch(switch_to_room);
 
-//Respawn Code
+//Respawn Code, will replace with Hibriges
 with oPlayer {
 	if state == PS_DEAD || state == PS_RESPAWN {
+		//if other.respawn_timer > 0 state = PS_DEAD;
 		with other {
-			//var true_pos_new = cell_to_grid(other.respawn_point[0],other.respawn_point[1]);
-			//true_pos = true_pos_new;
+			//switch_to_room = other.respawn_point[2];
 			follow_point.x = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[0];
 			follow_point.y = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[1];
 			other.x = follow_point.x;
 			other.y = follow_point.y;
-			/*follow_point.x = true_pos[0];
-			follow_point.y = true_pos[1];*/
-			//last_pos[0] = follow_point.x;
-    		//last_pos[1] = follow_point.y;
 		}
 	}
 }
 
-
-
-
 if get_gameplay_time() > 3 && room_type == 1 { //Scrolling Room
     set_view_position(init_cam_pos[0],init_cam_pos[1]);
     if !respawning set_follow_point(follow_objects);
-    /*if abs(follow_point.x - last_pos[0]) < follow_snap && 
-       abs(follow_point.y - last_pos[1]) < follow_snap && 
-       follow_player.state != PS_HITSTUN room_scroll();*/
+
     if follow_player.state != PS_HITSTUN room_scroll();
     //Frame Cleanups
     last_pos[0] = follow_point.x;
@@ -48,11 +39,7 @@ if get_gameplay_time() > 3 && room_type == 1 { //Scrolling Room
     scroll_horiz = true;
     scroll_vert = true;
 }
-	
-/*if get_gameplay_time() < 120 {
-    follow_player.vsp = 0;
-    follow_player.hsp = 0;
-}*/
+
 /*if get_gameplay_time() % 1 == 0 {
     e = instance_create(follow_point.x,follow_point.y,"obj_stage_article",1);
     e.num = 2; //empty script
@@ -61,7 +48,7 @@ if get_gameplay_time() > 3 && room_type == 1 { //Scrolling Room
 }*/
 
 cur_room_time++;
-#define set_follow_point(_obj_array)
+#define set_follow_point(_obj_array) //Set the point the room will follow to
 var _x_avg = 0;
 var _y_avg = 0;
 var _count = 0;
@@ -76,7 +63,7 @@ _x_avg /= _count;
 _y_avg /= _count;
 follow_point.x = _x_avg;
 follow_point.y = _y_avg;//+(follow_player.down_held > 20)*50-(follow_player.up_held > 20)*50;
-#define room_scroll()
+#define room_scroll() //Scroll the whole room to the camera
 horiz_dir = 0;
 vert_dir = 0;
 var left_off = 0;
@@ -84,6 +71,7 @@ var right_off = 0;
 var up_off = 0;
 var down_off = 0;
 
+//Camera restriction checks and scrolling
 if !instance_exists(cam_override_obj) {
     cam_override_obj = noone;
     scroll_vert = true;
@@ -119,7 +107,6 @@ if horiz_dir != 0 { //Cause all entities we can access to scroll
     with oPlayer x += other.horiz_dir;
     
     //BASE CAST EXCEPTIONS ARE IMPOSSIBLE - WE CANNOT EDIT THEM
-    //with pBurnBox x += other.other.other.horiz_dir;
     
     //
     
@@ -130,6 +117,7 @@ if horiz_dir != 0 { //Cause all entities we can access to scroll
     with obj_article_solid x += other.horiz_dir;
     with obj_article_platform x += other.horiz_dir;
     with hit_fx_obj x += other.horiz_dir;
+    //We cannot move dust particles currently - will uncomment if we can later on
     /*if "new_dust_fx_obj" in self with asset_get("new_dust_fx_obj") x += other.horiz_dir;
     if "dust_fg_surface" in self with asset_get("dust_fg_surface") x += other.horiz_dir;
     if "smoke_fg_surface" in self with asset_get("smoke_fg_surface") x += other.horiz_dir;
@@ -151,6 +139,7 @@ if vert_dir != 0 { //Cause all entities we can access to scroll
     with obj_article_solid y += other.vert_dir;
     with obj_article_platform y += other.vert_dir;
     with hit_fx_obj y += other.vert_dir;
+    //We cannot move dust particles currently - will uncomment if we can later on
     /*if "new_dust_fx_obj" in self with asset_get("new_dust_fx_obj") y += other.vert_dir;
     if "dust_fg_surface" in self with asset_get("dust_fg_surface") y += other.vert_dir;
     if "smoke_fg_surface" in self with asset_get("smoke_fg_surface") y += other.vert_dir;
@@ -168,11 +157,10 @@ if old_cell_pos != cell_pos && !room_switch_on {
 }
 
 
-//(true_pos[0]/cell_size+grid_offset)
 
 
 
-#define reload_rooms()
+#define reload_rooms() //Reload room data, runs on start
 cur_room = 0;
 cur_room_time = 0;
 array_room_ID = array_create(0);
@@ -180,10 +168,10 @@ array_room_data = array_create(0);
 array_room_transition_time = 120;
 array_room_name = 0;
 
-//room_add(0,[]);
+
 user_event(1); //Room Load Event Script
 
-//room_switch(1);
+
 #define room_add(_room_id,room_data) //Adds a new room to the scene
 var _room_id_ind = array_find_index(array_room_ID,_room_id);
 if _room_id_ind == - 1 {
@@ -194,7 +182,7 @@ if _room_id_ind == - 1 {
     array_room_data[_room_id_ind] = room_data;
     array_room_ID[_room_id_ind] = _room_id;
 }
-#define room_switch(_room_id)
+#define room_switch(_room_id) //Switches the room
 if debug print_debug("[RM] Switching to... "+string(_room_id));
 if _room_id != cur_room {
     cur_room_time = 0;
@@ -216,7 +204,7 @@ if _room_id != cur_room {
 } 
 with oPlayer set_state(PS_IDLE);
 switch_to_room = cur_room;
-#define room_switch_update()
+#define room_switch_update() //Runs when a room transition is in effect
 with oPlayer {
 	set_state(PS_IDLE);
 	vsp = 0;
@@ -260,8 +248,7 @@ switch room_switch_type {
 }
 room_switch_timer++;
 
-#define room_render(_room_id)
-//var _has_rendered = false;
+#define room_render(_room_id) //Renders the current room. Runs on cell change, room transitions, and respawn usually.
 var articles_spawned = 0;
 if _room_id < array_length_1d(array_room_data) {
     room_data = array_room_data[_room_id];
@@ -273,9 +260,6 @@ if _room_id < array_length_1d(array_room_data) {
             for (var j = 0; j < array_length_1d(cell_data) && articles_spawned < article_frame_limit; j++) { //Check objects inside the array
                 if cell_data[j][6][0] == 0 { //If it's not flagged as spawned yet
                     //Real coords need translating into relative
-                    //var _cell_x = (cell_data[j][1]-grid_offset)*cell_size;
-                    //var _cell_y = (cell_data[j][2]-grid_offset)*cell_size;
-                    //var _rel_pos =  real_to_grid([_cell_x,_cell_y]);
                     rel_pos = cell_to_grid([cell_data[j][1],cell_data[j][2]],_cell_pos);
                         switch cell_data[j][3] {
                             case 2:
@@ -316,16 +300,16 @@ if _room_id < array_length_1d(array_room_data) {
     }
 } else if debug print_debug("[RM] Unfound Room ID");
 
-#define real_to_grid(_pos)
+#define real_to_grid(_pos) //Translate real coordinates into coordinates on the basegame grid 
 return [_pos[0] - init_cam_pos[0]+true_pos[0], _pos[1] - init_cam_pos[1]+true_pos[1]];
-#define cell_to_real(_pos,_cell_pos)
+#define cell_to_real(_pos,_cell_pos) //Translate cell coordinates to real
 return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0] != 0))*cell_size, (_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1] != 0))*cell_size];
-#define cell_to_grid(_pos, _cell_pos)
+#define cell_to_grid(_pos, _cell_pos) //Translate cell coordinates to the basegame grid system
 return real_to_grid(cell_to_real(_pos,_cell_pos));
-#define grid_to_cell(_pos)
+#define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
 cell_pos = [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
 return [_pos[0] % ((cell_dim[0]-grid_offset)*cell_size),_pos[1] % ((cell_dim[1]-grid_offset)*cell_size)];
-#define despawn_room()
+#define despawn_room() //Despawns all articles in a current room. If an article was a 1 time use, it won't respawn.
 var _room_id = cur_room;
 for (var k = 0; k < array_length_1d(array_room_data[_room_id]); k++) {
         for (var j = 0; j < array_length_1d(array_room_data[_room_id][k][1]); j++) { //Check objects inside the array
@@ -335,13 +319,3 @@ for (var k = 0; k < array_length_1d(array_room_data[_room_id]); k++) {
 with obj_stage_article if num != 3 && num != 5 instance_destroy(id);
 with obj_stage_article_platform instance_destroy(id);
 with obj_stage_article_solid instance_destroy(id);
-/*for (var i = 0; i < ds_list_size(list_room); i++) {
-    instance_destroy(list_room[| i]);
-}
-ds_list_clear(list_room);*/
-/*#define despawn_room()
-
-for (var i = 0; i < ds_list_size(list_room); i++) {
-    if instance_exists(list_room[| i]) instance_destroy(list_room[| i]);
-}
-ds_list_clear(list_room);*/
