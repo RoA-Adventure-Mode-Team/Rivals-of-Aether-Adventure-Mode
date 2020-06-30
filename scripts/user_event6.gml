@@ -1,6 +1,6 @@
 //Custom AI Behavior. see article6 code for details.
 
-//Enum Declarations
+//Enum Declarations, DO NOT EDIT
 enum TR {
     NEAR,
     MID,
@@ -9,33 +9,20 @@ enum TR {
     LOW,
     HIGH
 }
-
 //
+
+//Enemy enums
 enum EN {
     OU, //0
-    BIR, //1
-}
-if _init {
-    //Custom Code Here
-    
-    
-    
-    switch enem_id {
-        case EN.OU:
-            if !committed && attack_down next_attack = AT_JAB;
-            //Custom State Stuff
-            switch art_state {
-                case PS_DOUBLE_JUMP:
-                    sprite_index = enemy_sprite_get(enem_id,"PS_FIRST_JUMP");
-                    break;
-            }
-            break;
-    }
-    //
-} else {
+};
+
+if !_init {
+	//#region Enemy intialization
     switch enem_id {
         case EN.OU:
         //Initializations Here
+        
+        sprite_name = "0";
         
         //Animation Actions
         char_height = 25;
@@ -64,8 +51,8 @@ if _init {
         moonwalk_accel = 1.4;
         
         jump_start_time = 5;
-        jump_speed = 17;
-        short_hop_speed = 15;
+        jump_speed = 12;
+        short_hop_speed = 8;
         djump_speed = 10;
         leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
         max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
@@ -131,8 +118,94 @@ if _init {
         death_sound = asset_get("sfx_death2");
         break;
     }
+    //#endregion
+    
+} else {
+	//#region Enemy update
+    switch enem_id {
+        case EN.OU:
+            if !committed && attack_down next_attack = AT_JAB;
+            //Custom State Stuff
+            switch art_state {
+                case PS_DOUBLE_JUMP:
+                    sprite_index = enemy_sprite_get(enem_id,"PS_FIRST_JUMP");
+                    break;
+            }
+        break;
+    }
+    //
+    //#endregion
+	
+    //#region Enemy attacks
+	if (next_attack >= 0) {
+		with (obj_stage_main) {
+			switch(other.enem_id) {
+				case EN.OU: {
+					switch (other.next_attack) {
+						case AT_JAB:
+							set_attack_value(AT_JAB, AG_CATEGORY, 1);
+							set_attack_value(AT_JAB, AG_SPRITE, sprite_get("ou_jab"));
+							set_attack_value(AT_JAB, AG_NUM_WINDOWS, 3);
+							set_attack_value(AT_JAB, AG_HAS_LANDING_LAG, 1);
+							set_attack_value(AT_JAB, AG_LANDING_LAG, 4);
+							set_attack_value(AT_JAB, AG_HURTBOX_SPRITE, sprite_get("jab_hurt"));
+
+							set_window_value(AT_JAB, 1, AG_WINDOW_LENGTH, 8);
+							set_window_value(AT_JAB, 1, AG_WINDOW_ANIM_FRAMES, 2);
+							set_window_value(AT_JAB, 1, AG_WINDOW_HAS_SFX, 1);
+							set_window_value(AT_JAB, 1, AG_WINDOW_SFX, asset_get("sfx_swipe_weak2"));
+							set_window_value(AT_JAB, 1, AG_WINDOW_SFX_FRAME, 7);
+
+							set_window_value(AT_JAB, 2, AG_WINDOW_LENGTH, 4);
+							set_window_value(AT_JAB, 2, AG_WINDOW_ANIM_FRAMES, 1);
+							set_window_value(AT_JAB, 2, AG_WINDOW_ANIM_FRAME_START, 2);
+
+							set_window_value(AT_JAB, 3, AG_WINDOW_LENGTH, 7);
+							set_window_value(AT_JAB, 3, AG_WINDOW_ANIM_FRAMES, 2);
+							set_window_value(AT_JAB, 3, AG_WINDOW_ANIM_FRAME_START, 3);
+							set_window_value(AT_JAB, 3, AG_WINDOW_HAS_WHIFFLAG, 1);
+
+							set_num_hitboxes(AT_JAB, 2);
+
+							set_hitbox_value(AT_JAB, 1, HG_HITBOX_TYPE, 2);
+							set_hitbox_value(AT_JAB, 1, HG_WINDOW, 2);
+							set_hitbox_value(AT_JAB, 1, HG_LIFETIME, 6);
+							set_hitbox_value(AT_JAB, 1, HG_SHAPE, 0);
+							set_hitbox_value(AT_JAB, 1, HG_HITBOX_X, 27);
+							set_hitbox_value(AT_JAB, 1, HG_HITBOX_Y, -24);
+							set_hitbox_value(AT_JAB, 1, HG_WIDTH, 55);
+							set_hitbox_value(AT_JAB, 1, HG_HEIGHT, 55);
+							set_hitbox_value(AT_JAB, 1, HG_PRIORITY, 1);
+							set_hitbox_value(AT_JAB, 1, HG_DAMAGE, 4);
+							set_hitbox_value(AT_JAB, 1, HG_ANGLE, 60);
+							set_hitbox_value(AT_JAB, 1, HG_BASE_KNOCKBACK, 5);
+							set_hitbox_value(AT_JAB, 1, HG_KNOCKBACK_SCALING, .6);
+							set_hitbox_value(AT_JAB, 1, HG_BASE_HITPAUSE, 5);
+							set_hitbox_value(AT_JAB, 1, HG_HITPAUSE_SCALING, .6);
+							set_hitbox_value(AT_JAB, 1, HG_HIT_LOCKOUT, 0);
+							//set_hitbox_value(AT_JAB, 1, HG_EFFECT, 12);
+							set_hitbox_value(AT_JAB, 1, HG_HITBOX_GROUP, -1);
+							set_hitbox_value(AT_JAB, 1, HG_VISUAL_EFFECT, 0);
+							set_hitbox_value(AT_JAB, 1, HG_HIT_SFX, asset_get("sfx_blow_weak2"));
+							set_hitbox_value(AT_JAB, 1, HG_IGNORES_PROJECTILES, 0);
+							set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_SPRITE, asset_get("empty_sprite"));
+							set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_MASK, -1);
+							set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_WALL_BEHAVIOR, 2);
+							set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_GROUND_BEHAVIOR, 2);
+							set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_ENEMY_BEHAVIOR, 1);
+							set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_PARRY_STUN, true);
+							set_hitbox_value(AT_JAB, 1, HG_PROJECTILE_DOES_NOT_REFLECT, true);
+						break;
+					}
+				}
+				break;
+			}
+		}
+	}
+	//#endregion
 }
 
+
 //DO NOT EDIT BELLOW
-#define enemy_sprite_get(_num,_sprite) //Get the sprite of this article
-return sprite_get("enemy_"+string(_num)+"_"+string(_sprite));
+#define enemy_sprite_get(_name,_sprite) //Get the sprite of this article
+return sprite_get("enemy_"+string(_name)+"_"+string(_sprite));

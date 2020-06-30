@@ -27,6 +27,7 @@ if state == 0 { //trigger active
             break;
     }
     if collis_obj != noone && (!hold_up || collis_obj.up_down) with obj_stage_article if num == 5 {
+        switch_to_room_pos = [-1, -1];
         room_switch_type = other.room_switch_type;
         switch_to_room = other.to_room;
         room_switch_event = other.event_id;

@@ -1,13 +1,15 @@
 //article6_init, Enemy
-
+//Rework done by Harbige12
 
 _init = 0;
-collision_box = asset_get("ex_guy_crouch_box");
+collision_box = asset_get("ex_guy_hurt_box");
 colis_width = sprite_get_width(collision_box);
 colis_height = sprite_get_height(collision_box);
 sprite_index = sprite_get("ou_idle");
 mask_index =  collision_box; // Collision Mask
-debug = true;
+hurtbox_spr = collision_box; //Hurtbox Sprite
+
+debug = false;
 init_pos = [0,0];
 can_be_grounded = true;
 ignores_walls = false;
@@ -16,17 +18,14 @@ custom_args = array_create(0);
 
 stage_main = asset_get("obj_stage_main");
 
-
-
-
 //Physics Delta
 physics_range = 800; //Range that physics live-updates
 in_render = false;
 
 //State Actions
-art_state = 0;
+art_state = PS_IDLE;
 art_state_timer = 0;
-state = 0;
+state = PS_IDLE;
 state_timer = 0;
 next_state = 0;
 prev_state = 0;
@@ -41,11 +40,9 @@ team = 0;
 is_attacking = true;
 committed = false;
 sprite_default_offset = [56, 102];
-
 crouch_timer = 0;
-sprite_name = "none";
-
 hitpoints_max = 0; //If this is zero, percentage knockback will be used. - Harbige
+enemy_class = 0 //0 = grounded; 1 = flying
 
 //AI Variables
 player_controller = 0;
@@ -210,41 +207,45 @@ attack_fresh = true;
 attack = 0;
 next_attack = -1;
 last_attack = -1;
+super_armor = false;
 
 window = 0;
 window_timer = 0;
 
 ag_category = 0;
 ag_num_windows = 0;
+ag_window_start = 0;
 ag_sprite = 0;
 ag_hurtbox_sprite = 0;
 ag_num_windows = 0;
 ag_uses_custom_gravity = 0;
 
 hg_num_hitboxes = 0;
+hg_hitbox_start = 0;
 
 //Window Variables
-ag_window_type[7] = 0;
-ag_window_length[7] = 0;
-ag_window_anim_frames[7] = 0;
-ag_window_anim_frame_start[7] = 0;
-ag_window_has_sfx[7] = 0;
-ag_window_sfx[7] = 0;
-ag_window_sfx_frame[7] = 0;
-ag_window_hspeed[7] = 0;
-ag_window_hspeed_type[7] = 0;
-ag_window_vspeed[7] = 0;
-ag_window_vspeed_type[7] = 0;
-ag_window_custom_gravity[7] = 0;
-ag_window_wifflag[7] = 0;
+ag_window_type[100] = 0;
+ag_window_length[100] = 0;
+ag_window_anim_frames[100] = 0;
+ag_window_anim_frame_start[100] = 0;
+ag_window_has_sfx[100] = 0;
+ag_window_sfx[100] = 0;
+ag_window_sfx_frame[100] = 0;
+ag_window_hspeed[100] = 0;
+ag_window_hspeed_type[100] = 0;
+ag_window_vspeed[100] = 0;
+ag_window_vspeed_type[100] = 0;
+ag_window_custom_gravity[100] = 0;
+ag_window_wifflag[100] = 0;
 
 //Hitbox Variables
-hg_window[5] = 0;
-hg_window_frame[5] = 0;
-hg_x[5] = 0;
-hg_y[5] = 0;
-hg_bhitp[5] = 0;
-hg_shitp[5] = 0;
+hg_type[100] = 0;
+hg_window[100] = 0;
+hg_window_frame[100] = 0;
+hg_x[100] = 0;
+hg_y[100] = 0;
+hg_bhitp[100] = 0;
+hg_shitp[100] = 0;
 
 hitb = noone;
 hitb_pos = [0,0];
@@ -268,6 +269,7 @@ strong_down = 0;
 left_hard_pressed = 0;
 right_hard_pressed = 0;
 down_hard_pressed = 0;
+attack_pressed = 0;
 
 _joy_dir = 0;
 

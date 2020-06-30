@@ -3,7 +3,7 @@ draw_set_alpha(1);
 if !_init exit; //Only draw stuff after initializing
 if in_render {
     if debug {
-        draw_sprite_ext(collision_box,0,x,y,1,1,0,c_white,.6);
+        draw_sprite_ext(hurtbox_spr,-1,x,y,spr_dir,1,0,c_white,.6);
         draw_debug_text(x-128,y,string(attack_down));
         draw_debug_text(x-128,y+16,string(down_down));
         draw_debug_text(x-128,y-16,string(up_down));
@@ -27,6 +27,19 @@ if in_render {
     }
     
     }
+    
+    if (super_armor) {
+        var offset = 2;
+        for (var ix = -offset; ix <= offset; ix += offset) {  
+             for (var iy = -offset; iy <= offset; iy += offset) {  
+                gpu_set_fog(1, c_white, 0, 0);
+                draw_sprite_ext(sprite_index,image_index,x + ix,y + iy,image_xscale * spr_dir,image_yscale,image_angle,image_blend,image_alpha);
+                gpu_set_fog(0, 0, 0, 0);
+             }
+        }
+        draw_sprite_ext(sprite_index,image_index,x,y,image_xscale * spr_dir,image_yscale,image_angle,image_blend,image_alpha);
+    }
+    
     //Contributed by Harbige
     if (hitpoints_max > 0) {
         if (char_healthbar != noone) {
@@ -37,7 +50,7 @@ if in_render {
     }
     else draw_debug_text(x-10,y-(char_height*2)-20,string(percent)+"%");
     //
-    draw_sprite_ext(char_arrow,0,x-10,y-char_height*2-6,1,1,0,c_white,1);
+    draw_sprite_ext(char_arrow,0,x-10,y-char_height*2-6,1,1,0,char_hud_color,1);
     
     
 }

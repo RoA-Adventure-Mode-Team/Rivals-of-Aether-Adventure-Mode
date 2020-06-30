@@ -5,25 +5,44 @@ if get_gameplay_time() == 2 {
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
     init_cam_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
+    reload_rooms();
+    switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
+    room_switch(follow_player.respawn_point[2]);
+   
     last_pos[0] = follow_player.x;
     last_pos[1] = follow_player.y;
-	
-    reload_rooms();
-    room_switch(1);
 }
-if room_switch_on room_switch_update();
-if switch_to_room != cur_room room_switch(switch_to_room);
 
-//Respawn Code, will replace with Hibriges
-with oPlayer {
+if switch_to_room != cur_room room_switch(switch_to_room);
+if room_switch_on room_switch_update();
+
+with follow_player {
 	if state == PS_DEAD || state == PS_RESPAWN {
-		//if other.respawn_timer > 0 state = PS_DEAD;
-		with other {
-			//switch_to_room = other.respawn_point[2];
-			follow_point.x = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[0];
-			follow_point.y = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[1];
-			other.x = follow_point.x;
-			other.y = follow_point.y;
+		if (state_timer == 89 && state == PS_RESPAWN) {
+			smoothing = 1;
+			visible = false;
+			set_state(PS_IDLE_AIR);
+			with other {
+				//var true_pos_new = cell_to_grid(other.respawn_point[0],other.respawn_point[1]);
+				//true_pos = true_pos_new;
+				room_switch_type = 1;
+    			switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
+			    room_switch(follow_player.respawn_point[2]);
+		        room_switch_on = true;
+		        room_switch_timer = 0;
+				/*follow_point.x = true_pos[0];
+				follow_point.y = true_pos[1];*/
+			}
+		}
+		if (state_timer < 89 && state == PS_RESPAWN) || state == PS_DEAD  {
+			with other {
+				//var true_pos_new = cell_to_grid(other.respawn_point[0],other.respawn_point[1]);
+				//true_pos = true_pos_new;
+				follow_player.x = init_cam_pos[0];
+				follow_player.y = init_cam_pos[1];
+				/*follow_point.x = true_pos[0];
+				follow_point.y = true_pos[1];*/
+			}
 		}
 	}
 }
@@ -215,6 +234,7 @@ switch room_switch_type {
 		if room_switch_timer == floor(room_switch_time/2) {
 			despawn_room();
 			room_render(cur_room);
+			switch_room_position(switch_to_room_pos);
 			with obj_stage_article if num == 3 {
 				event_id = other.room_switch_event;
 				event_triggered = true;
@@ -229,6 +249,7 @@ switch room_switch_type {
 		if room_switch_timer == floor(room_switch_time/2) {
 			despawn_room();
 			room_render(cur_room);
+			switch_room_position(switch_to_room_pos);
 			with obj_stage_article if num == 3 {
 				event_id = other.room_switch_event;
 				event_triggered = true;
@@ -244,6 +265,7 @@ switch room_switch_type {
 		room_switch_on = false;
 		despawn_room();
 		room_render(cur_room);
+		switch_room_position(switch_to_room_pos);
 		break;
 }
 room_switch_timer++;
@@ -319,3 +341,15 @@ for (var k = 0; k < array_length_1d(array_room_data[_room_id]); k++) {
 with obj_stage_article if num != 3 && num != 5 instance_destroy(id);
 with obj_stage_article_platform instance_destroy(id);
 with obj_stage_article_solid instance_destroy(id);
+
+#define switch_room_position(_pos) //Switches the room position in grid space (Harbige12)
+if (_pos[0] != -1) {
+	follow_point.x = _pos[0];
+	follow_player.x = follow_point.x;
+}
+if (_pos[1] != -1) {
+	follow_point.y = _pos[1];
+	follow_player.y = follow_point.y;
+}
+follow_player.visible = true;
+
