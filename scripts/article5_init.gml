@@ -18,8 +18,10 @@ room_switch_type = 0;
 room_switch_on = false;
 room_switch_time = 60;
 room_switch_timer = 0;
-switch_to_room_pos = [0,0] //position, cell position
-room_switch_pos = switch_to_room_pos
+
+switch_to_room_pos = [0,0]; //position, cell position
+room_switch_pos = switch_to_room_pos;
+
 room_switch_event = 0;
 
 cur_room_time = 0;
@@ -30,6 +32,8 @@ array_room_name = 0;
 
 room_type = 1;
 respawning = false;
+respawn_timer = 0;
+respawn_timer_max = 120;
 
 cam_pos_left = [0,0];
 cam_pos_right = [0,0];

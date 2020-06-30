@@ -361,7 +361,7 @@ if _scene_id_ind == -1 {
 }
 
 
-#define scene_switch(_scene_id) //switches the active scene
+#define scene_switch(_scene_id) //Switches the active scene
 if debug print_debug("[SM] Switching to... "+string(_scene_id));
 if _scene_id != cur_scene {
     cur_scene_time = 0;
