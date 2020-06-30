@@ -31,8 +31,8 @@ scene_add(1,[
     [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Hello! Welcome to RoA Adventure Mode Update 7!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
     
     ],
-    [TG_COMPLETE, 2,  tutorial_default_scroll]);
-    //[TG_COMPLETE, -1,  999999999999999]);
+    //[TG_COMPLETE, 2,  tutorial_default_scroll]);
+    [TG_COMPLETE, -1,  999999999999999]);
 scene_add(2,[
     [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
     [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It's been a hot minute, but a lot of work has been done and discoveries made!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox

@@ -363,6 +363,8 @@ vert_col = (place_meet_solid(x,y+2));
 if !vert_col && (place_meet_solid(x+5,y) || place_meet_solid(x-5,y)) horiz_col = true;
 //Fix Clipping
 if !is_free && vsp <= 0 && place_meet(x,y+1) y--;
+
+// Depricated collision checking
 /*if !is_free && vsp <= 0 {
 //if state == PS_LAND || state == PS_LANDING_LAG || state == PS_WAVELAND {
     while (place_meet(x,y-_y+1) && _y < _y_limit+1)  _y++;
@@ -551,7 +553,6 @@ if ag_window_has_sfx[window] == 1 && ag_window_sfx_frame[window] == window_timer
     sound_play(ag_window_sfx[window]);
 
 //Hitboxes
-
 for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j]+1 {
     hitb = create_hitbox(attack,j,x,y);
     if not "hit_owner" in hitb hitb.hit_owner = id;
@@ -660,7 +661,7 @@ clear_button_buffer(PC_TAUNT_PRESSED);
 #define enemy_sprite_get(_num,_sprite) //Get the sprite of this article
 return sprite_get("enemy_"+string(_num)+"_"+string(_sprite));
 
-#define get_attack_name(_attack) //get the name of an attack
+#define get_attack_name(_attack) //get the name of an attack. Yes, there isn't a base function for it, so here's the next best thing.
 
 switch _attack {
     case AT_JAB:
