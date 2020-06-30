@@ -577,6 +577,8 @@ if (!ignores_walls) {
 }
 //Fix Clipping
 if !is_free && vsp <= 0 && place_meet(x,y+1) y--;
+
+// Depricated collision checking
 /*if !is_free && vsp <= 0 {
 //if state == PS_LAND || state == PS_LANDING_LAG || state == PS_WAVELAND {
     while (place_meet(x,y-_y+1) && _y < _y_limit+1)  _y++;
@@ -947,7 +949,7 @@ clear_button_buffer(PC_TAUNT_PRESSED);
 #define enemy_sprite_get(_num,_sprite) //Get the sprite of this article
 return sprite_get("enemy_"+string(_num)+"_"+string(_sprite));
 
-#define get_attack_name(_attack) //get the name of an attack
+#define get_attack_name(_attack) //get the name of an attack. Yes, there isn't a base function for it, so here's the next best thing.
 
 switch _attack {
     case AT_JAB:
