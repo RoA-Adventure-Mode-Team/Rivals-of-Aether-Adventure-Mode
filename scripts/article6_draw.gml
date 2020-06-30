@@ -1,5 +1,20 @@
 //draw stuff for enemy
 draw_set_alpha(1);
+
+//Enum declarations (DO NOT EDIT)
+enum EN_EVENT {
+    INIT,
+    ANIMATION,
+    PRE_DRAW,
+    POST_DRAW,
+    UPDATE,
+    DEATH,
+    SET_ATTACK,
+    ATTACK_UPDATE,
+    GOT_HIT,
+    GOT_PARRIED
+}
+
 if !_init exit; //Only draw stuff after initializing
 if in_render {
     if debug {
@@ -28,6 +43,9 @@ if in_render {
     
     }
     
+    art_event = EN_EVENT.PRE_DRAW;
+    user_event(6);
+    
     if (super_armor) {
         var offset = 2;
         for (var ix = -offset; ix <= offset; ix += offset) {  
@@ -37,8 +55,9 @@ if in_render {
                 gpu_set_fog(0, 0, 0, 0);
              }
         }
-        draw_sprite_ext(sprite_index,image_index,x,y,image_xscale * spr_dir,image_yscale,image_angle,image_blend,image_alpha);
     }
+    
+    draw_sprite_ext(sprite_index,image_index,x,y,image_xscale * spr_dir,image_yscale,image_angle,image_blend,image_alpha);
     
     //Contributed by Harbige
     if (hitpoints_max > 0) {
@@ -52,7 +71,8 @@ if in_render {
     //
     draw_sprite_ext(char_arrow,0,x-10,y-char_height*2-6,1,1,0,char_hud_color,1);
     
-    
+    art_event = EN_EVENT.POST_DRAW;
+    user_event(6);
 }
 #define get_attack_name(_attack) //get the name of an attack
 

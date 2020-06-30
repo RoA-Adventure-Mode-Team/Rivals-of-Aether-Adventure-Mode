@@ -31,6 +31,7 @@ next_state = 0;
 prev_state = 0;
 state_free = 1;
 test = noone;
+art_event = 0;
 
 //Character Variables
 enem_id = spawn_variables[0];
@@ -237,6 +238,9 @@ ag_window_vspeed[100] = 0;
 ag_window_vspeed_type[100] = 0;
 ag_window_custom_gravity[100] = 0;
 ag_window_wifflag[100] = 0;
+ag_window_has_custom_friction[100] = 0;
+ag_window_air_friction[100] = 0;
+ag_window_ground_friction[100] = 0;
 
 //Hitbox Variables
 hg_type[100] = 0;

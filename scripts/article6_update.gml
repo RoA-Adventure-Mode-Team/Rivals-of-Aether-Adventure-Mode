@@ -1,6 +1,7 @@
 //article6_update, Enemy
 //Rework done by Harbige12
 
+//Targeting Enum
 enum TR {
     NEAR,
     MID,
@@ -10,9 +11,24 @@ enum TR {
     HIGH
 }
 
+//Event Enum
+enum EN_EVENT {
+    INIT,
+    ANIMATION,
+    PRE_DRAW,
+    POST_DRAW,
+    UPDATE,
+    DEATH,
+    SET_ATTACK,
+    ATTACK_UPDATE,
+    GOT_HIT,
+    GOT_PARRIED
+}
+
 if !_init {
     enem_id = spawn_variables[0];
     //player_controller = 1;
+    art_event = EN_EVENT.INIT
     user_event(6);
     _init = 1;
     //print_debug(get_attack_name(attacks[0]));
@@ -43,8 +59,8 @@ if !_init {
         if instance_exists(ai_target) frame_update();
         ai_update();
         input_process();
-        state_machine();
         physics_update();
+        state_machine();
         hitbox_update();
     }
     else {
@@ -122,7 +138,14 @@ switch target_behavior {
         break;
 }
 
-user_event(6); //Custom behavior
+if (art_state != PS_DEAD) {
+    art_event = EN_EVENT.UPDATE
+    user_event(6); //Custom behavior
+}
+else {
+    art_event = EN_EVENT.DEATH
+    user_event(6); //Custom behavior
+}
 
 #define frame_update() //Updates ai information every frame, not physics
 x_dist = abs(x-ai_target.x);
@@ -464,6 +487,9 @@ if hitpause <= 0 switch art_state { //Display Logic
             image_index +=  (kb_power / 60);
             break;
     }
+    
+art_event = EN_EVENT.ANIMATION
+user_event(6); //Custom behavior
 
 if next_attack != -1 attack_start();
 #define input_process() //For inputs in more than 1 state
@@ -512,18 +538,24 @@ if hitpause <=  0 {
         if (art_state != PS_ATTACK_AIR && art_state != PS_ATTACK_GROUND) {
             if (enemy_class == 0) {
                 hsp *= 1-air_friction;
-                vsp = min(vsp, max_fall);
-                if abs(hsp) < air_max_speed hsp += -air_accel*left_down+air_accel*right_down;
             }
             else {
-                if (player_controller == 1) {
+                hsp *= 1-air_friction;
+                vsp *= 1-air_friction;
+            }
+        }
+        if (enemy_class == 0) {
+            vsp = min(vsp, max_fall);
+            if (art_state != PS_ATTACK_AIR && art_state != PS_ATTACK_GROUND) {
+                if abs(hsp) < air_max_speed hsp += -air_accel*left_down+air_accel*right_down;
+            }
+        }
+        else {
+            if (player_controller == 1) {
+                if (art_state != PS_ATTACK_AIR && art_state != PS_ATTACK_GROUND) {
                     if (!joy_pad_idle) {
                         if abs(hsp) < air_max_speed  hsp += lengthdir_x(air_accel, joy_dir);
                         if abs(vsp) < air_max_speed  vsp += lengthdir_y(air_accel, joy_dir);
-                    }
-                    else {
-                        hsp *= 1-air_friction;
-                        vsp *= 1-air_friction;
                     }
                 }
             }
@@ -532,7 +564,9 @@ if hitpause <=  0 {
     } else {
         vsp = 0;
         djumps = max_djumps;
-        hsp *= 1-ground_friction/5;
+        if (art_state != PS_ATTACK_AIR && art_state != PS_ATTACK_GROUND) {
+            hsp *= 1-ground_friction/5;
+        }
         has_air_dodge = 1;
     }
 }
@@ -640,6 +674,8 @@ if invincible == 0 {
                 other.hbox_group = hbox_group;
             }
         }
+        art_event = EN_EVENT.GOT_HIT
+        user_event(6); //Custom behavior
         kb_angle = get_hitbox_angle(hit_id);
         if hit_id.player_id != 0 with hit_id.player_id {
             has_hit = 1;
@@ -683,6 +719,7 @@ with asset_get("pHitBox") if "hit_owner" in self && hit_owner == other.id {
             other.hitpause = obj_stage_main.hitstop;
             obj_stage_main.hitstop = 0;
             obj_stage_main.hitpause = false;
+            
             other.has_hit_en = 1;
         }
     }
@@ -769,7 +806,22 @@ if (hitpause <= 0) {
     //Sounds
     if ag_window_has_sfx[window] == 1 && ag_window_sfx_frame[window] == window_timer && ag_window_sfx[window] != 0 
         sound_play(ag_window_sfx[window]);
-    
+        
+    //Friction
+    var g_frict = ground_friction;
+    var a_frict = air_friction;
+    if (ag_window_has_custom_friction[window] == 1) {
+        g_frict = ag_window_custom_ground_friction[window];
+        a_frict = ag_window_custom_air_friction[window];
+    }
+    if (is_free) {
+        hsp *= 1-a_frict;
+        if (enemy_class == 1)
+            vsp *= 1-a_frict;
+    }
+    else {
+        hsp *= 1-g_frict/5;
+    }
     
     for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j] {
         var hitb = create_hitbox(attack,j,x+hg_x[j]*spr_dir,y+hg_y[j]);
@@ -779,9 +831,15 @@ if (hitpause <= 0) {
     }
     
     window_timer++;
+    
+    
+    art_event = EN_EVENT.ATTACK_UPDATE
+    user_event(6); //Custom behavior
 }
 
 #define attack_start() //Start attacking 
+art_event = EN_EVENT.SET_ATTACK
+user_event(6); //Custom behavior
 get_attack(next_attack);
 
 has_hit_en = false;
@@ -823,6 +881,14 @@ for (var i = 1; i <= ag_num_windows; i += 1) {
         other.ag_window_hspeed_type[i] = get_window_value(_attack,i,AG_WINDOW_HSPEED_TYPE);
         other.ag_window_vspeed[i] = get_window_value(_attack,i,AG_WINDOW_VSPEED);
         other.ag_window_vspeed_type[i] = get_window_value(_attack,i,AG_WINDOW_VSPEED_TYPE);
+        if (get_window_value(_attack,i,AG_WINDOW_HAS_CUSTOM_FRICTION)) {
+            other.ag_window_has_custom_friction[i] = get_window_value(_attack,i,AG_WINDOW_HAS_CUSTOM_FRICTION);
+            other.ag_window_custom_air_friction[i] = get_window_value(_attack,i,AG_WINDOW_CUSTOM_AIR_FRICTION);
+            other.ag_window_custom_ground_friction[i] = get_window_value(_attack,i,AG_WINDOW_CUSTOM_GROUND_FRICTION);
+        }
+        else {
+            other.ag_window_has_custom_friction[i] = 0;
+        }
     }
 }
 for (var i = 1; i <= hg_num_hitboxes; i += 1) {
