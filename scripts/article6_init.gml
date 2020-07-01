@@ -220,6 +220,7 @@ ag_sprite = 0;
 ag_hurtbox_sprite = 0;
 ag_num_windows = 0;
 ag_uses_custom_gravity = 0;
+ag_off_ledge = 0;
 
 hg_num_hitboxes = 0;
 hg_hitbox_start = 0;

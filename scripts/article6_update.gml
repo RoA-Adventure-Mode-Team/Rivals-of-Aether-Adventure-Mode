@@ -59,8 +59,8 @@ if !_init {
         if instance_exists(ai_target) frame_update();
         ai_update();
         input_process();
-        physics_update();
         state_machine();
+        physics_update();
         hitbox_update();
     }
     else {
@@ -577,8 +577,6 @@ if (!ignores_walls) {
 }
 //Fix Clipping
 if !is_free && vsp <= 0 && place_meet(x,y+1) y--;
-
-// Depricated collision checking
 /*if !is_free && vsp <= 0 {
 //if state == PS_LAND || state == PS_LANDING_LAG || state == PS_WAVELAND {
     while (place_meet(x,y-_y+1) && _y < _y_limit+1)  _y++;
@@ -706,23 +704,29 @@ if invincible == 0 {
 } else invincible--;
 
 #define hitbox_update() //Update enemy hitboxes
-
-with asset_get("pHitBox") if "hit_owner" in self && hit_owner == other.id {
-    if (type != 2) {
-        var x_off = other.hg_x[hbox_num];
-        var y_off = other.hg_y[hbox_num];
-        x_pos = ((other.x + x_off * other.spr_dir) - obj_stage_main.x);
-        y_pos = ((other.y + y_off) - obj_stage_main.y);
-        hsp = other.hsp;
-        vsp = other.vsp;
-        spr_dir = other.spr_dir;
-        
-        if (obj_stage_main.hitstop > 0) {
-            other.hitpause = obj_stage_main.hitstop;
-            obj_stage_main.hitstop = 0;
-            obj_stage_main.hitpause = false;
+if (instance_exists(pHitBox)) {
+    with asset_get("pHitBox") if "hit_owner" in self && hit_owner == other.id {
+        with (other) {
+            art_event = EN_EVENT.SET_ATTACK
+            user_event(6); //Custom behavior
+            get_hitboxes(other.attack);
+        }
+        if (type != 2) {
+            var x_off = other.hg_x[hbox_num];
+            var y_off = other.hg_y[hbox_num];
+            x_pos = ((other.x + x_off * other.spr_dir) - obj_stage_main.x);
+            y_pos = ((other.y + y_off) - obj_stage_main.y);
+            hsp = other.hsp;
+            vsp = other.vsp;
+            spr_dir = other.spr_dir;
             
-            other.has_hit_en = 1;
+            if (obj_stage_main.hitstop > 0) {
+                other.hitpause = obj_stage_main.hitstop;
+                obj_stage_main.hitstop = 0;
+                obj_stage_main.hitpause = false;
+                
+                other.has_hit_en = 1;
+            }
         }
     }
 }
@@ -739,6 +743,15 @@ return (place_meeting(__x,__y,asset_get("solid_32_obj")) ||
         place_meeting(__x,__y,obj_stage_article_solid) || 
         place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_platform));
+#define position_meet(__x,__y) //get place_meeting for the usual suspects
+/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
+       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
+return (position_meeting(__x,__y,asset_get("solid_32_obj")) || 
+        position_meeting(__x,__y,obj_stage_article_solid) || 
+        position_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
+        position_meeting(__x,__y,obj_stage_article_platform));
 #define place_meet_solid(__x,__y) //get place_meeting for the usual suspects
 /*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
        collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true));*/
@@ -757,23 +770,6 @@ else return instance_place(__x,__y,asset_get("jumpthrough_32_obj"));
 #define attack_update() //Attack update script during attacks
 //if debug print_debug("[EM] Attack Updating..."+string(window)+":"+string(window_timer));
 if (hitpause <= 0) {
-    
-    if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
-        if window >= ag_num_windows {
-            is_attacking = false;
-            next_state = PS_IDLE;
-            set_sprite_from_state(enem_id, next_state);
-            window = 1;
-            window_timer = 0;
-        }
-        else {
-            if ag_window_type[window] != 9 &&  ag_window_type[window] != 8 {
-                window++;
-            }
-            window_timer = 0;
-        }
-    }
-    
     if (ag_window_type[window] == 8 && !is_free) {
         window++;
         window_timer = 0;
@@ -825,28 +821,58 @@ if (hitpause <= 0) {
         hsp *= 1-g_frict/5;
     }
     
+    //Off ledge handling
+    if (!ag_off_ledge && !is_free) {
+        var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4)
+        var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4)
+        
+        if (off_r || off_l) {
+            x -= hsp;
+        }
+    }
+    
+    art_event = EN_EVENT.SET_ATTACK
+    user_event(6); //Custom behavior
+    get_hitboxes(attack);
     for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j] {
         var hitb = create_hitbox(attack,j,x+hg_x[j]*spr_dir,y+hg_y[j]);
-        hitb.type = hg_type == 0 ? 1 : hg_type;
+        hitb.type = hg_type[j] == 0 ? 1 : hg_type[j];
         if not "hit_owner" in hitb hitb.hit_owner = id;
         if not "team" in hitb hitb.team = team;
     }
     
-    window_timer++;
-    
     
     art_event = EN_EVENT.ATTACK_UPDATE
     user_event(6); //Custom behavior
+    
+    window_timer++;
+    
+    if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
+        if window >= ag_num_windows {
+            is_attacking = false;
+            next_state = PS_IDLE;
+            set_sprite_from_state(enem_id, next_state);
+            window = 1;
+            window_timer = 0;
+        }
+        else {
+            if ag_window_type[window] != 9 &&  ag_window_type[window] != 8 {
+                window++;
+            }
+            window_timer = 0;
+        }
+    }
+    
 }
 
 #define attack_start() //Start attacking 
-art_event = EN_EVENT.SET_ATTACK
-user_event(6); //Custom behavior
-get_attack(next_attack);
-
 has_hit_en = false;
 last_attack = attack;
 attack = next_attack;
+reset_attack_grid(attack);
+art_event = EN_EVENT.SET_ATTACK
+user_event(6); //Custom behavior
+get_attack(attack);
 next_attack = -1;
 window_timer = 0;
 window = 1;
@@ -861,6 +887,7 @@ print_debug("[EN] Getting attack data for "+get_attack_name(_attack));
 with obj_stage_main { //Main stage script object
     other.ag_category = get_attack_value(_attack,AG_CATEGORY);
     other.ag_num_windows = get_attack_value(_attack,AG_NUM_WINDOWS);
+    other.ag_off_ledge = get_attack_value(_attack,AG_OFF_LEDGE);
     other.ag_sprite = get_attack_value(_attack,AG_SPRITE);
     other.hg_num_hitboxes = get_num_hitboxes(_attack);
     other.ag_hurtbox_sprite = get_attack_value(_attack,AG_HURTBOX_SPRITE);
@@ -893,9 +920,12 @@ for (var i = 1; i <= ag_num_windows; i += 1) {
         }
     }
 }
+reset_attack_grid(_attack);
+
+#define get_hitboxes(_attack)
 for (var i = 1; i <= hg_num_hitboxes; i += 1) {
     with obj_stage_main {
-        other.hg_type = get_hitbox_value(_attack, i, HG_HITBOX_TYPE);
+        other.hg_type[i] = get_hitbox_value(_attack, i, HG_HITBOX_TYPE);
         other.hg_window[i] = get_hitbox_value(_attack,i,HG_WINDOW);
         other.hg_window_frame[i] = get_hitbox_value(_attack,i,HG_WINDOW_CREATION_FRAME);
         other.hg_x[i] = get_hitbox_value(_attack,i,HG_HITBOX_X);
@@ -903,6 +933,11 @@ for (var i = 1; i <= hg_num_hitboxes; i += 1) {
         other.hg_bhitp[i] = get_hitbox_value(_attack,i,HG_BASE_HITPAUSE);
         other.hg_shitp[i] = get_hitbox_value(_attack,i,HG_HITPAUSE_SCALING);
         
+        //This was added to prevent the hitbox from becoming the "[B]" sprite when type is 1.
+        if (other.hg_type[i] == 1) {
+            set_hitbox_value(_attack, i, HG_PROJECTILE_SPRITE, asset_get("empty_sprite"));
+            set_hitbox_value(_attack, i, HG_PROJECTILE_MASK, -1);
+        }
     }
 }
 #define get_inputs(_player) //Overwrite inputs with the given player's inputs (NOTE: Controller Port, NOT oPlayer)
@@ -949,7 +984,7 @@ clear_button_buffer(PC_TAUNT_PRESSED);
 #define enemy_sprite_get(_num,_sprite) //Get the sprite of this article
 return sprite_get("enemy_"+string(_num)+"_"+string(_sprite));
 
-#define get_attack_name(_attack) //get the name of an attack. Yes, there isn't a base function for it, so here's the next best thing.
+#define get_attack_name(_attack) //get the name of an attack
 
 switch _attack {
     case AT_JAB:
@@ -1018,6 +1053,19 @@ switch _attack {
         return "AT_EXTRA_2";
     case AT_EXTRA_3:
         return "AT_EXTRA_3";
+}
+
+#define reset_attack_grid(_attack)
+with obj_stage_main { //Main stage script object
+    for (var i = 0; i <= AG_USES_CUSTOM_GRAVITY; i++) {
+        set_attack_value(_attack, i, 0);
+    }
+    if (other.ag_num_windows > 0)
+    for (var w = 1; w <= other.ag_num_windows; w++) {
+        for (var i = 0; i <= 59; i++) {
+            set_window_value(_attack, w, i, 0);
+        }
+    }
 }
 
 #define set_sprite_from_state(_enemyID, _state) //Gets the sprite name from a state. The sprites have the same names as player sprites.
