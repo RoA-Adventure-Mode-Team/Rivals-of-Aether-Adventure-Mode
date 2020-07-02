@@ -189,6 +189,8 @@ horiz_col = false;
 vert_col = false;
 hbox_group = -1;
 hit_player_id = noone;
+hit_player_obj = noone;
+my_hitboxID = noone;
 old_hsp = 0;
 old_vsp = 0;
 
@@ -209,6 +211,7 @@ attack = 0;
 next_attack = -1;
 last_attack = -1;
 super_armor = false;
+was_parried = false;
 
 window = 0;
 window_timer = 0;

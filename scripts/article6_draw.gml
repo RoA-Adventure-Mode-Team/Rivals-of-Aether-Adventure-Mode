@@ -2,6 +2,8 @@
 draw_set_alpha(1);
 
 //Enum declarations (DO NOT EDIT)
+
+//Event Enum
 enum EN_EVENT {
     INIT,
     ANIMATION,
@@ -12,7 +14,9 @@ enum EN_EVENT {
     SET_ATTACK,
     ATTACK_UPDATE,
     GOT_HIT,
-    GOT_PARRIED
+    GOT_PARRIED,
+    HIT_PLAYER,
+    PARRY
 }
 
 if !_init exit; //Only draw stuff after initializing

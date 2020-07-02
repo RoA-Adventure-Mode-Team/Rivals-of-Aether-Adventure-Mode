@@ -22,7 +22,9 @@ enum EN_EVENT {
     SET_ATTACK,
     ATTACK_UPDATE,
     GOT_HIT,
-    GOT_PARRIED
+    GOT_PARRIED,
+    HIT_PLAYER,
+    PARRY
 }
 
 if !_init {
@@ -70,15 +72,16 @@ if !_init {
 }
 
 #define reset_variables()
-
-joy_pad_idle = true;
-super_armor = false;
-right_down = false;
-left_down = false;
-jump_down = false;
-left_hard_pressed = false;
-right_hard_pressed = false;
-down_hard_pressed = false;
+if hitpause <= 0 {
+    joy_pad_idle = true;
+    super_armor = false;
+    right_down = false;
+    left_down = false;
+    jump_down = false;
+    left_hard_pressed = false;
+    right_hard_pressed = false;
+    down_hard_pressed = false;
+}
 
 #define ai_update()
 if hitpause <= 0 {
@@ -625,7 +628,7 @@ if invincible == 0 {
     mask_index = collision_box;
     if hit_id == noone has_hit = 0;
     if hit_lockout > 0 hit_lockout--;
-    if hit_id != noone && (!("hit_owner" in hit_id) || hit_id.hit_owner != id) && (!("team" in hit_id) || hit_id.team != team)  && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
+    if instance_exists(hit_id) && (!("hit_owner" in hit_id) || hit_id.hit_owner != id) && (!("team" in hit_id) || hit_id.team != team)  && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
         with hit_id {
             if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
                 
@@ -660,10 +663,10 @@ if invincible == 0 {
                 //
                 if (!other.super_armor) {
                     other.spr_dir = -spr_dir;
-                    other.percent += damage;
-                    other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
                     other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
                 }
+                other.percent += damage;
+                other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
                 other.hitpause = hitpause + other.percent*hitpause_growth*0.05;
                 other.old_hsp = other.hsp;
                 other.old_vsp = other.vsp;
@@ -711,6 +714,25 @@ if (instance_exists(pHitBox)) {
             user_event(6); //Custom behavior
             get_hitboxes(other.attack);
         }
+        with (oPlayer) {
+            if (place_meeting(x, y, other)) {
+                if (other.hit_owner.has_hit_en == 0) {
+                        other.hit_owner.has_hit_en = 1;
+                }
+                else {
+                    other.hit_owner.my_hitboxID = other.id
+                    other.hit_owner.was_parried = obj_stage_main.was_parried;
+                    if (!other.hit_owner.was_parried)
+                        other.hit_owner.art_event = EN_EVENT.HIT_PLAYER
+                    else
+                        other.hit_owner.art_event = EN_EVENT.GOT_PARRIED
+                    other.hit_owner.hit_player_obj = id;
+                    with (other.hit_owner) {
+                        user_event(6); //Custom behavior
+                    }   
+                }
+            }
+        }
         if (type != 2) {
             var x_off = other.hg_x[hbox_num];
             var y_off = other.hg_y[hbox_num];
@@ -724,8 +746,6 @@ if (instance_exists(pHitBox)) {
                 other.hitpause = obj_stage_main.hitstop;
                 obj_stage_main.hitstop = 0;
                 obj_stage_main.hitpause = false;
-                
-                other.has_hit_en = 1;
             }
         }
     }
@@ -770,11 +790,6 @@ else return instance_place(__x,__y,asset_get("jumpthrough_32_obj"));
 #define attack_update() //Attack update script during attacks
 //if debug print_debug("[EM] Attack Updating..."+string(window)+":"+string(window_timer));
 if (hitpause <= 0) {
-    if (ag_window_type[window] == 8 && !is_free) {
-        window++;
-        window_timer = 0;
-    }
-    
     //Speeds
     switch ag_window_hspeed_type[window] {
         case 2:
@@ -822,38 +837,39 @@ if (hitpause <= 0) {
     }
     
     //Off ledge handling
-    if (!ag_off_ledge && !is_free) {
+    if (!ag_off_ledge && !is_free && hsp != 0) {
         var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4)
         var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4)
         
-        if (off_r || off_l) {
+        if ((off_r && hsp > 0) || (off_l && hsp < 0)) {
             x -= hsp;
         }
     }
-    
-    art_event = EN_EVENT.SET_ATTACK
-    user_event(6); //Custom behavior
-    get_hitboxes(attack);
     for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j] {
-        var hitb = create_hitbox(attack,j,x+hg_x[j]*spr_dir,y+hg_y[j]);
+        art_event = EN_EVENT.SET_ATTACK
+        user_event(6); //Custom behavior
+        get_hitboxes(attack);
+        var hitb = create_hitbox(attack,j,round(x)+hg_x[j]*spr_dir,round(y)+hg_y[j]);
         hitb.type = hg_type[j] == 0 ? 1 : hg_type[j];
         if not "hit_owner" in hitb hitb.hit_owner = id;
         if not "team" in hitb hitb.team = team;
     }
     
+    window_timer++;
     
     art_event = EN_EVENT.ATTACK_UPDATE
     user_event(6); //Custom behavior
-    
-    window_timer++;
     
     if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
         if window >= ag_num_windows {
             is_attacking = false;
             next_state = PS_IDLE;
+            hurtbox_spr = collision_box;
             set_sprite_from_state(enem_id, next_state);
             window = 1;
             window_timer = 0;
+            was_parried = false;
+            obj_stage_main.was_parried = false;
         }
         else {
             if ag_window_type[window] != 9 &&  ag_window_type[window] != 8 {
@@ -861,6 +877,11 @@ if (hitpause <= 0) {
             }
             window_timer = 0;
         }
+    }
+    
+    if (ag_window_type[window] == 8 && !is_free) {
+        window++;
+        window_timer = 0;
     }
     
 }
@@ -873,6 +894,7 @@ reset_attack_grid(attack);
 art_event = EN_EVENT.SET_ATTACK
 user_event(6); //Custom behavior
 get_attack(attack);
+get_hitboxes(attack);
 next_attack = -1;
 window_timer = 0;
 window = 1;
