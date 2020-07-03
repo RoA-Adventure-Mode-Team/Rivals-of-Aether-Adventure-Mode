@@ -8,7 +8,11 @@ room_add(1,[
     [ //Each Cell
         [0,0], //Cell Coordinates
         [
-        /*[dither test]*/ [10, 88, 44, 0, -5, [0, 0, 0, 0, 0, 0, 0, 0], [0]],
+        /*  DITHER ARGS: [dither type, transparency (0 = partial transparency, 1 = full transparency), dither frames]
+        /*[no dither]*/                 [11, 20, 44, 0, -5, [0, 0, 0, 0, 0, 0, 0, 0], [0]],
+        /*[partial w/ regular dither]*/ [11, 50, 44, 0, -5, [1, 0, 20, 0, 0, 0, 0, 0], [0]],
+        /*[full w/ brick dither]*/      [11, 80, 44, 0, -5, [2, 1, 30, 0, 0, 0, 0, 0], [0]],
+        /*[dbz dither]*/                [11, 110, 44, 0, -5, [3, 1, 32, 0, 0, 0, 0, 0], [0]],
         /*[obj1]*/ [6, 80, 36, 0, -5, [0, 0, 0, 0, 0, 0, 0, 0], [0]],
         ///*[obj2]*/ [4, 89, 47, 0, 0, [1, 0, 0, 0, 0, 32, 32, -1], [0]],
         /*[obj2]*/ [8, 75, 40, 0, 0, [0, 0, 32, 32, 2, 2, 1, 0], [0]],
