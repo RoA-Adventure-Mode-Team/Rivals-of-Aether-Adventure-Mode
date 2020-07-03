@@ -16,7 +16,9 @@ if get_gameplay_time() == 2 {
 if switch_to_room != cur_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
 
-with follow_player {
+smoothing = .3;
+
+with oPlayer {
 	if state == PS_DEAD || state == PS_RESPAWN {
 		if (state_timer == 89 && state == PS_RESPAWN) {
 			smoothing = 1;
@@ -304,14 +306,16 @@ if _room_id < array_length_1d(array_room_data) {
                         art.cell_pos = _cell_pos;
                         cell_data[@j][@6][@0] = art.id;
                         art.custom_args = cell_data[j][6][0];
+                        //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;
                         articles_spawned++;
+                        
                 }
                 
             }
         } else {
             //print_debug(string(_cell_pos)+": "+string(abs(_cell_pos[1] - cell_pos[1])));
             for (var j = 0; j < array_length_1d(cell_data); j++) {
-                if cell_data[j][6][0] != 0 && cell_data[j][6][0] != -1 {
+                if cell_data[j][6][0] != 0 && cell_data[j][6][0] != -1 && (!("keep" in cell_data[j][6][0]) || cell_data[j][6][0].keep == false) {
                     instance_destroy(cell_data[j][6][0]);
                     cell_data[@j][@6][@0] = 0;
                 }
@@ -335,10 +339,10 @@ return [_pos[0] % ((cell_dim[0]-grid_offset)*cell_size),_pos[1] % ((cell_dim[1]-
 var _room_id = cur_room;
 for (var k = 0; k < array_length_1d(array_room_data[_room_id]); k++) {
         for (var j = 0; j < array_length_1d(array_room_data[_room_id][k][1]); j++) { //Check objects inside the array
-            if array_room_data[@_room_id][k][1][j][6][0] != -1 array_room_data[@_room_id][@k][@1][@j][@6][@0] = 0; //Set to not spawned if not dead
+            if array_room_data[@_room_id][k][1][j][6][0] != -1 && (!("keep" in array_room_data[@_room_id][k][1][j][6][0]) || array_room_data[@_room_id][k][1][j][6][0].keep == false) array_room_data[@_room_id][@k][@1][@j][@6][@0] = 0; //Set to not spawned if not dead
         }
     }
-with obj_stage_article if num != 3 && num != 5 instance_destroy(id);
+with obj_stage_article if num != 3 && num != 5 && (!("keep" in id) || keep == false) instance_destroy(id);
 with obj_stage_article_platform instance_destroy(id);
 with obj_stage_article_solid instance_destroy(id);
 

@@ -26,6 +26,7 @@ enum WIN {
 //Scene Data Here
 
 //Global Scenes
+/*
 scene_add(1,[
     [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
     [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Hello! Welcome to RoA Adventure Mode Update 7!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
@@ -93,10 +94,10 @@ scene_add(11,[
     [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We plan on getting the engine finished and enter the beta phase soon! - Archytas", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
     
     ],
-    [TG_COMPLETE, 12, tutorial_default_scroll]);
+    [TG_COMPLETE, 12, tutorial_default_scroll]);*/
     
 switch cur_room { //Room Specific Scenes
-    case 1:
+    case -1:
         
         break;
     /*case 1:

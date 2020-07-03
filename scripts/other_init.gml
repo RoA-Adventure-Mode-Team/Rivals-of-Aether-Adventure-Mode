@@ -14,3 +14,4 @@ respawn_point = [[1008/16,598/16],[0,0],1]; //SubCell Position, Cell Position, R
 
 has_walljump_actual = true;
 
+item_id = -1;

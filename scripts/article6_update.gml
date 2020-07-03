@@ -325,8 +325,8 @@ switch (enemy_class) {
                 if spr_dir != to_dir next_state = PS_WALK_TURN;
                 hsp += lengthdir_x(walk_accel, joy_dir);
                 vsp += lengthdir_y(walk_accel, joy_dir);
-                hsp = clamp(hsp, -walk_speed, walk_speed)
-                vsp = clamp(vsp, -walk_speed, walk_speed)
+                hsp = clamp(hsp, -walk_speed, walk_speed);
+                vsp = clamp(vsp, -walk_speed, walk_speed);
                 if (left_hard_pressed || right_hard_pressed) {
                     if !joy_pad_idle && able_to_dash next_state = PS_DASH_START;
                 }
@@ -354,8 +354,8 @@ switch (enemy_class) {
             case PS_DASH:
                 hsp += lengthdir_x(dash_accel, joy_dir);
                 vsp += lengthdir_y(dash_accel, joy_dir);
-                hsp = clamp(hsp, -dash_speed, dash_speed)
-                vsp = clamp(vsp, -dash_speed, dash_speed) / 2
+                hsp = clamp(hsp, -dash_speed, dash_speed);
+                vsp = clamp(vsp, -dash_speed, dash_speed) / 2;
                 if spr_dir != to_dir next_state = PS_DASH_TURN;
                 if joy_pad_idle next_state = PS_DASH_STOP;
                 break;
