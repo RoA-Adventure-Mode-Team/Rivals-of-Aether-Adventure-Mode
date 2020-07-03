@@ -12,4 +12,7 @@ sprite_change_offset("enemy_0_PS_CROUCH",56, 102);
 sprite_change_offset("enemy_0_PS_WAVELAND",56, 102);
 sprite_change_offset("ou_jab",56, 102);
 
+sprite_change_offset("column_deco",210, 310);
+sprite_change_offset("column_deco_black",210, 310);
+
 
