@@ -35,6 +35,8 @@ art_event = 0;
 
 //Character Variables
 enem_id = spawn_variables[0];
+spawn_event = spawn_variables[1];
+death_event = spawn_variables[2];
 spr_dir = 1;
 is_free = 1;
 team = 0;
@@ -44,6 +46,22 @@ sprite_default_offset = [56, 102];
 crouch_timer = 0;
 hitpoints_max = 0; //If this is zero, percentage knockback will be used. - Harbige
 enemy_class = 0 //0 = grounded; 1 = flying
+destroyed = 0;
+
+//Boss variables
+is_boss = 0; //If this enemy's a boss, it will show the healthbar on the hud.
+boss_intro_mode = 0; //0 = no intro; 1 = has intro. Requires done_intro to be set to true to start the fight.
+show_healthbar = false; //Shows the healthbar;
+done_intro = false; //Set this to true to start the fight.
+battle_state = 0; //0 = intro; 1 = fight; 2 = death
+boss_healthbar_timer = 0;
+battle_state_timer = 0;
+
+char_name = ""; //The name of this enemy
+health_children = array_create(0); //When the parent takes damage, its children will also take damage. If the children take damage, the parent will take damage.
+health_share_mode = 0; //0 = health is synced with its children. 1 = health does not sync but shares the same healthbar.
+//This variable will be set automatically when health_children's length > 0.
+health_parent = -1;
 
 //AI Variables
 player_controller = 0;
@@ -64,7 +82,6 @@ able_to_shield = true;
 able_to_jump = true;
 able_to_djump = true;
 able_to_dash = true;
-attack_time = 30;
 //
 
 //Animation Actions

@@ -29,41 +29,74 @@ enum EN_EVENT {
 
 if !_init {
     enem_id = spawn_variables[0];
+    spawn_event = spawn_variables[1];
+    death_event = spawn_variables[2];
     //player_controller = 1;
     art_event = EN_EVENT.INIT
     user_event(6);
+    
+    //Spawn event
+    if (spawn_event > 0) {
+    	with obj_stage_article if num == 3 {
+    		event_id = other.spawn_event;
+    		event_triggered = true;
+    	}
+    }
     _init = 1;
     //print_debug(get_attack_name(attacks[0]));
 } else {
     in_render = physics_range == -1 || (point_distance(x,y,view_get_xview()+view_get_wview()/2,view_get_yview()+view_get_hview()/2) < physics_range);
     if in_render {
-        if hitpause <= 1 { 
-            if (hitstun <= 0) {
-                hsp = old_hsp;
-                vsp = old_vsp;
+        if (!destroyed) {
+            if hitpause <= 1 { 
+                if (hitstun <= 0) {
+                    hsp = old_hsp;
+                    vsp = old_vsp;
+                }
             }
-        }
-        else {
-            hsp = 0;
-            vsp = 0;
-        }
+            else {
+                hsp = 0;
+                vsp = 0;
+            }
         
-        if (hitpause > 0)
-            hitpause--;
-        reset_variables();
-        if player_controller != 0 {
-            with oPlayer {
-                if player == other.player_controller set_state(PS_IDLE_AIR);
+            //Parenting
+            if (array_length(health_children) > 0) {
+                for (var i = 0; i < array_length(health_children); i++) {
+                    with (health_children[i]) health_parent = other.id;
+                }
             }
-            with obj_stage_article if get_article_script(id) == 5 && follow_player != other.id follow_player = other.id;
-            get_inputs(player_controller);
+            
+            if (hitpause > 0)
+                hitpause--;
+            reset_variables();
+            boss_update();
+            if player_controller != 0 {
+                with oPlayer {
+                    if player == other.player_controller set_state(PS_IDLE_AIR);
+                }
+                with obj_stage_article if get_article_script(id) == 5 && follow_player != other.id follow_player = other.id;
+                get_inputs(player_controller);
+            }
+            if instance_exists(ai_target) frame_update();
+            ai_update();
+            input_process();
+            state_machine();
+            physics_update();
+            hitbox_update();
         }
-        if instance_exists(ai_target) frame_update();
-        ai_update();
-        input_process();
-        state_machine();
-        physics_update();
-        hitbox_update();
+
+        else {
+            visible = false;
+            var die = true;
+            if (is_boss && battle_state_timer <= 60)
+                die = false;
+                
+            if (die) {
+                with (obj_stage_main) ds_list_remove(active_bosses, other.id);
+                instance_destroy();
+                exit;
+            }
+        }
     }
     else {
         hsp = 0;
@@ -88,6 +121,7 @@ if hitpause <= 0 {
     state_timer++;
 }
 
+
 if hitstun <= 0 {
     if art_state != next_state {
         prev_state = art_state;
@@ -109,14 +143,20 @@ if hitstun <= 0 {
     down_hard_pressed = false;
     
     hurtbox_spr = collision_box;
-    if !is_free art_state = PS_HITSTUN_LAND; 
-    else art_state = PS_HITSTUN;
-    if hitpoints_max > 0 {
-        if (percent >= hitpoints_max) {
-            art_state = PS_DEAD;
-        }
+    if (art_state != PS_DEAD) {
+        if !is_free art_state = PS_HITSTUN_LAND; 
+        else art_state = PS_HITSTUN;
     }
     //
+}
+
+if hitpoints_max > 0 {
+    if (percent >= hitpoints_max && art_state != PS_DEAD) {
+        prev_state = art_state;
+        next_state = PS_DEAD;
+        art_state = PS_DEAD;
+        state_timer = 0;
+    }
 }
 //Default AI Targeting
 switch target_behavior {
@@ -440,7 +480,6 @@ switch (art_state) {
             continue;
         }
     }
-    
     break;
 }
 
@@ -629,80 +668,18 @@ if invincible == 0 {
     if hit_id == noone has_hit = 0;
     if hit_lockout > 0 hit_lockout--;
     if instance_exists(hit_id) && (!("hit_owner" in hit_id) || hit_id.hit_owner != id) && (!("team" in hit_id) || hit_id.team != team)  && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
-        with hit_id {
-            if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
-                
-                //DEPRICATED BECAUSE get_hitbox_angle() EXISTS TY GIIK
-                
-                /*if kb_angle == 361 && other.free other.kb_angle = 45;
-                else if kb_angle == 361 && !other.free other.kb_angle = 40;
-                var _kb_angle = kb_angle;
-                var true_dir = player_id.spr_dir;
-                if attack == AT_BAIR true_dir = !true_dir; //I swear to god Dan
-                if true_dir == 1 other.kb_angle = (kb_angle)*3.14159/180;
-                else other.kb_angle = (180-kb_angle)*3.14159/180;
-                
-                var _x_hcenter = other.x-x;
-                var _y_hcenter = other.y-y;
-                var _x_pcenter = other.x-player_id.x;
-                var _y_pcenter = other.y-player_id.y;
-                switch hit_flipper {
-                    case 1: // Send away from the enemy
-                        other.kb_angle = tan(_y_hcenter/_x_hcenter);
-                        break;
-                    case 2: // Send toward from the enemy
-                        other.kb_angle = tan(_y_hcenter/_x_hcenter)+3.14159/2;
-                        break;
-                    case 3: // Horizontal away
-                        other.kb_angle = tan(arcsin(other.kb_angle)/(sign(_x_hcenter)*arccos(other.kb_angle)));
-                        break;
-                    case 4: // Horizontal towards
-                        other.kb_angle = tan(arcsin(other.kb_angle)/(-sign(_x_hcenter)*arccos(other.kb_angle)));
-                        break;
-                }*/
-                //
-                if (!other.super_armor) {
-                    other.spr_dir = -spr_dir;
-                    other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
+        enemy_got_hit(hit_id);
+        if (health_share_mode == 0) {
+            if (array_length(health_children) > 0) {
+                for (var i = 0; i < array_length(health_children); i++) {
+                    if (instance_exists(health_children[i]))
+                        with (health_children[i]) enemy_got_hit(hit_id);
                 }
-                other.percent += damage;
-                other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
-                other.hitpause = hitpause + other.percent*hitpause_growth*0.05;
-                other.old_hsp = other.hsp;
-                other.old_vsp = other.vsp;
-                if no_other_hit != 0 other.hit_lockout = no_other_hit;
-                else other.hit_lockout = hitpause;
-                other.hit_sound = sound_effect;
-                other.hit_visual = hit_effect;
-                other.hbox_group = hbox_group;
+            }
+            if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
+                with (health_parent) enemy_got_hit(hit_id);
             }
         }
-        art_event = EN_EVENT.GOT_HIT
-        user_event(6); //Custom behavior
-        kb_angle = get_hitbox_angle(hit_id);
-        if hit_id.player_id != 0 with hit_id.player_id {
-            has_hit = 1;
-            has_hit_id = other.id;
-            old_vsp = vsp;
-            old_hsp = hsp;
-            hitstop = other.hitpause;
-            hitpause = 1;
-            hsp = 0;
-            vsp = 0;
-        }
-        hit_player_id = hit_id.player_id;
-        if (!hit_id.fx_created && hit_id.hbox_group != -1) || hit_id.hbox_group == -1 {
-            hit_id.fx_created = true;
-            if (hit_visual >= 0)
-                with (hit_id)
-                    spawn_hit_fx(x + (spr_dir * hit_effect_x), y + hit_effect_y, hit_effect);
-            if (hit_id.hitstun_factor != -1)
-                sound_play(hit_sound);
-        }
-        if (hit_id.type == 2 && hit_id.enemies == 0) {
-            instance_destroy(hit_id);
-        }
-        has_hit = 1;
     }
 } else invincible--;
 
@@ -754,6 +731,164 @@ if (hitpause <= 0 && hitstun <= 0) {
     old_hsp = hsp;
     old_vsp = vsp;
 }
+
+#define boss_update() 
+switch (battle_state) {
+    case 0:
+        if (boss_intro_mode == 1) 
+        {
+            next_state = PS_SPAWN;
+        }
+        else
+        {
+            done_intro = true;
+            next_state = PS_IDLE;
+        }
+        if (is_boss) {
+            with (obj_stage_main)
+                ds_list_add(active_bosses, other.id)
+        }
+        
+        committed = 1;
+        battle_state = 1;
+        
+        if (array_length(health_children) > 0) {
+            for (var i = 0; i < array_length(health_children); i++) {
+                if (instance_exists(health_children[i]))
+                        with (health_children[i]) {
+                        committed = 1;
+                        battle_state = 1;
+                    }
+            }
+        }
+        if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
+            with (health_parent) {
+                committed = 1;
+                battle_state = 1;
+            }
+        }
+        
+    break;
+    case 1:
+        var start_battle = true;
+        committed = 1;
+        if (!done_intro)
+            start_battle = false;
+        if (array_length(health_children) > 0) {
+            for (var i = 0; i < array_length(health_children); i++) {
+                if (instance_exists(health_children[i]))
+                    with (health_children[i]) {
+                        if (!done_intro)
+                            start_battle = false;
+                    }
+            }
+        }
+        if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
+            with (health_parent) {
+                if (!done_intro)
+                    start_battle = false;
+            }
+        }
+        
+        if (show_healthbar) {
+            battle_state_timer ++;
+        }
+        
+        if (start_battle) {
+            var intro_done = true;
+            
+            show_healthbar = true;
+            
+            if (is_boss && hitpoints_max > 0) {
+                if (battle_state_timer > 30) {
+                    if (boss_healthbar_timer % 2 == 0) {
+                        sound_play( sound_get("sfx_boss_hp_tick"), false, 0);
+                    }
+                    boss_healthbar_timer++;
+                    if (boss_healthbar_timer < 56)
+                        intro_done = false;
+                }
+                else {
+                    intro_done = false;
+                }
+            }
+            
+            if (intro_done) {
+                boss_healthbar_timer = 0;
+                committed = 0;
+                battle_state = 2;
+                next_state = PS_IDLE;
+                if (array_length(health_children) > 0) {
+                    for (var i = 0; i < array_length(health_children); i++) {
+                        if (instance_exists(health_children[i]))
+                            with (health_children[i]) {
+                                committed = 0;
+                                battle_state = 2;
+                                next_state = PS_IDLE;
+                            }
+                    }
+                }
+                if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
+                    with (health_parent) {
+                        committed = 0;
+                        battle_state = 2;
+                        next_state = PS_IDLE;
+                    }
+                }
+            }
+        }
+    break;
+    case 2:
+        var end_battle = true;
+        
+        if (art_state != PS_DEAD)
+            end_battle = false;
+        if (array_length(health_children) > 0) {
+            for (var i = 0; i < array_length(health_children); i++) {
+                with (health_children[i]) {
+                    if (art_state != PS_DEAD)
+                        end_battle = false;
+                }
+            }
+        }
+        if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
+            with (health_parent) {
+                if (art_state != PS_DEAD)
+                    end_battle = false;
+            }
+        }
+            
+        if (end_battle)
+        {
+            battle_state = 3;
+            battle_state_timer = 0;
+            if (health_share_mode == 0) {
+                if (array_length(health_children) > 0) {
+                    for (var i = 0; i < array_length(health_children); i++) {if (
+                        instance_exists(health_children[i]))
+                            with (health_children[i]) {
+                                next_state = PS_DEAD;
+                                battle_state = 3;
+                                battle_state_timer = 0;
+                            }
+                    }
+                }
+                if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
+                    with (health_parent) {
+                        next_state = PS_DEAD;
+                        battle_state = 3;
+                        battle_state_timer = 0;
+                    }
+                }
+            }
+        }
+    break;
+    case 3:
+        battle_state_timer ++;
+    break;
+}
+
+
 #define place_meet(__x,__y) //get place_meeting for the usual suspects
 /*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
        collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true) ||
@@ -1190,3 +1325,79 @@ if (sprite_index == asset_get("net_disc_spr")) { //The origin of the X Sprite
         break;
     }
 }
+
+#define enemy_got_hit(_hbox)
+with _hbox {
+    if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
+        
+        //DEPRICATED BECAUSE get_hitbox_angle() EXISTS TY GIIK
+        
+        /*if kb_angle == 361 && other.free other.kb_angle = 45;
+        else if kb_angle == 361 && !other.free other.kb_angle = 40;
+        var _kb_angle = kb_angle;
+        var true_dir = player_id.spr_dir;
+        if attack == AT_BAIR true_dir = !true_dir; //I swear to god Dan
+        if true_dir == 1 other.kb_angle = (kb_angle)*3.14159/180;
+        else other.kb_angle = (180-kb_angle)*3.14159/180;
+        
+        var _x_hcenter = other.x-x;
+        var _y_hcenter = other.y-y;
+        var _x_pcenter = other.x-player_id.x;
+        var _y_pcenter = other.y-player_id.y;
+        switch hit_flipper {
+            case 1: // Send away from the enemy
+                other.kb_angle = tan(_y_hcenter/_x_hcenter);
+                break;
+            case 2: // Send toward from the enemy
+                other.kb_angle = tan(_y_hcenter/_x_hcenter)+3.14159/2;
+                break;
+            case 3: // Horizontal away
+                other.kb_angle = tan(arcsin(other.kb_angle)/(sign(_x_hcenter)*arccos(other.kb_angle)));
+                break;
+            case 4: // Horizontal towards
+                other.kb_angle = tan(arcsin(other.kb_angle)/(-sign(_x_hcenter)*arccos(other.kb_angle)));
+                break;
+        }*/
+        //
+        if (!other.super_armor) {
+            other.spr_dir = -spr_dir;
+            other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
+        }
+        other.percent += damage;
+        other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
+        other.hitpause = hitpause + other.percent*hitpause_growth*0.05;
+        other.old_hsp = other.hsp;
+        other.old_vsp = other.vsp;
+        if no_other_hit != 0 other.hit_lockout = no_other_hit;
+        else other.hit_lockout = hitpause;
+        other.hit_sound = sound_effect;
+        other.hit_visual = hit_effect;
+        other.hbox_group = hbox_group;
+    }
+}
+art_event = EN_EVENT.GOT_HIT
+user_event(6); //Custom behavior
+kb_angle = get_hitbox_angle(_hbox);
+if _hbox.player_id != 0 with _hbox.player_id {
+    has_hit = 1;
+    has__hbox = other.id;
+    old_vsp = vsp;
+    old_hsp = hsp;
+    hitstop = other.hitpause;
+    hitpause = 1;
+    hsp = 0;
+    vsp = 0;
+}
+hit_player_id = _hbox.player_id;
+if (!_hbox.fx_created && _hbox.hbox_group != -1) || _hbox.hbox_group == -1 {
+    _hbox.fx_created = true;
+    if (hit_visual >= 0)
+        with (_hbox)
+            spawn_hit_fx(x + (spr_dir * hit_effect_x), y + hit_effect_y, hit_effect);
+    if (_hbox.hitstun_factor != -1)
+        sound_play(hit_sound);
+}
+if (_hbox.type == 2 && _hbox.enemies == 0) {
+    instance_destroy(_hbox);
+}
+has_hit = 1;
