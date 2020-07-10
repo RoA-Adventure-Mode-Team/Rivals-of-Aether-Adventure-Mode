@@ -21,6 +21,7 @@ trigger_player = spawn_variables[3];
 trigger_shape = spawn_variables[4];
 trigger_w = spawn_variables[5];
 trigger_h = spawn_variables[6];
+trigger_negative = spawn_variables[7];
 cur_scene = 0;
 
 trigger_var = noone;

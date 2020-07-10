@@ -11,6 +11,7 @@ if !_init {
     trigger_shape = spawn_variables[4];
     trigger_w = spawn_variables[5];
     trigger_h = spawn_variables[6];
+    trigger_negative = spawn_variables[7];
     cur_scene = 0;
     trigger_var = noone;
     //trigger_objects = [pHitBox];
@@ -21,14 +22,14 @@ if !_init {
     
     
     switch trigger_obj_type {
-        case 0:
+        case 0: //Player
             trigger_obj_type = oPlayer;
             break;
-        case 1:
+        case 1: //Hitbox
             trigger_obj_type = pHitBox;
             break;
-        case 2: //Set yer own, customly from the scene manager
-            trigger_obj_type = all;
+        case 2: //Stage Article
+            trigger_obj_type = object_stage_article;
             break;
     }
     _init = 1;
@@ -55,7 +56,9 @@ if state == 1 { //trigger active
             collis_obj  = instance_place(x,y,trigger_obj_type);
             break;
     }
-    if collis_obj != noone && (trigger_player == 0 || trigger_player == collis_obj.player ) && (active_scene == 0 || cur_scene == active_scene) {
+    if collis_obj != noone && 
+    (trigger_negative == 0 || ("num" in collis_obj && num == trigger_negative)) &&
+    (trigger_player == 0 || trigger_player == collis_obj.player ) && (active_scene == 0 || cur_scene == active_scene) {
         with obj_stage_article if num == 3 {
             
             event_triggered = true;
