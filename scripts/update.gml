@@ -70,6 +70,15 @@ if !_init {
 			}
 		}
 	}
+	
+	
+	var i = 0;
+	
+	repeat ds_list_size(active_bosses) {
+		if (!instance_exists(active_bosses[| i]))
+        	ds_list_remove(active_bosses,active_bosses[| i])
+        i++;
+	}
 
 	/*with asset_get("oPlayer") {
 		other.down_down = down_down;

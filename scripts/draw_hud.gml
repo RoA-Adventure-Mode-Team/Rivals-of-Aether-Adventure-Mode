@@ -31,6 +31,7 @@ draw_set_halign(fa_left);*/
 
 
 with scene_manager draw_windows();
+draw_boss_healthbar();
 //Debug Info
 if debug_info {
     draw_debug_text(2,2,"FPS: "+string(fps));
@@ -93,8 +94,10 @@ if debug_console { //debug_console_update();
         if console_parse != [] console_command(console_parse);
         
     }
-    
 }
+
+
+
 #define console_command(_console_parse)
 switch _console_parse[0] {
     case "debug":
@@ -233,6 +236,120 @@ repeat ds_list_size(list_window) {
             /*case 2: //Arrow Sprite
                 draw_sprite_ext(list_window[| i]._sprite_index, list_window[| i]._image_index,list_window[| i]._x+list_window[| i]._in_x,list_window[| i]._y+list_window[| i]._in_y,1,1,0,c_white,1);
                 break;*/
+        }
+    }
+    i++;
+}
+
+#define draw_boss_healthbar()
+var i = 0;
+
+repeat ds_list_size(active_bosses) {
+    var boss = active_bosses[| i];
+    var hbar_x = view_get_wview() / 2;
+    var hbar_y = -80;
+    var hbar_yoff = 52 * i;
+    var hbar_fill = 0;
+    var hbar_color = c_white;
+    var show_percent = true;
+    var hbar_percent = 0;
+    var hbar_shake_x = 0;
+    var hbar_shake_y = 0;
+    
+    with (boss) {
+        hbar_color = char_hud_color;
+        show_percent = hitpoints_max <= 0;
+        hbar_percent = percent;
+        
+        if (show_percent)
+            hbar_yoff = 68 * i;
+        
+        if (hitstun > 15 && hitpause > 0) {
+            hbar_shake_x = round(-2 + random_func(1, 4, true) / 2) * 2;
+            hbar_shake_y = round(-2 + random_func(1, 4, true) / 2) * 2;
+        }
+        switch(battle_state) {
+            case 0:
+                hbar_y = -80;
+                hbar_fill = 0;
+            break;
+            
+            case 1:
+                if (show_healthbar) {
+                    if (battle_state_timer <= 30)
+                        hbar_y = lerp(-80, 24 + hbar_yoff, battle_state_timer / 30)
+                    else
+                        hbar_y = 24 + hbar_yoff
+                    if (boss_healthbar_timer > 0) {
+                        if (boss_healthbar_timer < 56) 
+                            hbar_fill = ease_linear(0, 1, round(boss_healthbar_timer), 56);
+                        else {
+                            hbar_fill = 1
+                        }
+                    }
+                    else
+                        hbar_fill = 0;
+                }
+                else {
+                    hbar_y = -80;
+                    hbar_fill = 0;
+                }
+            break;
+            
+            case 2:
+                var hp_total = 0;
+                var hp_sum = 0;
+                hbar_y = 24 + hbar_yoff;
+                hp_total += hitpoints_max;
+                hp_sum += hitpoints_max - percent;
+                if (array_length(health_children) > 0) {
+                    for (var i = 0; i < array_length(health_children); i++) {
+                        with (health_children[i]) {
+                            hp_total += hitpoints_max;
+                            hp_sum += hitpoints_max - percent;
+                        }
+                    }
+                }
+                if (health_parent != -1 && health_parent != id) {
+                    with (health_parent) {
+                        hp_total += hitpoints_max;
+                        hp_sum += hitpoints_max - percent;
+                    }
+                }
+                if (hp_total != 0)
+                    hbar_fill = hp_sum / hp_total;
+            break;
+            case 3:
+                if (battle_state_timer <= 60)
+                    hbar_y = lerp(24 + hbar_yoff, -80, battle_state_timer / 60)
+                else
+                    hbar_y = -80
+            break;
+        }
+        var xx = hbar_x - 320;
+        var yy = hbar_y + 32;
+        var str = char_name;
+        
+        if (!show_percent) {
+            draw_set_font(asset_get("medFont"));
+            draw_set_halign(fa_left)
+            
+            draw_sprite(sprite_get("boss_hp_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
+            draw_sprite_part_ext(sprite_get("boss_hp_bar"), 0, 0, 0, 640 * hbar_fill, 26, hbar_x - 320 + hbar_shake_x, hbar_y + hbar_shake_y, 1, 1, hbar_color, 1);
+            draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
+        }
+        else {
+            
+            draw_sprite(sprite_get("boss_percent_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
+            draw_set_font(asset_get("roaLBLFont"));
+            draw_set_halign(fa_right)
+            draw_text_trans_outline(hbar_x + 80, hbar_y + 8, hbar_percent, 1, -1, 1, 1, 0, c_white, c_black, 1);
+            
+            draw_set_font(asset_get("medFont"));
+            draw_set_halign(fa_left)
+            draw_text_trans_outline(hbar_x + 86, hbar_y + 16, "%", 1, -1, 1, 1, 0, c_white, c_black, 1);
+            draw_set_halign(fa_right)
+            draw_text_trans_outline(xx + 320 - 32, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
         }
     }
     i++;
