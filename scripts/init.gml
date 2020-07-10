@@ -54,6 +54,7 @@ with oPlayer {
 room_manager = noone;
 
 //Enemies (article6)
+active_bosses = ds_list_create();
 
 //Camera Controller (article7)
 
