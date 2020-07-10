@@ -9,7 +9,7 @@ sprite_index = sprite_get("ou_idle");
 mask_index =  collision_box; // Collision Mask
 hurtbox_spr = collision_box; //Hurtbox Sprite
 
-debug = false;
+debug = true;
 init_pos = [0,0];
 can_be_grounded = true;
 ignores_walls = false;
@@ -204,7 +204,7 @@ last_hitbox = noone;
 should_die = false;
 horiz_col = false;
 vert_col = false;
-hbox_group = -1;
+hbox_group = -2;
 hit_player_id = noone;
 hit_player_obj = noone;
 my_hitboxID = noone;

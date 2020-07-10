@@ -32,8 +32,7 @@ if !_init {
     spawn_event = spawn_variables[1];
     death_event = spawn_variables[2];
     //player_controller = 1;
-    art_event = EN_EVENT.INIT
-    user_event(6);
+    custom_behavior(EN_EVENT.INIT)
     
     //Spawn event
     if (spawn_event > 0) {
@@ -182,12 +181,10 @@ switch target_behavior {
 }
 
 if (art_state != PS_DEAD) {
-    art_event = EN_EVENT.UPDATE
-    user_event(6); //Custom behavior
+    custom_behavior(EN_EVENT.UPDATE)
 }
 else {
-    art_event = EN_EVENT.DEATH
-    user_event(6); //Custom behavior
+    custom_behavior(EN_EVENT.DEATH)
 }
 
 #define frame_update() //Updates ai information every frame, not physics
@@ -530,8 +527,7 @@ if hitpause <= 0 switch art_state { //Display Logic
             break;
     }
     
-art_event = EN_EVENT.ANIMATION
-user_event(6); //Custom behavior
+custom_behavior(EN_EVENT.ANIMATION)
 
 if next_attack != -1 attack_start();
 #define input_process() //For inputs in more than 1 state
@@ -663,22 +659,21 @@ if hit_player_id != noone && hit_player_id.object_index == oPlayer.object_index 
 if invincible == 0 {
     last_hitbox = hit_id;
     mask_index = hurtbox_spr;
-    hit_id = instance_place(x,y,pHitBox);
+    hit_id = highest_priority_hb()
     mask_index = collision_box;
     if hit_id == noone has_hit = 0;
     if hit_lockout > 0 hit_lockout--;
-    if instance_exists(hit_id) && (!("hit_owner" in hit_id) || hit_id.hit_owner != id) && (!("team" in hit_id) || hit_id.team != team)  && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
-        enemy_got_hit(hit_id);
-        if (health_share_mode == 0) {
-            if (array_length(health_children) > 0) {
-                for (var i = 0; i < array_length(health_children); i++) {
-                    if (instance_exists(health_children[i]))
-                        with (health_children[i]) enemy_got_hit(hit_id);
-                }
+    else hit_lockout = 0;
+    enemy_got_hit(hit_id);
+    if (health_share_mode == 0) {
+        if (array_length(health_children) > 0) {
+            for (var i = 0; i < array_length(health_children); i++) {
+                if (instance_exists(health_children[i]))
+                    with (health_children[i]) enemy_got_hit(hit_id);
             }
-            if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
-                with (health_parent) enemy_got_hit(hit_id);
-            }
+        }
+        if (instance_exists(health_parent) && health_parent != -1 && health_parent != id) {
+            with (health_parent) enemy_got_hit(hit_id);
         }
     }
 } else invincible--;
@@ -687,8 +682,7 @@ if invincible == 0 {
 if (instance_exists(pHitBox)) {
     with asset_get("pHitBox") if "hit_owner" in self && hit_owner == other.id {
         with (other) {
-            art_event = EN_EVENT.SET_ATTACK
-            user_event(6); //Custom behavior
+            custom_behavior(EN_EVENT.SET_ATTACK)
             get_hitboxes(other.attack);
         }
         with (oPlayer) {
@@ -699,14 +693,11 @@ if (instance_exists(pHitBox)) {
                 else {
                     other.hit_owner.my_hitboxID = other.id
                     other.hit_owner.was_parried = obj_stage_main.was_parried;
-                    if (!other.hit_owner.was_parried)
-                        other.hit_owner.art_event = EN_EVENT.HIT_PLAYER
-                    else
-                        other.hit_owner.art_event = EN_EVENT.GOT_PARRIED
                     other.hit_owner.hit_player_obj = id;
-                    with (other.hit_owner) {
-                        user_event(6); //Custom behavior
-                    }   
+                    if (!other.hit_owner.was_parried)
+                        custom_behavior(EN_EVENT.GOT_HIT)
+                    else
+                        custom_behavior(EN_EVENT.GOT_PARRIED)
                 }
             }
         }
@@ -981,8 +972,7 @@ if (hitpause <= 0) {
         }
     }
     for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j] {
-        art_event = EN_EVENT.SET_ATTACK
-        user_event(6); //Custom behavior
+        custom_behavior(EN_EVENT.SET_ATTACK)
         get_hitboxes(attack);
         var hitb = create_hitbox(attack,j,round(x)+hg_x[j]*spr_dir,round(y)+hg_y[j]);
         hitb.type = hg_type[j] == 0 ? 1 : hg_type[j];
@@ -992,8 +982,7 @@ if (hitpause <= 0) {
     
     window_timer++;
     
-    art_event = EN_EVENT.ATTACK_UPDATE
-    user_event(6); //Custom behavior
+    custom_behavior(EN_EVENT.ATTACK_UPDATE)
     
     if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
         if window >= ag_num_windows {
@@ -1026,8 +1015,7 @@ has_hit_en = false;
 last_attack = attack;
 attack = next_attack;
 reset_attack_grid(attack);
-art_event = EN_EVENT.SET_ATTACK
-user_event(6); //Custom behavior
+custom_behavior(EN_EVENT.SET_ATTACK)
 get_attack(attack);
 get_hitboxes(attack);
 next_attack = -1;
@@ -1327,77 +1315,97 @@ if (sprite_index == asset_get("net_disc_spr")) { //The origin of the X Sprite
 }
 
 #define enemy_got_hit(_hbox)
-with _hbox {
-    if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
-        
-        //DEPRICATED BECAUSE get_hitbox_angle() EXISTS TY GIIK
-        
-        /*if kb_angle == 361 && other.free other.kb_angle = 45;
-        else if kb_angle == 361 && !other.free other.kb_angle = 40;
-        var _kb_angle = kb_angle;
-        var true_dir = player_id.spr_dir;
-        if attack == AT_BAIR true_dir = !true_dir; //I swear to god Dan
-        if true_dir == 1 other.kb_angle = (kb_angle)*3.14159/180;
-        else other.kb_angle = (180-kb_angle)*3.14159/180;
-        
-        var _x_hcenter = other.x-x;
-        var _y_hcenter = other.y-y;
-        var _x_pcenter = other.x-player_id.x;
-        var _y_pcenter = other.y-player_id.y;
-        switch hit_flipper {
-            case 1: // Send away from the enemy
-                other.kb_angle = tan(_y_hcenter/_x_hcenter);
-                break;
-            case 2: // Send toward from the enemy
-                other.kb_angle = tan(_y_hcenter/_x_hcenter)+3.14159/2;
-                break;
-            case 3: // Horizontal away
-                other.kb_angle = tan(arcsin(other.kb_angle)/(sign(_x_hcenter)*arccos(other.kb_angle)));
-                break;
-            case 4: // Horizontal towards
-                other.kb_angle = tan(arcsin(other.kb_angle)/(-sign(_x_hcenter)*arccos(other.kb_angle)));
-                break;
-        }*/
-        //
-        if (!other.super_armor) {
-            other.spr_dir = -spr_dir;
-            other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
+if instance_exists(_hbox) && (!("hit_owner" in _hbox) || _hbox.hit_owner != id) && (!("team" in _hbox) || _hbox.team != team)  && hit_lockout == 0 && (last_hitbox != _hbox || _hbox.hbox_group == -1) && (_hbox.hbox_group == -1 || _hbox.hbox_group != hbox_group) {
+    with _hbox {
+        if other.hitstun == 0 || kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj > other.hitstun {
+            
+            //DEPRICATED BECAUSE get_hitbox_angle() EXISTS TY GIIK
+            
+            /*if kb_angle == 361 && other.free other.kb_angle = 45;
+            else if kb_angle == 361 && !other.free other.kb_angle = 40;
+            var _kb_angle = kb_angle;
+            var true_dir = player_id.spr_dir;
+            if attack == AT_BAIR true_dir = !true_dir; //I swear to god Dan
+            if true_dir == 1 other.kb_angle = (kb_angle)*3.14159/180;
+            else other.kb_angle = (180-kb_angle)*3.14159/180;
+            
+            var _x_hcenter = other.x-x;
+            var _y_hcenter = other.y-y;
+            var _x_pcenter = other.x-player_id.x;
+            var _y_pcenter = other.y-player_id.y;
+            switch hit_flipper {
+                case 1: // Send away from the enemy
+                    other.kb_angle = tan(_y_hcenter/_x_hcenter);
+                    break;
+                case 2: // Send toward from the enemy
+                    other.kb_angle = tan(_y_hcenter/_x_hcenter)+3.14159/2;
+                    break;
+                case 3: // Horizontal away
+                    other.kb_angle = tan(arcsin(other.kb_angle)/(sign(_x_hcenter)*arccos(other.kb_angle)));
+                    break;
+                case 4: // Horizontal towards
+                    other.kb_angle = tan(arcsin(other.kb_angle)/(-sign(_x_hcenter)*arccos(other.kb_angle)));
+                    break;
+            }*/
+            //
+            if (!other.super_armor) {
+                other.spr_dir = -spr_dir;
+                other.hitstun = kb_value*4*((other.knockback_adj-1)*0.6+1)+other.percent*0.12*kb_scale*4*0.65*other.knockback_adj;
+            }
+            other.percent += damage;
+            other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
+            other.hitpause = hitpause + other.percent*hitpause_growth*0.05;
+            other.old_hsp = other.hsp;
+            other.old_vsp = other.vsp;
+            if no_other_hit != 0 other.hit_lockout = no_other_hit;
+            else other.hit_lockout = hitpause;
+            other.hit_sound = sound_effect;
+            other.hit_visual = hit_effect;
+            other.hbox_group = hbox_group;
         }
-        other.percent += damage;
-        other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
-        other.hitpause = hitpause + other.percent*hitpause_growth*0.05;
-        other.old_hsp = other.hsp;
-        other.old_vsp = other.vsp;
-        if no_other_hit != 0 other.hit_lockout = no_other_hit;
-        else other.hit_lockout = hitpause;
-        other.hit_sound = sound_effect;
-        other.hit_visual = hit_effect;
-        other.hbox_group = hbox_group;
+    }
+    custom_behavior(EN_EVENT.GOT_HIT);
+    kb_angle = get_hitbox_angle(_hbox);
+    if _hbox.player_id != 0 with _hbox.player_id {
+        has_hit = 1;
+        has_hit_id = other.id;
+        old_vsp = vsp;
+        old_hsp = hsp;
+        hitstop = other.hitpause;
+        hitpause = 1;
+        hsp = 0;
+        vsp = 0;
+    }
+    hit_player_id = _hbox.player_id;
+    if (!_hbox.fx_created && _hbox.hbox_group != -1) || _hbox.hbox_group == -1 {
+        _hbox.fx_created = true;
+        if (hit_visual >= 0)
+            with (_hbox)
+                spawn_hit_fx(x + (spr_dir * hit_effect_x), y + hit_effect_y, hit_effect);
+        if (_hbox.hitstun_factor != -1)
+            sound_play(hit_sound);
+    }
+    if (_hbox.type == 2 && _hbox.enemies == 0) {
+        instance_destroy(_hbox);
+    }
+    has_hit = 1;
+}
+
+#define custom_behavior(_eventID)
+art_event = _eventID
+user_event(6); //Custom behavior
+
+#define highest_priority_hb()
+var result = noone;
+var compare = 0;
+with (asset_get("pHitBox")) {
+    if (place_meeting(x, y, other) && player != 5)
+    {
+        if (hit_priority >= compare) {
+            result = id;
+            compare = hit_priority;
+        }
     }
 }
-art_event = EN_EVENT.GOT_HIT
-user_event(6); //Custom behavior
-kb_angle = get_hitbox_angle(_hbox);
-if _hbox.player_id != 0 with _hbox.player_id {
-    has_hit = 1;
-    has__hbox = other.id;
-    old_vsp = vsp;
-    old_hsp = hsp;
-    hitstop = other.hitpause;
-    hitpause = 1;
-    hsp = 0;
-    vsp = 0;
-}
-hit_player_id = _hbox.player_id;
-if (!_hbox.fx_created && _hbox.hbox_group != -1) || _hbox.hbox_group == -1 {
-    _hbox.fx_created = true;
-    if (hit_visual >= 0)
-        with (_hbox)
-            spawn_hit_fx(x + (spr_dir * hit_effect_x), y + hit_effect_y, hit_effect);
-    if (_hbox.hitstun_factor != -1)
-        sound_play(hit_sound);
-}
-if (_hbox.type == 2 && _hbox.enemies == 0) {
-    instance_destroy(_hbox);
-}
-has_hit = 1;
+
+return result;
