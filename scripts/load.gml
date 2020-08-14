@@ -16,6 +16,61 @@ sprite_change_offset("enemy_0_PS_WAVELAND",56, 102);
 
 sprite_change_offset("ou_jab",56, 102);
 
+sprite_change_offset("enemy_1_bighurt",64, 94);
+sprite_change_offset("enemy_1_dash",64, 94);
+sprite_change_offset("enemy_1_dashstart",64, 94);
+sprite_change_offset("enemy_1_dashstop",64, 94);
+sprite_change_offset("enemy_1_dashturn",64, 94);
+sprite_change_offset("enemy_1_dead",64, 94);
+sprite_change_offset("enemy_1_doublejump",64, 94);
+sprite_change_offset("enemy_1_hurt",64, 94);
+sprite_change_offset("enemy_1_hurtground",64, 94);
+sprite_change_offset("enemy_1_idle",64, 94);
+sprite_change_offset("enemy_1_jump",64, 94);
+sprite_change_offset("enemy_1_jumpstart",64, 94);
+sprite_change_offset("enemy_1_land",64, 94);
+sprite_change_offset("enemy_1_spinhurt",64, 94);
+sprite_change_offset("enemy_1_walk",64, 94);
+sprite_change_offset("enemy_1_walkturn",64, 94);
+
+sprite_change_offset("enemy_1_jab",80, 126);
+sprite_change_offset("enemy_1_ftilt",64, 94);
+sprite_change_offset("enemy_1_dattack",80, 94);
+sprite_change_offset("enemy_1_nspecial",96, 94);
+sprite_change_offset("enemy_1_nspecial_fx",48, 46);
+
+sprite_change_offset("enemy_2_bighurt",80, 110);
+sprite_change_offset("enemy_2_hurt",80, 110);
+sprite_change_offset("enemy_2_idle",96, 110);
+sprite_change_offset("enemy_2_walkturn",96, 110);
+sprite_change_offset("enemy_2_spinhurt",80, 110);
+
+sprite_change_offset("enemy_2_nair",96, 110);
+sprite_change_offset("enemy_2_fair",96, 110);
+sprite_change_offset("enemy_2_dair",80, 110);
+sprite_change_offset("enemy_2_proj",16, 16);
+
+sprite_change_offset("enemy_3_bighurt",96, 158);
+sprite_change_offset("enemy_3_downhurt",96, 158);
+sprite_change_offset("enemy_3_hurt",96, 158);
+sprite_change_offset("enemy_3_hurtbox",96, 158);
+sprite_change_offset("enemy_3_hurtground",96, 158);
+sprite_change_offset("enemy_3_idle",96, 158);
+sprite_change_offset("enemy_3_jump",96, 158);
+sprite_change_offset("enemy_3_jumpstart",96, 158);
+sprite_change_offset("enemy_3_land",96, 158);
+sprite_change_offset("enemy_3_spinhurt",96, 158);
+sprite_change_offset("enemy_3_uphurt",96, 158);
+sprite_change_offset("enemy_3_walk",96, 158);
+sprite_change_offset("enemy_3_walkturn",96, 158);
+
+sprite_change_offset("enemy_3_jab",96, 158);
+sprite_change_offset("enemy_3_ftilt",128, 158);
+sprite_change_offset("enemy_3_utilt",96, 158);
+
+sprite_change_offset("fx_enemy_abyssdeath",48, 48);
+sprite_change_offset("fx_enemy_abyssdeath2",52, 52);
+
 sprite_change_offset("column_deco",210, 310);
 sprite_change_offset("column_deco_black",210, 310);
 
