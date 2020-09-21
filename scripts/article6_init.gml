@@ -46,6 +46,7 @@ sprite_default_offset = [56, 102];
 crouch_timer = 0;
 hitpoints_max = 0; //If this is zero, percentage knockback will be used. - Harbige
 enemy_class = 0; //0 = grounded; 1 = flying
+
 destroyed = 0;
 
 //Boss variables

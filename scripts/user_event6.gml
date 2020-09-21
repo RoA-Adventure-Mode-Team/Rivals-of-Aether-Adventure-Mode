@@ -2033,6 +2033,7 @@ switch (enem_id) {
     break;
 }
 
+
 //Extra functions
 #define arc_calc_x_speed(x1, y1, x2, y2, vspd, g)
 var dX = x2 - x1;

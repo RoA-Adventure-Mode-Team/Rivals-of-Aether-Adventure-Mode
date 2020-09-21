@@ -10,6 +10,7 @@ if(_init)
     parallax_y = spawn_variables[6];
     static = spawn_variables[7];
     mask_index = deco_image;
+
     switch(dither_type)
     {
         case 1:
@@ -25,6 +26,7 @@ if(_init)
         dither_sprite = asset_get("empty_sprite");
         break;
     }
+
     with obj_stage_article if num == 5 {
         other.room_manager = id;
         other.init_cam_pos = init_cam_pos;

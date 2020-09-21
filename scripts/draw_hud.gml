@@ -32,14 +32,7 @@ draw_set_halign(fa_left);*/
 
 with scene_manager draw_windows();
 draw_boss_healthbar();
-/*
-with obj_stage_article {
-	if num == 1 && static {
-		depth = -2;
-		draw_sprite_ext(sprite_index,0,0,0,2,2,0,c_white,1);
-	}
-}
-*/
+
 //Debug Info
 if debug {
     draw_set_alpha(.7);
@@ -136,6 +129,7 @@ if debug_console { //debug_console_update();
         
     }
 }
+
 
 if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
     console_command(["debug",get_match_setting(SET_HITBOX_VIS)]);
