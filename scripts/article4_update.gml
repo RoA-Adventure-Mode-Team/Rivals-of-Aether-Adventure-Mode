@@ -6,7 +6,7 @@ if !_init {
     event_id = spawn_variables[0];
     active_scene = spawn_variables[1];
     trigger_obj_type = spawn_variables[2];
-    trigger_player = spawn_variables[3];
+    item_needed = spawn_variables[3];
     //trigger_obj_type = oPlayer;
     trigger_shape = spawn_variables[4];
     trigger_w = spawn_variables[5];
@@ -18,7 +18,6 @@ if !_init {
     //trigger_player = [all];
     collis_obj = noone;
     destroy_on_trigger = true;
-    destroy_effect = asset_get("sfx_ice_shatter_big");
     
     
     switch trigger_obj_type {
@@ -56,9 +55,11 @@ if state == 1 { //trigger active
             collis_obj  = instance_place(x,y,trigger_obj_type);
             break;
     }
+    if collis_obj != noone print_debug("[TZ] COLLIDE");
     if collis_obj != noone && 
     (trigger_negative == 0 || ("num" in collis_obj && num == trigger_negative)) &&
-    (trigger_player == 0 || trigger_player == collis_obj.player ) && (active_scene == 0 || cur_scene == active_scene) {
+    (item_needed == 0 || item_needed == collis_obj.item_id) && (active_scene == 0 || cur_scene == active_scene) {
+        if debug print_debug("[TZ] TRIGGERED "+string(event_id));
         with obj_stage_article if num == 3 {
             
             event_triggered = true;

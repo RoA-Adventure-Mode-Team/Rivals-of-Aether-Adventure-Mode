@@ -11,7 +11,8 @@ enum WIN {
     OBJ_SPR,
     WLD_CAM,
     WLD_TXT,
-    WLD_SPR
+    WLD_SPR,
+    PLR_CTL
 }
 
 #macro TG_CUSTOM 69 //Run custom trigger code
@@ -27,13 +28,15 @@ if cur_scene == 0 {
 
 if switch_to_scene != cur_scene scene_switch(switch_to_scene);
 
-user_event(2); //scene_custom_update();
+if ds_list_valid(list_window) user_event(2); //scene_custom_update();
 
 if event_triggered event_trigger();
 
 //Process the above
-update_windows();
-update_scene();
+if ds_list_valid(list_window) {
+    update_windows();
+    update_scene();
+}
 
 
 #define scene_custom_trigger()
@@ -191,6 +194,21 @@ switch _content_type {
             init_pos: [__x,__y]
             
         };//_vari = [bg_image_index, _image_index, visibl]
+        break;
+    case WIN.PLR_CTL: //Control a player object
+        var window_obj = {
+            _x: __x,
+            _y: __y,
+            content_type: _content_type,
+            player_obj: _container[0],
+            state: _container[1],
+            state_time: _container[2],
+            window: _container[3],
+            velocity: _container[4],
+            sprite_overwrite: _container[5],
+            sprite_speed: _container[6],
+            sprite_index: _container[7]
+        };
         break;
 }
 

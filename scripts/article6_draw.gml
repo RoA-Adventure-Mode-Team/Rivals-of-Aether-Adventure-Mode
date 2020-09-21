@@ -1,5 +1,24 @@
 //draw stuff for enemy
 draw_set_alpha(1);
+
+//Enum declarations (DO NOT EDIT)
+
+//Event Enum
+enum EN_EVENT {
+    INIT,
+    ANIMATION,
+    PRE_DRAW,
+    POST_DRAW,
+    UPDATE,
+    DEATH,
+    SET_ATTACK,
+    ATTACK_UPDATE,
+    GOT_HIT,
+    GOT_PARRIED,
+    HIT_PLAYER,
+    PARRY
+}
+
 if !_init exit; //Only draw stuff after initializing
 if in_render {
     if debug {
@@ -28,6 +47,9 @@ if in_render {
     
     }
     
+    art_event = EN_EVENT.PRE_DRAW;
+    user_event(6);
+    
     if (super_armor) {
         var offset = 2;
         for (var ix = -offset; ix <= offset; ix += offset) {  
@@ -37,22 +59,27 @@ if in_render {
                 gpu_set_fog(0, 0, 0, 0);
              }
         }
-        draw_sprite_ext(sprite_index,image_index,x,y,image_xscale * spr_dir,image_yscale,image_angle,image_blend,image_alpha);
     }
+    
+    draw_sprite_ext(sprite_index,image_index,x,y,image_xscale * spr_dir,image_yscale,image_angle,image_blend,image_alpha);
+    
     
     //Contributed by Harbige
-    if (hitpoints_max > 0) {
-        if (char_healthbar != noone) {
-            var hbar_fill = lerp(1, 0, percent / hitpoints_max);
-            draw_sprite_ext(char_healthbar,0,x - 34,y-char_height*2-22,1,1,0,c_white,1);
-            draw_sprite_part_ext(char_healthbar, 1, 0, 0, 64 * hbar_fill, 16, x - 34, y-char_height*2-22, 1, 1, char_hud_color, 1);
+    if (!is_boss) {
+        if (hitpoints_max > 0) {
+            if (char_healthbar != noone) {
+                var hbar_fill = lerp(1, 0, percent / hitpoints_max);
+                draw_sprite_ext(char_healthbar,0,x - 34,y-char_height*2-22,1,1,0,c_white,1);
+                draw_sprite_part_ext(char_healthbar, 1, 0, 0, 64 * hbar_fill, 16, x - 34, y-char_height*2-22, 1, 1, char_hud_color, 1);
+            }
         }
+        else draw_debug_text(x-10,y-(char_height*2)-20,string(percent)+"%");
+        //
+        draw_sprite_ext(char_arrow,0,x-10,y-char_height*2-6,1,1,0,char_hud_color,1);
     }
-    else draw_debug_text(x-10,y-(char_height*2)-20,string(percent)+"%");
-    //
-    draw_sprite_ext(char_arrow,0,x-10,y-char_height*2-6,1,1,0,char_hud_color,1);
     
-    
+    art_event = EN_EVENT.POST_DRAW;
+    user_event(6);
 }
 #define get_attack_name(_attack) //get the name of an attack
 
