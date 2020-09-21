@@ -9,6 +9,7 @@ if !_init {
     room_switch_type = spawn_variables[5];
     hold_up = spawn_variables[6];
     event_id = spawn_variables[7];
+    item_needed = spawn_variables[8];
     _init = 1;
 }
 state_timer++;
@@ -26,11 +27,15 @@ if state == 0 { //trigger active
             collis_obj  = instance_place(x,y,oPlayer);
             break;
     }
-    if collis_obj != noone && (!hold_up || collis_obj.up_down) with obj_stage_article if num == 5 {
-        switch_to_room_pos = [-1, -1];
-        room_switch_type = other.room_switch_type;
-        switch_to_room = other.to_room;
-        room_switch_event = other.event_id;
+    if collis_obj != noone && (!hold_up || collis_obj.up_down) && (item_needed == 0 || item_needed == collis_obj.item_id.item_id) {
+        with room_manager {
+            switch_to_room_pos = [-1, -1];
+            room_switch_type = other.room_switch_type;
+            switch_to_room = other.to_room;
+            room_switch_event = other.event_id;
+            
+        }
+        if item_needed == collis_obj.item_id instance_destroy(collis_obj.item_id);
     }
 }
 

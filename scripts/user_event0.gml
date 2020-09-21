@@ -9,12 +9,13 @@ enum BT {
     START
 }
 enum WIN {
-    HUD_TXT, //HUD Text Object
-    HUD_SPR, //HUD Sprite Object
-    OBJ_SPR, //Sprite on an Object
-    WLD_CAM, //World Camera
-    WLD_TXT, //World Text
-    WLD_SPR  //World Sprites
+    HUD_TXT,
+    HUD_SPR,
+    OBJ_SPR,
+    WLD_CAM,
+    WLD_TXT,
+    WLD_SPR,
+    PLR_CTL
 }
 
 #macro TG_CUSTOM 69 //Run custom trigger code
@@ -26,14 +27,15 @@ enum WIN {
 //Scene Data Here
 
 //Global Scenes
-/*
-scene_add(1,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "Hello! Welcome to RoA Adventure Mode Update 7!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+
+/*scene_add(1,[
+    [2,2, 1, [sprite_get("dialog_border"), 6, -16, -16, sprite_get("squdia_idle"), 6]], //window 0, animated sprite
+    [150,2, 0, [asset_get("empty_sprite"), 6, 20, 16, "roundFont", "Shabadap bo bop!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
     
     ],
     //[TG_COMPLETE, 2,  tutorial_default_scroll]);
     [TG_COMPLETE, -1,  999999999999999]);
+
 scene_add(2,[
     [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
     [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It's been a hot minute, but a lot of work has been done and discoveries made!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
@@ -97,6 +99,28 @@ scene_add(11,[
     [TG_COMPLETE, 12, tutorial_default_scroll]);*/
     
 switch cur_room { //Room Specific Scenes
+    case 1:
+        scene_add(1,[],[TG_COMPLETE, -1,  999999999999999]);
+        scene_add(2,[
+            [300,400, 1, [sprite_get("dialog_borderbg"), 6, 0, 0, sprite_get("squdia_flap"), 8]], //window 0, animated sprite
+            [300,400, 1, [sprite_get("dialog_border"), 6, 0, 0, asset_get("empty_sprite"), 8]], //window 0, animated sprite
+            [300+64,400, 0, [sprite_get("dialog_text"), 6, 12, 4, "roundFont", "Hmmm... "+player_name+" is it? I've got something you can help me with...", 300, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+            ],
+            [TG_COMPLETE, 3,  tutorial_default_scroll]);
+            //[TG_COMPLETE, 2,  999999999999999]);
+        scene_add(3,[
+            [300,400, 1, [sprite_get("dialog_borderbg"), 6, 0, 0, sprite_get("squdia_hap"), 8]], //window 0, animated sprite
+            [300,400, 1, [sprite_get("dialog_border"), 6, 0, 0, asset_get("empty_sprite"), 8]], //window 0, animated sprite
+            [300+64,400, 0, [sprite_get("dialog_text"), 6, 12, 4, "roundFont", "I forgot my lunch in my house to the right. Could you go fetch it?", 300, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+            ],
+            [TG_COMPLETE, 4,  tutorial_default_scroll]);
+        scene_add(4,[
+            [300,400, 1, [sprite_get("dialog_borderbg"), 6, 0, 0, sprite_get("squdia_flap"), 8]], //window 0, animated sprite
+            [300,400, 1, [sprite_get("dialog_border"), 6, 0, 0, asset_get("empty_sprite"), 8]], //window 0, animated sprite
+            [300+64,400, 0, [sprite_get("dialog_text"), 6, 12, 4, "roundFont", "I've got a stall to run! Chop Chop!", 300, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
+            ],
+            [TG_COMPLETE, 5,  tutorial_default_scroll]);
+        break;
     case -1:
         
         break;

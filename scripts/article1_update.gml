@@ -4,18 +4,23 @@ if _init == 0 {
     spr_name = "article1_"+string(spawn_variables[0]);
     spr_ = sprite_get(spr_name);
     if spawn_variables[3] != 0 sprite_change_collision_mask(spr_name,true, 2, 0, 0, sprite_get_width(spr_), sprite_get_height(spr_), 0 );
-    sprite_index = sprite_get("article1_"+string(spawn_variables[0]));
-    //if sprite_index 
-    mask_index = sprite_index;
+    if spawn_variables[0] < 1000 sprite_index = sprite_get("article1_"+string(spawn_variables[0]));
+    else sprite_index = spawn_variables[0];
+    //mask_index = sprite_index;
     anim_speed = spawn_variables[1]*.01;
     group = spawn_variables[2];
-    /*marker[0] = spawn_variables[2];
-    marker[1] = spawn_variables[3];
-    wait_time_max = spawn_variables[4];
-    spe = spawn_variables[5];
-    current_marker = 0;
-    wait_time = wait_time_max;*/
-    //print_debug(string(spawn_variables));
+    static  = spawn_variables[4];
+    alpha_ = spawn_variables[5];
+    if alpha_ != 0 image_alpha = alpha_;
+    if static {
+        with obj_stage_article {
+            if num == 5 {
+        		other.x = view_get_xview()+init_pos[0]*16;
+        		other.y = view_get_yview()+init_pos[1]*16;
+                other.init_cam_pos = init_cam_pos;
+            }
+        }
+    }
     _init = 1;
 } else {
     //visible = false;
@@ -29,6 +34,9 @@ if _init == 0 {
     
     //frame_update();
     
+    //if static print_debug(string([x,y]));
+   /* x = init_x;
+    y = init_y;*/
     image_index = (image_index + anim_speed) % image_number;
-    
+
 }

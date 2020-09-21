@@ -32,7 +32,7 @@ if !_init {
     spawn_event = spawn_variables[1];
     death_event = spawn_variables[2];
     //player_controller = 1;
-    art_event = EN_EVENT.INIT
+    art_event = EN_EVENT.INIT;
     user_event(6);
     
     //Spawn event
@@ -182,11 +182,11 @@ switch target_behavior {
 }
 
 if (art_state != PS_DEAD) {
-    art_event = EN_EVENT.UPDATE
+    art_event = EN_EVENT.UPDATE;
     user_event(6); //Custom behavior
 }
 else {
-    art_event = EN_EVENT.DEATH
+    art_event = EN_EVENT.DEATH;
     user_event(6); //Custom behavior
 }
 

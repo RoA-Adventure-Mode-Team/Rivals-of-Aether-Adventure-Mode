@@ -7,7 +7,7 @@ _init = 0;
 state = 0;
 state_old = 0;
 state_timer = 0;
-debug = true;
+debug = false;
 init_pos = [0,0];
 cell_pos = [0,0];
 

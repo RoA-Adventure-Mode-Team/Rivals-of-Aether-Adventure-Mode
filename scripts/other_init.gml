@@ -10,8 +10,8 @@ keep_dash = false;
 taunt_held = 0;
 attack_held = 0;
 
-respawn_point = [[1008/16,598/16],[0,0],1]; //SubCell Position, Cell Position, Room #
+respawn_point = [[77,44],[0,0],1]; //SubCell Position, Cell Position, Room #
 
 has_walljump_actual = true;
 
-item_id = -1;
+item_id = noone;

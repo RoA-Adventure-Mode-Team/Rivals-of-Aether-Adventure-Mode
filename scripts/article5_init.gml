@@ -1,10 +1,11 @@
 //article5_init, Room Manager
 
 sprite_index = asset_get("empty_sprite");
+room_manager = id;
 _init = 0;
 init_pos = [0,0];
 custom_args = array_create(0);
-debug = true;
+debug = false;
 cell_size = 16;
 cell_dim = [163,85];
 grid_offset = 4;
@@ -12,6 +13,7 @@ list_room = ds_list_create();
 ds_list_clear(list_room);
 //list_room = array_create(0);
 cur_room = 0;
+init_cam_pos = [0,0];
 
 switch_to_room = cur_room;
 room_switch_type = 0;
