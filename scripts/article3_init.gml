@@ -1,6 +1,6 @@
 //article3_init, cutscene manager
 sprite_index = asset_get("empty_sprite");
-debug = true;
+debug = false;
 init_pos = [0,0];
 custom_args = array_create(0);
 //Only One Thing to Exist
@@ -61,7 +61,7 @@ bg_speed = .1;
 
 //
 tutorial_target = noone;
-tutorial_default_scroll = 240;
+tutorial_default_scroll = 120;
 tutorial_default_text_speed = 2;
 
 //

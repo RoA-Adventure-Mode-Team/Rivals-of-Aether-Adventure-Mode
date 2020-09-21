@@ -7,6 +7,7 @@ init_pos = [0,0];
 state = 0;
 state_old = 0;
 state_timer = 0;
+debug = false;
 debug_color = c_fuchsia;
 anim_speed = 0;
 
@@ -23,3 +24,4 @@ to_room = spawn_variables[4];
 room_switch_type = spawn_variables[5];
 hold_up = spawn_variables[6];
 event_id = spawn_variables[7];
+item_needed = 0;

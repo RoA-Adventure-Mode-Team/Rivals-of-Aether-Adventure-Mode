@@ -7,7 +7,7 @@ _init = 0;
 state = 0;
 state_old = 0;
 state_timer = 0;
-debug = true;
+debug = false;
 init_pos = [0,0];
 debug_color = c_red;
 
@@ -16,7 +16,7 @@ anim_type = 0;
 event_id = spawn_variables[0];
 active_scene = spawn_variables[1];
 trigger_obj_type = spawn_variables[2];
-trigger_player = spawn_variables[3];
+item_needed = spawn_variables[3];
 //trigger_obj_type = oPlayer;
 trigger_shape = spawn_variables[4];
 trigger_w = spawn_variables[5];

@@ -3,6 +3,34 @@
 switch cur_room {
     case 1:
         switch cur_scene {
+            case 2:
+            case 3:
+            case 4:
+                //if cur_scene_time == 2 with follow_player {
+                with follow_player {
+                    clear_button_buffer(PC_LEFT_HARD_PRESSED);
+            		clear_button_buffer(PC_RIGHT_HARD_PRESSED);
+            		clear_button_buffer(PC_UP_HARD_PRESSED);
+            		clear_button_buffer(PC_DOWN_HARD_PRESSED);
+            		clear_button_buffer(PC_LEFT_STRONG_PRESSED);
+            		clear_button_buffer(PC_RIGHT_STRONG_PRESSED);
+            		clear_button_buffer(PC_UP_STRONG_PRESSED);
+            		clear_button_buffer(PC_DOWN_STRONG_PRESSED);
+            		clear_button_buffer(PC_LEFT_STICK_PRESSED);
+            		clear_button_buffer(PC_RIGHT_STICK_PRESSED);
+            		clear_button_buffer(PC_UP_STICK_PRESSED);
+            		clear_button_buffer(PC_DOWN_STICK_PRESSED);
+            		clear_button_buffer(PC_JUMP_PRESSED);
+            		clear_button_buffer(PC_ATTACK_PRESSED);
+            		clear_button_buffer(PC_SHIELD_PRESSED);
+            		clear_button_buffer(PC_SPECIAL_PRESSED);
+            		clear_button_buffer(PC_STRONG_PRESSED);
+            		clear_button_buffer(PC_TAUNT_PRESSED);
+                }
+                //print_debug(string(list_window[| 2].text_full));
+                if list_window[| 2].vis_chars == string_length(list_window[| 2].text_full) list_window[| 0]._sprite_index = sprite_get("squdia_idle");
+                //else list_window[| 0]._sprite_index = sprite_get("squdia_flap");
+                break;
             /*case 1:
                 if cur_scene_time == 2 list_window[| 0].path = [50,400];
                 if cur_scene_time == 5 list_window[| 1].path = [150,400];
@@ -13,13 +41,8 @@ switch cur_room {
                 follow_player.dash_speed = 40;
                 follow_player.air_max_speed = 40;
                 follow_player.leave_ground_max = 40;
-                follow_player.air_accel= 1;*/
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                //if cur_scene_time == 1 with obj_stage_article if num == 6 player_controller = 0;
-                break;
+                follow_player.air_accel= 1;
+                break;*/
                 
         }
         break;

@@ -1,7 +1,13 @@
 //draw_debug_text(x,y,"HELLO, GORDON! "+string(timer))
-
-draw_set_alpha(.3);
 if debug {
+    draw_set_alpha(.3);
     draw_circle_color(x,y,grav_radius,debug_color,debug_color,c_black);
+    draw_set_alpha(1);
+    draw_debug_text(x,y,string(item_id));
 }
-draw_set_alpha(1);
+
+
+if state_timer < 50 && state == 1 {
+    if (follow_player.spr_dir == 1) draw_debug_text(x-name_width,y,item_name);
+    else draw_debug_text(x,y,item_name);
+}

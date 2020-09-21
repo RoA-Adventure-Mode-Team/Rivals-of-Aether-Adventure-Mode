@@ -1,10 +1,11 @@
 //article5_init, Room Manager
 
 sprite_index = asset_get("empty_sprite");
+room_manager = id;
 _init = 0;
 init_pos = [0,0];
 custom_args = array_create(0);
-debug = true;
+debug = false;
 cell_size = 16;
 cell_dim = [163,85];
 grid_offset = 4;
@@ -12,6 +13,7 @@ list_room = ds_list_create();
 ds_list_clear(list_room);
 //list_room = array_create(0);
 cur_room = 0;
+init_cam_pos = [0,0];
 
 switch_to_room = cur_room;
 room_switch_type = 0;
@@ -52,6 +54,7 @@ vert_dir = 0;
 smoothing = .3;
 cam_override_obj = noone;
 follow_snap = 5000;
+static_position = [0,0];
 
 //art1_solid = array_create(15);
 //art1_plat = array_create(15);
@@ -60,13 +63,15 @@ follow_snap = 5000;
 render_distance = 2000;
 entity_render_distance = 800;
 
+render_offset = [0,0];
+
 room_data = 0;
 init_pos = [0,0];
 cell_pos = [0,0];
 cell_data = 0;
 rel_pos = 0;
 obj_type = "";
-article_frame_limit = 20;
+article_frame_limit = 10000;
 art = noone;
 //follow_objects  = [];
 with oPlayer {

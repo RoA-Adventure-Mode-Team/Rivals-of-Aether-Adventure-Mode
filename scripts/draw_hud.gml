@@ -32,9 +32,42 @@ draw_set_halign(fa_left);*/
 
 with scene_manager draw_windows();
 draw_boss_healthbar();
+
 //Debug Info
-if debug_info {
+if debug {
+    draw_set_alpha(.7);
+    draw_rectangle_color(0,0,350,110,c_black,c_black,c_black,c_black,c_black);
+    draw_set_alpha(1);
     draw_debug_text(2,2,"FPS: "+string(fps));
+    with room_manager {
+        p_true_pos = real_to_grid([follow_player.x,follow_player.y]);
+        p_cell_pos = grid_to_cell(p_true_pos);
+        //draw_debug_text(2,16,"CAM POS: "+string(true_pos));
+        //draw_debug_text(2,32,"CELL POS: "+string(cell_pos));
+        //draw_debug_text(2,48,"POS IN CELL: "+string([floor((pos_in_cell[0])/16),floor((pos_in_cell[1])/16)]));
+        draw_debug_text(2,64,"PLAYER POS: "+string(p_cell_pos[1])+":"+string([floor((p_cell_pos[0][0])/16),floor((p_cell_pos[0][1])/16)])+":"+string([(p_cell_pos[0][0]) % 16, (p_cell_pos[0][1]) % 16]));
+        //print_debug(string(p_cell_pos));
+        //draw_debug_text(2,64,"FOLLOW POS: "+string(follow_point));
+        //draw_debug_text(2,82,"PLAYER POS: "+string(follow_player_pos));
+        //draw_debug_text(2,128, string([horiz_dir,vert_dir]));
+        /*
+        var init_y = 78;
+        var dist_y = 16;
+        draw_debug_text(2,64,"ACTIVE ARTICLE LIST:");
+        for (var i = 0; i < ds_list_size(list_room); i++) {
+            draw_debug_text(2,init_y+i*dist_y,string(list_room[| i].id)+": "+string([list_room[| i].x,list_room[| i].y]));
+        }*/
+        /*var _count = 0;
+        with obj_stage_article_solid _count++;
+        with obj_stage_article_platform _count++;
+        with obj_stage_article _count++;
+        draw_debug_text(2,96,"A ACTIVE ARTICLES:"+string(_count));*/
+        //draw_debug_text(2,112,"VERT, HORIZ:"+string([scroll_vert,scroll_horiz]));
+    }
+    //draw_circle_color(view_get_wview()/2,view_get_hview()/2,4,c_red,c_red,false);
+    draw_circle_color(follow_player.x-view_get_xview(),follow_player.y-view_get_yview(),4,c_red,c_red,false);
+    
+    /*draw_debug_text(2,2,"FPS: "+string(fps));
     with room_manager {
         draw_debug_text(2,16,"CAM POS: "+string(true_pos));
         draw_debug_text(2,32,"CELL POS: "+string(cell_pos));
@@ -47,17 +80,18 @@ if debug_info {
         draw_debug_text(2,64,"ACTIVE ARTICLE LIST:");
         for (var i = 0; i < ds_list_size(list_room); i++) {
             draw_debug_text(2,init_y+i*dist_y,string(list_room[| i].id)+": "+string([list_room[| i].x,list_room[| i].y]));
-        }*/
+        }
         var _count = 0;
         with obj_stage_article_solid _count++;
         with obj_stage_article_platform _count++;
         with obj_stage_article _count++;
         draw_debug_text(2,96,"A ACTIVE ARTICLES:"+string(_count));
         //draw_debug_text(2,112,"VERT, HORIZ:"+string([scroll_vert,scroll_horiz]));
-    }
+    }*/
 }
 //Room Swap effects
 with room_manager {
+    //if other.game_end set_view_position(init_cam_pos[0],init_cam_pos[1]);
     switch room_switch_type {
         case 1: //Fade Out/In
     		if room_switch_timer < room_switch_time/2 draw_rectangle_color(0,0,960,540*room_switch_timer/(room_switch_time/2),c_black,c_black,c_black,c_black,c_black);
@@ -97,11 +131,21 @@ if debug_console { //debug_console_update();
 }
 
 
+if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
+    console_command(["debug",get_match_setting(SET_HITBOX_VIS)]);
+    debug_toggle = get_match_setting(SET_HITBOX_VIS);
+}
 
 #define console_command(_console_parse)
 switch _console_parse[0] {
     case "debug":
-        if string_digits(_console_parse[1]) != "" {
+        debug = !debug;
+        var _debug = debug;
+        with obj_stage_article_solid debug = _debug;
+        with obj_stage_article_platform debug = _debug;
+        with obj_stage_article debug = _debug;
+        
+        /*if string_digits(_console_parse[1]) != "" {
             with obj_stage_article_solid if num == real(_console_parse[1]) debug = !debug;
             with obj_stage_article_platform if num == real(_console_parse[1]) debug = !debug;
             with obj_stage_article if num == real(_console_parse[1]) debug = !debug;
@@ -109,7 +153,7 @@ switch _console_parse[0] {
         } else if _console_parse[1] == "hud" {
             debug_info = !debug_info;
             print_to_console("TOGGLING DEBUG HUD");
-        } else print_to_console("UNKNOWN ARGUMENTS");
+        } else print_to_console("UNKNOWN ARGUMENTS");*/
         break;
     case "set":
         if _console_parse[1] in self && _console_parse[2] in variable_instance_get(self,_console_parse[1]) {
@@ -277,14 +321,14 @@ repeat ds_list_size(active_bosses) {
             case 1:
                 if (show_healthbar) {
                     if (battle_state_timer <= 30)
-                        hbar_y = lerp(-80, 24 + hbar_yoff, battle_state_timer / 30)
+                        hbar_y = lerp(-80, 24 + hbar_yoff, battle_state_timer / 30);
                     else
-                        hbar_y = 24 + hbar_yoff
+                        hbar_y = 24 + hbar_yoff;
                     if (boss_healthbar_timer > 0) {
                         if (boss_healthbar_timer < 56) 
                             hbar_fill = ease_linear(0, 1, round(boss_healthbar_timer), 56);
                         else {
-                            hbar_fill = 1
+                            hbar_fill = 1;
                         }
                     }
                     else
@@ -321,9 +365,9 @@ repeat ds_list_size(active_bosses) {
             break;
             case 3:
                 if (battle_state_timer <= 60)
-                    hbar_y = lerp(24 + hbar_yoff, -80, battle_state_timer / 60)
+                    hbar_y = lerp(24 + hbar_yoff, -80, battle_state_timer / 60);
                 else
-                    hbar_y = -80
+                    hbar_y = -80;
             break;
         }
         var xx = hbar_x - 320;
@@ -332,7 +376,7 @@ repeat ds_list_size(active_bosses) {
         
         if (!show_percent) {
             draw_set_font(asset_get("medFont"));
-            draw_set_halign(fa_left)
+            draw_set_halign(fa_left);
             
             draw_sprite(sprite_get("boss_hp_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
             draw_sprite_part_ext(sprite_get("boss_hp_bar"), 0, 0, 0, 640 * hbar_fill, 26, hbar_x - 320 + hbar_shake_x, hbar_y + hbar_shake_y, 1, 1, hbar_color, 1);
@@ -342,13 +386,13 @@ repeat ds_list_size(active_bosses) {
             
             draw_sprite(sprite_get("boss_percent_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
             draw_set_font(asset_get("roaLBLFont"));
-            draw_set_halign(fa_right)
+            draw_set_halign(fa_right);
             draw_text_trans_outline(hbar_x + 80, hbar_y + 8, hbar_percent, 1, -1, 1, 1, 0, c_white, c_black, 1);
             
             draw_set_font(asset_get("medFont"));
-            draw_set_halign(fa_left)
+            draw_set_halign(fa_left);
             draw_text_trans_outline(hbar_x + 86, hbar_y + 16, "%", 1, -1, 1, 1, 0, c_white, c_black, 1);
-            draw_set_halign(fa_right)
+            draw_set_halign(fa_right);
             draw_text_trans_outline(xx + 320 - 32, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
         }
     }
@@ -358,3 +402,25 @@ repeat ds_list_size(active_bosses) {
 #define draw_text_trans_outline(_x, _y, str, separ, w, xscale, yscale, angl, text_colour, outline_colour, alph)
 for (i = - 1; i < 2; i++) for (j = -1; j < 2; j++) draw_text_ext_transformed_color(_x+i*2,_y+j*2,str,separ, w, xscale, yscale, angl, outline_colour, outline_colour, outline_colour, outline_colour, 1);
 draw_text_ext_transformed_color(_x,_y,str,separ, w, xscale, yscale, angl, text_colour, text_colour, text_colour, text_colour, 1);
+#define real_to_grid(_pos) //Translate real coordinates into coordinates on the basegame grid 
+//return [_pos[0] - init_cam_pos[0]+true_pos[0], _pos[1] - init_cam_pos[1]+true_pos[1]]; 
+//return [_pos[0] - render_offset[0], _pos[1] - render_offset[1]]; 
+return _pos;
+#define cell_to_real(_pos,_cell_pos) //Translate cell coordinates to real
+//_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+with room_manager return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0] != 0))*cell_size + render_offset[0], 
+						  (_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1] != 0))*cell_size + render_offset[1]];
+#define cell_to_grid(_pos, _cell_pos) //Translate cell coordinates to the basegame grid system
+with room_manager return real_to_grid(cell_to_real(_pos,_cell_pos));
+#define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
+_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+with room_manager {
+    return [[(abs(_pos[0]) % ((cell_dim[0]-grid_offset)*cell_size)),
+		    (abs(_pos[1]) % ((cell_dim[1]-grid_offset)*cell_size))],
+		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
+			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
+// 	return [[cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),
+// 		    cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))],
+// 		   [-floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
+// 			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
+}

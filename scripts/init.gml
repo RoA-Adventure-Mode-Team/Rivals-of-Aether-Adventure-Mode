@@ -10,6 +10,7 @@ debug_info = true;
 down_down = 0;
 up_down = 0;
 last_ID = 0;
+game_end = false;
 
 cam_x_right = view_get_wview()+view_get_xview();
 cam_y_right = view_get_hview()+view_get_yview();
@@ -23,6 +24,7 @@ debug_w = 300;
 debug_h = 400;
 debug_sp = 5;
 debug_txt_w = 90;
+debug_toggle = false;
 
 debug_ex = debug_x+debug_w;
 debug_ey = debug_y+debug_h;
@@ -44,10 +46,11 @@ list_window = ds_list_create();
 scene_manager = noone;
 
 follow_player = noone;
+player_num = 0;
 with oPlayer {
-    if !variable_instance_exists(self, "is_ai") other.follow_player = id;
+    if (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
+    other.player_num++;
 }
-
 //Area Triggers (article4)
 
 //Room Manager (article5)
@@ -59,3 +62,7 @@ active_bosses = ds_list_create();
 //Camera Controller (article7)
 
 //Room Transitions (article8)
+
+
+room_width = 100000;
+room_height = 100000;
