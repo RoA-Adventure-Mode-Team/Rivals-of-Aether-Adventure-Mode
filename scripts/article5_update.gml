@@ -49,7 +49,6 @@ if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
     
-    set_view_position_smooth(follow_point.x,follow_point.y);
     if !respawning && follow_player.state != PS_HITSTUN set_follow_point(follow_objects);
     //Frame Cleanups
     last_pos[0] = follow_point.x;
@@ -398,21 +397,3 @@ if (_pos[1] != -1) {
 	follow_player.y = follow_point.y;
 }
 follow_player.visible = true;
-#define set_view_position_smooth(_x,_y)
-//var sm_x = (((_x + true_pos[0])/2 + true_pos[0])/2 + true_pos[0])/2;
-//var sm_y = (((_y + true_pos[1])/2 + true_pos[1])/2 + true_pos[1])/2;
-var sm_x = ease_linear(floor(true_pos[0]),floor(_x),1,5);
-var sm_y = ease_linear(floor(true_pos[1]),floor(_y),1,5);
-//var dir_x = _x - true_pos[0];
-//var dir_y = _y - true_pos[1];
-
-set_view_position(round(sm_x), round(sm_y));
-//static_position = [round(sm_x),round(sm_y)];
-with obj_stage_article {
-	if num == 1 && static {
-		x = round(sm_x);
-		y = round(sm_y);
-	}
-}
-//set_view_position(round(sm_x), round(sm_y));
-//set_view_position(sm_x, sm_y);
