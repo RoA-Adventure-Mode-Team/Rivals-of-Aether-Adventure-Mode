@@ -40,7 +40,6 @@ else
         var playback_rate = dither_time / (sprite_get_number(dither_sprite) - 1 + full_transparency);
         
         gpu_set_blendenable(false);
-
         gpu_set_colorwriteenable(false,false,false,true);
         draw_set_alpha(0);
         draw_rectangle_color(0,0, room_width,room_height, c_white, c_white, c_white, c_white, false);
@@ -57,9 +56,7 @@ else
         gpu_set_blendmode(bm_normal);
         
         // pattern 2
-
         gpu_set_blendenable(false);
-
         gpu_set_colorwriteenable(false,false,false,true);
         draw_set_alpha(0);
         draw_rectangle_color(0,0, room_width,room_height, c_white, c_white, c_white, c_white, false);

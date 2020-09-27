@@ -19,6 +19,7 @@ trigger_h = spawn_variables[2];
 lock_type = spawn_variables[3];
 cam_lock_x = spawn_variables[4];
 cam_lock_y = spawn_variables[5];
+active_scene = spawn_variables[6];
 
 collis_obj = noone;
 

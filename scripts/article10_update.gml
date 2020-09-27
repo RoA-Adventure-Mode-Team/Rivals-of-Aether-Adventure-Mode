@@ -64,7 +64,7 @@ if state == 2 { //Rejection & Cooldown
     vsp *= .98;
     hsp *= .98;
 }
-
+user_event(10);//Item Custom Behavior
 #define item_sprite_get(_num,_sprite) //Get the sprite of this article
 return sprite_get("item_"+string(_num)+"_"+string(_sprite));
 

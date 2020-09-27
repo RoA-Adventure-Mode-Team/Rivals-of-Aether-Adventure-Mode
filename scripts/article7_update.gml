@@ -9,14 +9,18 @@ if !_init {
     else cam_lock_x = spawn_variables[4];
     if spawn_variables[5] == 0 cam_lock_y = trigger_h/2;
     else cam_lock_y = spawn_variables[5];
-    cam_override_pos = [init_pos[0]+cam_lock_x/cell_size,
-                        init_pos[1]+cam_lock_y/cell_size];
+    cam_override_pos = [init_pos[0]+cam_lock_x,
+                        init_pos[1]+cam_lock_y];
+    // cam_override_pos = [init_pos[0]+cam_lock_x/cell_size,
+    //                     init_pos[1]+cam_lock_y/cell_size];
+                        
+    active_scene = spawn_variables[6];
     _init = 1;
     //print_debug(string(cam_override_pos));
 }
 state_timer++;
 
-if state == 0 { //trigger active
+if state == 0 && (active_scene == 0 || active_scene == room_manager.cur_scene){ //trigger active
     switch trigger_shape {
         case 0:
             collis_obj = collision_rectangle(x,y,x+trigger_w,y+trigger_h,oPlayer,false,true);
