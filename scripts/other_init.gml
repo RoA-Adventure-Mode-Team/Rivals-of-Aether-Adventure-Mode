@@ -1,4 +1,7 @@
 //other_init - runs variables to players
+
+temp_pause = noone;
+
 last_pos = [x,y];
 
 down_held = 0;

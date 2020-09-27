@@ -1,5 +1,4 @@
 // decorative columns
-
 deco_image = asset_get("empty_sprite");
 sprite_index = asset_get("empty_sprite");
 mask_index = sprite_get("column_deco");
@@ -28,4 +27,3 @@ static = spawn_variables[7];
 
 room_manager = noone;
 init_cam_pos = [0,0];
-

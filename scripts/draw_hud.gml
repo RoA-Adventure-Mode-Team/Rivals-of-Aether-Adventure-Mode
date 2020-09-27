@@ -28,11 +28,28 @@ draw_set_halign(fa_left);*/
 /*with oPlayer {
     draw_debug_text(2,128, string(get_state_name(state)));
 }*/
+with oPlayer {
+	with other.room_manager {
+		if instance_exists(other.temp_pause) {
+			paused = true;
+			set_view_position(follow_point.x,follow_point.y);
+		} else paused = false;
+	}
+}
+
+
 
 
 with scene_manager draw_windows();
 draw_boss_healthbar();
-
+/*
+with obj_stage_article {
+	if num == 1 && static {
+		depth = -2;
+		draw_sprite_ext(sprite_index,0,0,0,2,2,0,c_white,1);
+	}
+}
+*/
 //Debug Info
 if debug {
     draw_set_alpha(.7);
@@ -40,6 +57,7 @@ if debug {
     draw_set_alpha(1);
     draw_debug_text(2,2,"FPS: "+string(fps));
     with room_manager {
+    	//print_debug(string(follow_point));
         p_true_pos = real_to_grid([follow_player.x,follow_player.y]);
         p_cell_pos = grid_to_cell(p_true_pos);
         //draw_debug_text(2,16,"CAM POS: "+string(true_pos));
@@ -129,7 +147,6 @@ if debug_console { //debug_console_update();
         
     }
 }
-
 
 if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
     console_command(["debug",get_match_setting(SET_HITBOX_VIS)]);
@@ -400,7 +417,7 @@ repeat ds_list_size(active_bosses) {
 }
 
 #define draw_text_trans_outline(_x, _y, str, separ, w, xscale, yscale, angl, text_colour, outline_colour, alph)
-for (i = - 1; i < 2; i++) for (j = -1; j < 2; j++) draw_text_ext_transformed_color(_x+i*2,_y+j*2,str,separ, w, xscale, yscale, angl, outline_colour, outline_colour, outline_colour, outline_colour, 1);
+for (var i = - 1; i < 2; i++) for (var j = -1; j < 2; j++) draw_text_ext_transformed_color(_x+i*2,_y+j*2,str,separ, w, xscale, yscale, angl, outline_colour, outline_colour, outline_colour, outline_colour, 1);
 draw_text_ext_transformed_color(_x,_y,str,separ, w, xscale, yscale, angl, text_colour, text_colour, text_colour, text_colour, 1);
 #define real_to_grid(_pos) //Translate real coordinates into coordinates on the basegame grid 
 //return [_pos[0] - init_cam_pos[0]+true_pos[0], _pos[1] - init_cam_pos[1]+true_pos[1]]; 

@@ -7,8 +7,14 @@
     draw_sprite(custom_args[1],0,x,y);
 }*/
 
-
-set_view_position_smooth(follow_point.x,follow_point.y);
+with oPlayer {
+	with other.room_manager {
+		if instance_exists(other.temp_pause) {
+			paused = true;
+			set_view_position_smooth(follow_point.x,follow_point.y);
+		} else paused = false;
+	}
+}
 
 
 #define set_view_position_smooth(_x,_y)
@@ -27,5 +33,4 @@ with obj_stage_article {
 		y = round(sm_y);
 	}
 }
-//set_view_position(round(sm_x), round(sm_y));
-//set_view_position(sm_x, sm_y);
+

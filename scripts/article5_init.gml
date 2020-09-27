@@ -51,10 +51,12 @@ scroll_vert = true;
 horiz_dir = 0;
 vert_dir = 0;
 
-smoothing = .3;
+smoothing = 1/5;
 cam_override_obj = noone;
 follow_snap = 5000;
 static_position = [0,0];
+
+paused = false;
 
 //art1_solid = array_create(15);
 //art1_plat = array_create(15);

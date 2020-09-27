@@ -33,7 +33,6 @@ if !_init {
     death_event = spawn_variables[2];
     //player_controller = 1;
     art_event = EN_EVENT.INIT;
-
     user_event(6);
     
     //Spawn event

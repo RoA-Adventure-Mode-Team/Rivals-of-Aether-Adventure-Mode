@@ -7,26 +7,7 @@ switch cur_room {
             case 3:
             case 4:
                 //if cur_scene_time == 2 with follow_player {
-                with follow_player {
-                    clear_button_buffer(PC_LEFT_HARD_PRESSED);
-            		clear_button_buffer(PC_RIGHT_HARD_PRESSED);
-            		clear_button_buffer(PC_UP_HARD_PRESSED);
-            		clear_button_buffer(PC_DOWN_HARD_PRESSED);
-            		clear_button_buffer(PC_LEFT_STRONG_PRESSED);
-            		clear_button_buffer(PC_RIGHT_STRONG_PRESSED);
-            		clear_button_buffer(PC_UP_STRONG_PRESSED);
-            		clear_button_buffer(PC_DOWN_STRONG_PRESSED);
-            		clear_button_buffer(PC_LEFT_STICK_PRESSED);
-            		clear_button_buffer(PC_RIGHT_STICK_PRESSED);
-            		clear_button_buffer(PC_UP_STICK_PRESSED);
-            		clear_button_buffer(PC_DOWN_STICK_PRESSED);
-            		clear_button_buffer(PC_JUMP_PRESSED);
-            		clear_button_buffer(PC_ATTACK_PRESSED);
-            		clear_button_buffer(PC_SHIELD_PRESSED);
-            		clear_button_buffer(PC_SPECIAL_PRESSED);
-            		clear_button_buffer(PC_STRONG_PRESSED);
-            		clear_button_buffer(PC_TAUNT_PRESSED);
-                }
+                freeze_players();
                 //print_debug(string(list_window[| 2].text_full));
                 if list_window[| 2].vis_chars == string_length(list_window[| 2].text_full) list_window[| 0]._sprite_index = sprite_get("squdia_idle");
                 //else list_window[| 0]._sprite_index = sprite_get("squdia_flap");
@@ -196,3 +177,24 @@ World Drawn Animated Sprite:
 with obj_stage_article if num == 3 switch_to_scene = _scene_id;
 #define room_switch(_room_id)
 with obj_stage_article if num == 5 switch_to_room = _room_id;
+#define freeze_players()
+with oPlayer {
+    clear_button_buffer(PC_LEFT_HARD_PRESSED);
+	clear_button_buffer(PC_RIGHT_HARD_PRESSED);
+	clear_button_buffer(PC_UP_HARD_PRESSED);
+	clear_button_buffer(PC_DOWN_HARD_PRESSED);
+	clear_button_buffer(PC_LEFT_STRONG_PRESSED);
+	clear_button_buffer(PC_RIGHT_STRONG_PRESSED);
+	clear_button_buffer(PC_UP_STRONG_PRESSED);
+	clear_button_buffer(PC_DOWN_STRONG_PRESSED);
+	clear_button_buffer(PC_LEFT_STICK_PRESSED);
+	clear_button_buffer(PC_RIGHT_STICK_PRESSED);
+	clear_button_buffer(PC_UP_STICK_PRESSED);
+	clear_button_buffer(PC_DOWN_STICK_PRESSED);
+	clear_button_buffer(PC_JUMP_PRESSED);
+	clear_button_buffer(PC_ATTACK_PRESSED);
+	clear_button_buffer(PC_SHIELD_PRESSED);
+	clear_button_buffer(PC_SPECIAL_PRESSED);
+	clear_button_buffer(PC_STRONG_PRESSED);
+	clear_button_buffer(PC_TAUNT_PRESSED);
+}

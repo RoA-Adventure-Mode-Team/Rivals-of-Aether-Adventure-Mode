@@ -1,5 +1,5 @@
 //
-if get_gameplay_time() == 2 {
+if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
     
     cam_pos_left = [view_get_xview(),view_get_yview()];
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
@@ -10,25 +10,21 @@ if get_gameplay_time() == 2 {
     switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
     room_switch(follow_player.respawn_point[2]);
     
-    set_view_position(follow_player.x,follow_player.y);
-    cam_pos_left = [view_get_xview(),view_get_yview()];
-    cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
-    true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
-    //init_cam_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
 	old_cell_pos = cell_pos;
     last_pos[0] = follow_player.x;
     last_pos[1] = follow_player.y;
 }
 
+if get_gameplay_time() == 3 { //Move the cam to position
+	set_view_position(follow_player.x,follow_player.y);
+}
+
 if switch_to_room != cur_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
-
-smoothing = .3;
-
+smoothing = 1/5;
 with oPlayer { //Respawn Code
 	if state == PS_DEAD || state == PS_RESPAWN {
 		if (state_timer == 89 && state == PS_RESPAWN) {
-			smoothing = 1;
 			visible = false;
 			set_state(PS_IDLE_AIR);
 			with other {
@@ -44,7 +40,6 @@ with oPlayer { //Respawn Code
 }
 
 if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
-    //set_view_position(init_cam_pos[0],init_cam_pos[1]);
     cam_pos_left = [view_get_xview(),view_get_yview()];
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
@@ -56,20 +51,7 @@ if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
     scroll_horiz = true;
     scroll_vert = true;
     pos_in_cell = grid_to_cell([follow_point.x,follow_point.y]);
-    //print_debug(string(cell_pos));
-    //print_debug(string(pos_in_cell));
-	/*if old_cell_pos != cell_pos && !room_switch_on {
-	    room_render(cur_room);
-	    old_cell_pos = cell_pos;
-	}*/
 }
-
-/*if get_gameplay_time() % 1 == 0 {
-    e = instance_create(follow_point.x,follow_point.y,"obj_stage_article",1);
-    e.num = 2; //empty script
-    //ds_list_add(list_room,e);
-    //ds_list_add(list_room,instance_create(follow_point.x,follow_point.y,"obj_stage_article",1));
-}*/
 
 cur_room_time++;
 #define set_follow_point(_obj_array) //Set the point the room will follow to
@@ -88,109 +70,6 @@ _y_avg /= _count;
 follow_point.x = _x_avg + cam_offset[0];//+ follow_player.hsp*10;
 follow_point.y = _y_avg + cam_offset[1];//+ follow_player.vsp*10; //+(follow_player.down_held > 20)*50-(follow_player.up_held > 20)*50;
 
-/*#define room_scroll() //Scroll the whole room to the camera
-horiz_dir = 0;
-vert_dir = 0;
-var left_off = 0;
-var right_off = 0;
-var up_off = 0;
-var down_off = 0;
-
-//Camera restriction checks and scrolling
-if !instance_exists(cam_override_obj) {
-    cam_override_obj = noone;
-    scroll_vert = true;
-    scroll_horiz = true;
-}
-
-if scroll_horiz {
-    left_off = follow_point.x - cam_pos_left[0] + cam_offset[0];
-    right_off = cam_pos_right[0] - follow_point.x - cam_offset[0];
-    if left_off < follow_offset*1.777 horiz_dir = floor(1*(follow_offset*1.777 - left_off));
-    if right_off < follow_offset*1.777 horiz_dir = ceil(-1*(follow_offset*1.777 - right_off));
-    
-} else {
-	follow_point.x = cell_to_grid(cam_override_obj.cam_override_pos,cam_override_obj.cell_pos)[0]-cell_size*2.5;
-    left_off = abs(follow_point.x - cam_pos_left[0]);
-    horiz_dir = (follow_offset*1.777 - left_off);
-}
-
-if scroll_vert {
-    up_off = follow_point.y - cam_pos_left[1] + cam_offset[1];
-    down_off = cam_pos_right[1] - follow_point.y - cam_offset[1];
-    if up_off < follow_offset vert_dir = floor(1*(follow_offset - up_off));
-    if down_off < follow_offset vert_dir = ceil(-1*(follow_offset - down_off));
-} else {
-    follow_point.y = cell_to_grid(cam_override_obj.cam_override_pos,cam_override_obj.cell_pos)[1]-cell_size*2;
-    up_off = abs(follow_point.y - cam_pos_left[1]);
-    vert_dir = (follow_offset - up_off);
-}
-
-horiz_dir = round(horiz_dir*smoothing);
-vert_dir = round(vert_dir*smoothing);
-if horiz_dir != 0 { //Cause all entities we can access to scroll
-    with oPlayer x += other.horiz_dir;
-    
-    //BASE CAST EXCEPTIONS ARE IMPOSSIBLE - WE CANNOT EDIT THEM
-    
-    //
-    
-    with pHitBox x += other.horiz_dir;
-    with obj_article1 x += other.horiz_dir;
-    with obj_article2 x += other.horiz_dir;
-    with obj_article3 x += other.horiz_dir;
-    with obj_article_solid x += other.horiz_dir;
-    with obj_article_platform x += other.horiz_dir;
-    with hit_fx_obj x += other.horiz_dir;
-    //We cannot move dust particles currently - will uncomment if we can later on
-    /*if "new_dust_fx_obj" in self with asset_get("new_dust_fx_obj") x += other.horiz_dir;
-    if "dust_fg_surface" in self with asset_get("dust_fg_surface") x += other.horiz_dir;
-    if "smoke_fg_surface" in self with asset_get("smoke_fg_surface") x += other.horiz_dir;
-    if "smoke_bg_surface" in self with asset_get("smoke_bg_surface") x += other.horiz_dir;*/
-    /*with obj_stage_article {
-    	if !((num == 1 || num == 11) && static) x += other.horiz_dir;
-    	//else x = view_get_xview()+init_pos[0]*16;
-    }
-    with obj_stage_article_solid x += other.horiz_dir;
-    with obj_stage_article_platform x += other.horiz_dir;
-    true_pos[0] += scroll_speed*horiz_dir;
-}
-if vert_dir != 0 { //Cause all entities we can access to scroll
-    with oPlayer {
-        y += other.vert_dir;
-        //if other.vert_dir == -1 && prev_state == PS_LAND free = 0;
-    }
-    with pHitBox y += other.vert_dir;
-    with obj_article1 y += other.vert_dir;
-    with obj_article2 y += other.vert_dir;
-    with obj_article3 y += other.vert_dir;
-    with obj_article_solid y += other.vert_dir;
-    with obj_article_platform y += other.vert_dir;
-    with hit_fx_obj y += other.vert_dir;
-    //We cannot move dust particles currently - will uncomment if we can later on
-    /*if "new_dust_fx_obj" in self with asset_get("new_dust_fx_obj") y += other.vert_dir;
-    if "dust_fg_surface" in self with asset_get("dust_fg_surface") y += other.vert_dir;
-    if "smoke_fg_surface" in self with asset_get("smoke_fg_surface") y += other.vert_dir;
-    if "smoke_bg_surface" in self with asset_get("smoke_bg_surface") y += other.vert_dir;*/
-    /*with obj_stage_article {
-    	if !((num == 1 || num == 11) && static) y += other.vert_dir;
-    	//else y = view_get_yview()+init_pos[1]*16;
-    }
-    with obj_stage_article_solid y += other.vert_dir;
-    with obj_stage_article_platform y += other.vert_dir;
-    true_pos[1] += scroll_speed*vert_dir;
-}*/
-
-/*pos_in_cell = grid_to_cell(true_pos);
-if old_cell_pos != cell_pos && !room_switch_on {
-    room_render(cur_room);
-    old_cell_pos = cell_pos;
-}*/
-
-
-
-
-
 #define reload_rooms() //Reload room data, runs on start
 cur_room = 0;
 cur_room_time = 0;
@@ -200,7 +79,6 @@ array_room_transition_time = 120;
 array_room_name = 0;
 
 user_event(1); //Room Load Event Script
-
 
 #define room_add(_room_id,room_data) //Adds a new room to the scene
 var _room_id_ind = array_find_index(array_room_ID,_room_id);
@@ -355,10 +233,6 @@ cell_pos = [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
 			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
 return [cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),
 		cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))];
-//cell_pos = [-floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
-//return [cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))];
-
-
 
 #define base_to_am(_pos) //Translate base-game coordinates to AM coordinates
 _pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
@@ -397,3 +271,27 @@ if (_pos[1] != -1) {
 	follow_player.y = follow_point.y;
 }
 follow_player.visible = true;
+set_view_position(follow_point.x,follow_point.y);
+#define set_view_position_smooth(_x,_y)
+//var sm_x = (((_x + true_pos[0])/2 + true_pos[0])/2 + true_pos[0])/2;
+//var sm_y = (((_y + true_pos[1])/2 + true_pos[1])/2 + true_pos[1])/2;
+var sm_x = true_pos[0];
+var sm_y = true_pos[1];
+if scroll_horiz sm_x = round(ease_linear(floor(true_pos[0]),floor(_x),1,1/smoothing));
+else sm_x = round(ease_linear(floor(true_pos[0]),floor(cam_override_obj.cam_override_pos[0]),1,1/smoothing));
+if scroll_vert sm_y = round(ease_linear(floor(true_pos[1]),floor(_y),1,1/smoothing));
+else sm_y = round(ease_linear(floor(true_pos[1]),floor(cam_override_obj.cam_override_pos[1]),1,1/smoothing));
+//var dir_x = _x - true_pos[0];
+//var dir_y = _y - true_pos[1];
+
+set_view_position(sm_x, sm_y);
+//static_position = [round(sm_x),round(sm_y)];
+with obj_stage_article {
+	if num == 1 && static {
+		x = sm_x;
+		y = sm_y;
+	}
+}
+//set_view_position(round(sm_x), round(sm_y));
+//set_view_position(sm_x, sm_y);
+
