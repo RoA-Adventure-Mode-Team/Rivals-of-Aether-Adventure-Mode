@@ -15,6 +15,9 @@ if _init == 0 {
     if alpha_ != 0 image_alpha = alpha_;
     //if static image_alpha = 0;
     _init = 1;
+    
+    offset = random_func_2(x % 200, 1, 0);
+    start_pos = x;
 } else {
 	/*if static {
 		//with room_manager {
@@ -41,8 +44,8 @@ if _init == 0 {
     //if static print_debug(string([x,y]));
    /* x = init_x;
     y = init_y;*/
-    image_index = (image_index + anim_speed) % image_number;
-
+    render_index = (render_index + anim_speed) % sprite_get_number(render_sprite);
+	x = start_pos + round(sin((get_gameplay_time() / 100) + offset) * 50);
 }
 
 draw = true;

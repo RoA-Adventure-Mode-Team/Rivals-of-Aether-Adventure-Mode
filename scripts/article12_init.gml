@@ -32,5 +32,6 @@ image_xscale = 2;
 image_yscale = 2;
 
 render_sprite = sprite_get("empty_sprite");
+render_index = 0;
 
 draw = false;

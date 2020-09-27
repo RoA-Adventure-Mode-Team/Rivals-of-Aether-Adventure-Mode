@@ -43,8 +43,7 @@ room_add(1,[
             [1, 57, 44, 0, 1, [sprite_get("well"), 2, 0, 0, 0, 0, 0, 0], [0]],
             [12, 67, 43, 0, -10, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0]],
             [12, 102.25, 43, 0, -10, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0]],
-            // Overlapping lights donut work right now
-            //[12, 107, 43, 0, -10, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0]],
+            [12, 106, 43, 0, -10, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0]],
             ]
         ],
     [
