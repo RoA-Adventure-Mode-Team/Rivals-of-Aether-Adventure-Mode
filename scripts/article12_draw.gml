@@ -24,7 +24,14 @@ if(draw)
     gpu_set_colorwriteenable(true,true,true,true);
     gpu_set_blendmode_ext(bm_dest_color,bm_dest_alpha);
     // gml's colors are in bgr format, I am irate
-    draw_rectangle_color(0,0, room_width,room_height, $502010, $502010, $502010, $502010, false);
+    var camera_pos;
+    with(player_id)
+    {
+        with(room_manager)
+            camera_pos = true_pos;
+    }
+    draw_rectangle_color(camera_pos[0] - view_get_wview() / 2, camera_pos[1] - view_get_hview() / 2, camera_pos[0] + view_get_wview() / 2, camera_pos[1] + view_get_hview() / 2, $702010, $702010, $000000, $000000, false);
+    
     gpu_set_blendmode_ext(bm_dest_colour,bm_one);
     with(obj_stage_article)
     {

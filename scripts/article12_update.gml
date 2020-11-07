@@ -18,6 +18,7 @@ if _init == 0 {
     
     offset = random_func_2(x % 200, 1, 0);
     start_pos = x;
+    
 } else {
 	/*if static {
 		//with room_manager {
