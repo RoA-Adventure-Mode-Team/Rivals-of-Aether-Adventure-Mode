@@ -1,5 +1,15 @@
 //Custom Scene Update - Scene Manager
 
+
+
+
+
+
+
+
+
+
+/*
 switch cur_room {
     case 1:
         switch cur_scene {
@@ -23,12 +33,12 @@ switch cur_room {
                 follow_player.air_max_speed = 40;
                 follow_player.leave_ground_max = 40;
                 follow_player.air_accel= 1;
-                break;*/
+                break;
                 
         }
         break;
 }
-
+*/
 /*
 with oPlayer {
     if attack_down && shield_down && other.cur_room == 1 with other {

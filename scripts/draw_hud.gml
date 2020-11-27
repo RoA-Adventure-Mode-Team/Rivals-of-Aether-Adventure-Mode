@@ -1,8 +1,37 @@
 //draw_hud - the x position of your HUD element is 48*(i-1)
 
-//draw_sprite_ext(sprite_get("clutch"),is_clutch,temp_x+110,temp_y-20,1,1,0,c_white,1);
 
+enum LWO {
+    TXT_HUD,
+    TXT_WLD,
+    CAM_WLD,
+    SPR_HUD,
+    SPR_WLD,
+    PLR_CTL
+}
 
+enum ACT {
+    DIALOG,
+    SPRITE,
+    WAIT,
+    SET
+}
+
+enum P {
+    LOAD,
+    ACTION_ID,
+    ALIVE_TIME,
+    OBJECT,
+    VISIBLE,
+    DIE
+}
+
+enum L {
+    ACTION_TYPE,
+    PARAM,
+    ON_EXIT
+}
+draw_scene();
 //draw_set_font(asset_get("medFont"));
 //draw_text_trans_outline(temp_x,temp_y,"TEST FONT",10,1000,1,1,0,c_white,c_black,1);
 //draw_debug_text(temp_x-200,temp_y-470,string(cur_scene));
@@ -28,19 +57,20 @@ draw_set_halign(fa_left);*/
 /*with oPlayer {
     draw_debug_text(2,128, string(get_state_name(state)));
 }*/
-with oPlayer {
+
+/*with oPlayer {
 	with other.room_manager {
 		if instance_exists(other.temp_pause) {
 			paused = true;
 			set_view_position(follow_point.x,follow_point.y);
 		} else paused = false;
 	}
-}
+}*/
 
 
 
 
-with scene_manager draw_windows();
+//with scene_manager draw_windows();
 draw_boss_healthbar();
 /*
 with obj_stage_article {
@@ -153,6 +183,46 @@ if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
     debug_toggle = get_match_setting(SET_HITBOX_VIS);
 }
 
+
+#define draw_scene() //Drawing HUD
+gpu_set_blendmode(bm_add);
+var actions_load = [];
+with scene_manager {
+	for (var i = 0; i < array_length_1d(cur_actions); i++) {
+		//print_debug("CATCH THIS");
+		actions_load = cur_actions[i][P.LOAD];
+		switch actions_load[L.ACTION_TYPE] {
+			case ACT.DIALOG:
+				var _param = actions_load[L.PARAM];
+				var alive_time = cur_actions[i][P.ALIVE_TIME];
+				switch _param[0] { //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speed, scroll_sound], 
+					case LWO.TXT_HUD: 
+						//print_debug("Drawing TXT_HUD @ "+string(actions_load[L.PARAM][1])+" "+string(actions_load[L.PARAM][2]));
+						if _param[5] != -1 draw_sprite_ext(_param[5], alive_time * _param[6], _param[1], _param[2], 1, 1, 0, c_white, 1);
+						//draw_set_color(c_white);
+						draw_set_font(_param[8]);
+						draw_text_ext_transformed(_param[1], _param[2], string_copy(_param[7], 0, floor(alive_time * _param[10])), 16, _param[3], 1, 1, 0);
+						if _param[11] != -1 && alive_time * _param[10] == floor(alive_time * _param[10]) sound_play(_param[11]);
+						//draw_text_trans_outline(_param[1], _param[2], _param[7], 16, _param[3], 1, 1, 0, c_white, c_black, 1);
+						break; 
+					case LWO.SPR_HUD: //obj_type, x, y, l, h, bg_spr, bg_spr_speed, spr, spr_speed], 
+						//It's generally more efficient to just use a SPRITE object, but it's here for standardization
+						if _param[5] != -1 draw_sprite_ext(_param[5], alive_time * _param[6], _param[1], _param[2], 1, 1, 0, c_white, 1);
+						if _param[7] != -1 draw_sprite_ext(_param[7], alive_time * _param[8], _param[1], _param[2], 1, 1, 0, c_white, 1);
+						break;
+				}
+				break;
+			case ACT.SPRITE: //spr, x, y, spr_speed, alpha
+				var _param = actions_load[L.PARAM];
+				var alive_time = cur_actions[i][P.ALIVE_TIME];
+				draw_sprite_ext(_param[0],sprite_get_number(_param[0])*alive_time*_param[3],_param[1],_param[2],1,1,0,c_white,_param[4]);
+				break;
+		}
+	}
+}
+gpu_set_blendmode(bm_normal);
+return true;
+
 #define console_command(_console_parse)
 switch _console_parse[0] {
     case "debug":
@@ -161,16 +231,6 @@ switch _console_parse[0] {
         with obj_stage_article_solid debug = _debug;
         with obj_stage_article_platform debug = _debug;
         with obj_stage_article debug = _debug;
-        
-        /*if string_digits(_console_parse[1]) != "" {
-            with obj_stage_article_solid if num == real(_console_parse[1]) debug = !debug;
-            with obj_stage_article_platform if num == real(_console_parse[1]) debug = !debug;
-            with obj_stage_article if num == real(_console_parse[1]) debug = !debug;
-            print_to_console("TOGGLING DEBUG FOR ARTICLE: "+_console_parse[1]);
-        } else if _console_parse[1] == "hud" {
-            debug_info = !debug_info;
-            print_to_console("TOGGLING DEBUG HUD");
-        } else print_to_console("UNKNOWN ARGUMENTS");*/
         break;
     case "set":
         if _console_parse[1] in self && _console_parse[2] in variable_instance_get(self,_console_parse[1]) {
@@ -245,15 +305,6 @@ switch _console_parse[0] {
 }
 
 #define print_to_console(_str)
-/*if string_length(_str) > debug_txt_w for (var i = 0; i < string_length(_str); i++) {
-    if i % debug_txt_w == 0 _str = string_copy(_str,0,i)+"
-"+string_copy(_str,i,string_length(_str)-i);
-}*/
-
-/*if string_length(key_string_old) > debug_txt_w for (var i = 0; i < string_length(key_string_old); i++) {
-    if i % debug_txt_w == 0 key_string_old = string_copy(key_string_old,0,i)+"
-"+string_copy(key_string_old,i+1,string_length(key_string_old)-i);
-}*/
 console_output = console_output + "
 > " + key_string_old + "
 : " + _str;
@@ -278,29 +329,6 @@ for (var i = 0; i < string_length(_str);i++) {
 _consol_parse[k] = string_copy(_str,j,i-j+1);
 
 return _consol_parse;
-#define draw_windows()
-var i = 0;
-//print_debug("AAA");
-repeat ds_list_size(list_window) {
-    if list_window[| i].visibl {
-        
-        switch list_window[| i].content_type {
-            case 0: //Textbox
-                draw_sprite_ext(list_window[| i].bg_sprite_index, list_window[| i].bg_image_index,list_window[| i]._x,list_window[| i]._y,1,1,0,c_white,1);
-                if list_window[| i].font != "" draw_set_font(asset_get(list_window[| i].font));
-                draw_text_trans_outline(list_window[| i]._x+list_window[| i]._in_x,list_window[| i]._y+list_window[| i]._in_y,string_copy(list_window[| i].text_full,1,floor(list_window[| i].vis_chars)),30,list_window[| i].text_spacing,1,1,0,c_white,c_black,1);
-                break;
-            case 1: //Animated Sprite 
-                draw_sprite_ext(list_window[| i].bg_sprite_index, list_window[| i].bg_image_index,list_window[| i]._x,list_window[| i]._y,1,1,0,c_white,1);
-                draw_sprite_ext(list_window[| i]._sprite_index, list_window[| i]._image_index,list_window[| i]._x+list_window[| i]._in_x,list_window[| i]._y+list_window[| i]._in_y,1,1,0,c_white,1);
-                break;
-            /*case 2: //Arrow Sprite
-                draw_sprite_ext(list_window[| i]._sprite_index, list_window[| i]._image_index,list_window[| i]._x+list_window[| i]._in_x,list_window[| i]._y+list_window[| i]._in_y,1,1,0,c_white,1);
-                break;*/
-        }
-    }
-    i++;
-}
 
 #define draw_boss_healthbar()
 var i = 0;
@@ -420,11 +448,8 @@ repeat ds_list_size(active_bosses) {
 for (var i = - 1; i < 2; i++) for (var j = -1; j < 2; j++) draw_text_ext_transformed_color(_x+i*2,_y+j*2,str,separ, w, xscale, yscale, angl, outline_colour, outline_colour, outline_colour, outline_colour, 1);
 draw_text_ext_transformed_color(_x,_y,str,separ, w, xscale, yscale, angl, text_colour, text_colour, text_colour, text_colour, 1);
 #define real_to_grid(_pos) //Translate real coordinates into coordinates on the basegame grid 
-//return [_pos[0] - init_cam_pos[0]+true_pos[0], _pos[1] - init_cam_pos[1]+true_pos[1]]; 
-//return [_pos[0] - render_offset[0], _pos[1] - render_offset[1]]; 
 return _pos;
 #define cell_to_real(_pos,_cell_pos) //Translate cell coordinates to real
-//_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 with room_manager return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0] != 0))*cell_size + render_offset[0], 
 						  (_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1] != 0))*cell_size + render_offset[1]];
 #define cell_to_grid(_pos, _cell_pos) //Translate cell coordinates to the basegame grid system
@@ -436,8 +461,4 @@ with room_manager {
 		    (abs(_pos[1]) % ((cell_dim[1]-grid_offset)*cell_size))],
 		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
 			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
-// 	return [[cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),
-// 		    cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))],
-// 		   [-floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
-// 			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
 }

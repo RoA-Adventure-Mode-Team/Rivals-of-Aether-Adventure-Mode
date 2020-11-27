@@ -1,21 +1,36 @@
 //article3_init, cutscene manager
 sprite_index = asset_get("empty_sprite");
-debug = false;
+debug = true;
 init_pos = [0,0];
 custom_args = array_create(0);
 //Only One Thing to Exist
 instance_num = 0;
 with obj_stage_article if num == other.num other.instance_num++;
 
+
 if instance_num > 1 {
     instance_destroy();
     exit;
 }
-/*TG_CUSTOM = 69; //Run custom trigger code
-TG_COMPLETE = 420; //Trigger upon 'completion' (defined per window type: Animation completion [> image_index], Full text display [vis_chars > full_text length])
-TG_BUTTON = 2; //Triggers upon button press (any button, attack, shield, taunt, etc)
-TG_TIME = 3; //Triggers after frame count
-*/
+//Scene Manager New
+_init = 0;
+scene_array = [];
+action_array = [];
+action_ids = [];
+object_list = [];
+
+cur_actions = [];
+cur_scene = [];
+
+
+room_id = 1;
+scene_id = 0;
+scene_time = 0;
+with obj_stage_main other.stage_main = id;
+//action_temp = 0;
+
+
+/*
 //Scene Manager
 list_window = ds_list_create();
 open_scene_id = 1;
@@ -48,10 +63,6 @@ player_snap_range = 10;
 cam_deathbox_bounds = [50,50,50,50];
 // Bg controller
 bg_data = ds_list_create();
-/*bg_data = {
-    sprite: noone,
-    parallax: [0,0]
-};*/
 ds_list_add(bg_data, {
     sprite: sprite_get("bg_1"),
     parallax: [0,0]
@@ -70,4 +81,4 @@ tutorial_default_text_speed = 2;
 with oPlayer {
     if !variable_instance_exists(self, "is_ai") other.follow_player = id;
 }
-//
+//*/

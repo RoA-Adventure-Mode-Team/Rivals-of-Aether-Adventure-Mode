@@ -1,14 +1,8 @@
 // Load Scene Data - Scene Manager
 
 //Enum & Macro Declarations, DO NOT EDIT
-enum BT {
-    ATTACK,
-    SHIELD,
-    ATTACK_SHIELD,
-    TAUNT,
-    START
-}
-enum WIN {
+
+/*enum WIN {
     HUD_TXT,
     HUD_SPR,
     OBJ_SPR,
@@ -16,6 +10,22 @@ enum WIN {
     WLD_TXT,
     WLD_SPR,
     PLR_CTL
+}*/
+
+enum LWO {
+    TXT_HUD,
+    TXT_WLD,
+    CAM_WLD,
+    SPR_HUD,
+    SPR_WLD,
+    PLR_CTL
+}
+
+enum ACT {
+    DIALOG,
+    SPRITE,
+    WAIT,
+    SET
 }
 
 #macro TG_CUSTOM 69 //Run custom trigger code
@@ -23,8 +33,45 @@ enum WIN {
 #macro TG_BUTTON 2 //Triggers upon button press (any button, attack, shield, taunt, etc)
 #macro TG_TIME 3 //Triggers after frame count
 
+action_array = [];
+scene_array = [];
+//
 
 //Scene Data Here
+scene_add(1, 1, [1]);
+action_add(1, 1, 1, ACT.DIALOG, 
+[LWO.TXT_HUD, 300, 400, 200, 50, -1, 0, "Test String", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
+[2,3]); //Actions to start on exit
+action_add(1, 1, 2, ACT.DIALOG, 
+[LWO.TXT_HUD, 300, 300, 200, 50, -1, 0, "Test String2", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
+[]); //Actions to start on exit
+action_add(1, 1, 3, ACT.DIALOG, 
+[LWO.TXT_HUD, 300, 500, 200, 50, -1, 0, "Test String3", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
+[]); //Actions to start on exit
+
+
+
+//Functions DO NOT EDIT BELLOW
+/*if debug {
+    print_debug("LOADED ARRAYS:");
+    print_debug(string(action_array));
+    print_debug(string(scene_array));
+}*/
+#define action_add(_room_id, _scene_id, _action_id, _action_type, _param, _on_exit)
+while _room_id >= array_length_1d(action_array) array_push(action_array, []);
+while _scene_id >= array_length_1d(action_array[_room_id]) array_push(action_array[_room_id], []);
+while _action_id >= array_length_1d(action_array[_room_id][_scene_id]) array_push(action_array[_room_id][_scene_id], []);
+action_array[@_room_id][@_scene_id][@_action_id] = [_action_type, _param, _on_exit];
+if debug print_debug("[AM] Action Loaded: "+string(_action_id));
+return true;
+
+#define scene_add(_room_id, _scene_id, _action_array)
+while _room_id >= array_length_1d(scene_array) array_push(scene_array, []);
+print_debug(string(scene_array));
+while _scene_id >= array_length_1d(scene_array[_room_id]) array_push(scene_array[_room_id], []);
+scene_array[@_room_id][@_scene_id] = _action_array;
+if debug print_debug("[AM] Scene Loaded: "+string(_scene_id));
+return true;
 
 //Global Scenes
 
@@ -98,7 +145,7 @@ scene_add(11,[
     ],
     [TG_COMPLETE, 12, tutorial_default_scroll]);*/
     
-switch cur_room { //Room Specific Scenes
+/*switch cur_room { //Room Specific Scenes
     case 1:
         scene_add(1,[],[TG_COMPLETE, -1,  999999999999999]);
         scene_add(2,[
@@ -124,16 +171,8 @@ switch cur_room { //Room Specific Scenes
     case 2:
         scene_add(1,[],[TG_COMPLETE, -1,  999999999999999]);
     case -1:
-        
         break;
-    /*case 1:
-        scene_add(1,[
-            [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "SCROLLING ROOM TEST", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 0, textbox
-            //[400,800,3,[0,follow_player,20,[0,40]]], //window 1, camera control
-            ],
-            [TG_CUSTOM, 2, tutorial_default_scroll]);
-        break;*/
-}
+}*/
 
 //
 
@@ -280,7 +319,7 @@ World Drawn Animated Sprite:
     init_pos: [x,y]
 #############
 */
-#define scene_add(_scene_id, scene_data, scene_triggers) //Adds a new scene to the scenespace
+/*#define scene_add(_scene_id, scene_data, scene_triggers) //Adds a new scene to the scenespace
 var _scene_id_ind = array_find_index(array_scene_ID,_scene_id);
 if _scene_id_ind == -1 {
     array_push(array_scene_data,scene_data);
@@ -291,5 +330,5 @@ if _scene_id_ind == -1 {
     array_scene_data[_scene_id_ind] = scene_data;
     array_scene_ID[_scene_id_ind] = _scene_id;
     array_scene_triggers[_scene_id_ind] = scene_triggers;
-}
+}*/
 

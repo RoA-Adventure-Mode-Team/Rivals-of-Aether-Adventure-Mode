@@ -1,6 +1,6 @@
 //draw stuff for enemy
 draw_set_alpha(1);
-
+//gpu_set_blendenable(bm_add);
 //Enum declarations (DO NOT EDIT)
 
 //Event Enum
@@ -81,6 +81,7 @@ if in_render {
     art_event = EN_EVENT.POST_DRAW;
     user_event(6);
 }
+//gpu_set_blendenable(bm_normal);
 #define get_attack_name(_attack) //get the name of an attack
 
 switch _attack {

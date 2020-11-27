@@ -19,8 +19,7 @@ if get_gameplay_time() == 3 { //Move the cam to position
 	set_view_position(follow_player.x,follow_player.y);
 }
 
-if switch_to_room != cur_room room_switch(switch_to_room);
-if room_switch_on room_switch_update();
+
 smoothing = 1/5;
 with oPlayer { //Respawn Code
 	if state == PS_DEAD || state == PS_RESPAWN {
@@ -38,6 +37,8 @@ with oPlayer { //Respawn Code
 		}
 	}
 }
+if switch_to_room != cur_room room_switch(switch_to_room);
+if room_switch_on room_switch_update();
 
 if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
     cam_pos_left = [view_get_xview(),view_get_yview()];
@@ -109,15 +110,17 @@ if _room_id != cur_room {
         room_render(cur_room);
     }
     
-} 
+} else {
+	print_debug("CURRENT ROOM");
+	despawn_room();
+    room_render(cur_room);
+}
 with oPlayer set_state(PS_IDLE);
 switch_to_room = cur_room;
 #define room_switch_update() //Runs when a room transition is in effect
 with oPlayer {
 	if other.room_switch_timer == 1 set_state(PS_SPAWN);
 	if other.room_switch_timer == other.room_switch_time set_state(PS_IDLE);
-	//vsp = 0;
-	//hsp = 0;
 }
 switch room_switch_type {
 	case 1: //Rectangle Slide

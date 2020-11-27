@@ -6,11 +6,11 @@
 //Background Controller
 
 
-for (var i = 0; i < ds_list_size(bg_data);i++) { //bg_data = {}
+/*for (var i = 0; i < ds_list_size(bg_data);i++) { //bg_data = {}
     draw_sprite(bg_data[| i].sprite,cur_scene_time*bg_speed,400,400);
-}
+}*/
 //
-#define draw_windows()
+/*#define draw_windows()
 var i = 0;
 repeat ds_list_size(list_window) {
     if list_window[| i].visibl {
@@ -26,11 +26,11 @@ repeat ds_list_size(list_window) {
                 break;
             /*case 2: //Arrow Sprite
                 draw_sprite_ext(list_window[| i]._sprite_index, list_window[| i]._image_index,list_window[| i]._x+list_window[| i]._in_x,list_window[| i]._y+list_window[| i]._in_y,1,1,0,c_white,1);
-                break;*/
+                break;
         }
     }
     i++;
-}
+}*/
 
 #define draw_text_trans_outline(_x, _y, str, separ, w, xscale, yscale, angl, text_colour, outline_colour, alph)
 for (var l = -1; l < 2; l++) for (var j = -1; j < 2; j++) draw_text_ext_transformed_color(_x+l*2,_y+j*2,str,separ, w, xscale, yscale, angl, outline_colour, outline_colour, outline_colour, outline_colour, 1);

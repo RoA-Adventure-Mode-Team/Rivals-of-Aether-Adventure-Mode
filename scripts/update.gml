@@ -9,14 +9,14 @@ if !_init {
 	scene_manager = instance_create(0,0,"obj_stage_article",3);
 	room_manager = instance_create(0,0,"obj_stage_article",5);
 	scene_manager.player_name = player_name;
-	debug = false;
+	/*debug = false;
 	with obj_stage_article debug = false;
 	with obj_stage_article_solid debug = false;
-	with obj_stage_article_platform debug = false;
-	/*debug = true;
+	with obj_stage_article_platform debug = false;*/
+	debug = true;
 	with obj_stage_article debug = true;
 	with obj_stage_article_solid debug = true;
-	with obj_stage_article_platform debug = true;*/
+	with obj_stage_article_platform debug = true;
 	_init = 1;
 } else {
 	
@@ -26,7 +26,7 @@ if !_init {
 			has_walljump = true;
 		}
 		//print_debug(string(url));
-		//with asset_get("pHitBox") visible = true;
+		with asset_get("pHitBox") visible = true;
 		with obj_stage_article if num == 6 && player_controller != 0 djumps = max_djumps;
 	}
 	if get_gameplay_time() == 3 with oPlayer {

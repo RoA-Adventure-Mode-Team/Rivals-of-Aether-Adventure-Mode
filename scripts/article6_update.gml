@@ -401,7 +401,7 @@ switch (enemy_class) {
             case PS_DASH_TURN:
                 if (state_timer == 0)
                     spr_dir = -spr_dir;
-                hsp = clamp(hsp + spr_dir*dash_turn_accel, -dash_speed, dash_speed)
+                hsp = clamp(hsp + spr_dir*dash_turn_accel, -dash_speed, dash_speed);
                 vsp = 0;
                 if state_timer > dash_turn_time {
                     next_state = PS_DASH;
@@ -409,7 +409,7 @@ switch (enemy_class) {
                 break;
             case PS_DASH_START:
                 hsp = spr_dir*initial_dash_speed;
-                vsp = 0
+                vsp = 0;
                 if state_timer > initial_dash_time next_state = PS_DASH;
                 if to_dir != spr_dir {
                     state_timer = 0;
@@ -530,7 +530,7 @@ if hitpause <= 0 switch art_state { //Display Logic
             break;
     }
     
-art_event = EN_EVENT.ANIMATION
+art_event = EN_EVENT.ANIMATION;
 user_event(6); //Custom behavior
 
 if next_attack != -1 attack_start();
@@ -687,7 +687,7 @@ if invincible == 0 {
 if (instance_exists(pHitBox)) {
     with asset_get("pHitBox") if "hit_owner" in self && hit_owner == other.id {
         with (other) {
-            art_event = EN_EVENT.SET_ATTACK
+            art_event = EN_EVENT.SET_ATTACK;
             user_event(6); //Custom behavior
             get_hitboxes(other.attack);
         }
@@ -697,12 +697,12 @@ if (instance_exists(pHitBox)) {
                         other.hit_owner.has_hit_en = 1;
                 }
                 else {
-                    other.hit_owner.my_hitboxID = other.id
+                    other.hit_owner.my_hitboxID = other.id;
                     other.hit_owner.was_parried = obj_stage_main.was_parried;
                     if (!other.hit_owner.was_parried)
-                        other.hit_owner.art_event = EN_EVENT.HIT_PLAYER
+                        other.hit_owner.art_event = EN_EVENT.HIT_PLAYER;
                     else
-                        other.hit_owner.art_event = EN_EVENT.GOT_PARRIED
+                        other.hit_owner.art_event = EN_EVENT.GOT_PARRIED;
                     other.hit_owner.hit_player_obj = id;
                     with (other.hit_owner) {
                         user_event(6); //Custom behavior
@@ -746,7 +746,7 @@ switch (battle_state) {
         }
         if (is_boss) {
             with (obj_stage_main)
-                ds_list_add(active_bosses, other.id)
+                ds_list_add(active_bosses, other.id);
         }
         
         committed = 1;
@@ -973,15 +973,15 @@ if (hitpause <= 0) {
     
     //Off ledge handling
     if (!ag_off_ledge && !is_free && hsp != 0) {
-        var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4)
-        var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4)
+        var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4);
+        var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4);
         
         if ((off_r && hsp > 0) || (off_l && hsp < 0)) {
             x -= hsp;
         }
     }
     for (var j = 1; j <= hg_num_hitboxes; j += 1) if window == hg_window[j] && window_timer == hg_window_frame[j] {
-        art_event = EN_EVENT.SET_ATTACK
+        art_event = EN_EVENT.SET_ATTACK;
         user_event(6); //Custom behavior
         get_hitboxes(attack);
         var hitb = create_hitbox(attack,j,round(x)+hg_x[j]*spr_dir,round(y)+hg_y[j]);
@@ -992,7 +992,7 @@ if (hitpause <= 0) {
     
     window_timer++;
     
-    art_event = EN_EVENT.ATTACK_UPDATE
+    art_event = EN_EVENT.ATTACK_UPDATE;
     user_event(6); //Custom behavior
     
     if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
@@ -1026,7 +1026,7 @@ has_hit_en = false;
 last_attack = attack;
 attack = next_attack;
 reset_attack_grid(attack);
-art_event = EN_EVENT.SET_ATTACK
+art_event = EN_EVENT.SET_ATTACK;
 user_event(6); //Custom behavior
 get_attack(attack);
 get_hitboxes(attack);
@@ -1040,7 +1040,7 @@ if is_free next_state = PS_ATTACK_AIR;
 else next_state = PS_ATTACK_GROUND;
 
 #define get_attack(_attack) //Set attack data, and attack start
-print_debug("[EN] Getting attack data for "+get_attack_name(_attack));
+if debug print_debug("[EN] Getting attack data for "+get_attack_name(_attack));
 with obj_stage_main { //Main stage script object
     other.ag_category = get_attack_value(_attack,AG_CATEGORY);
     other.ag_num_windows = get_attack_value(_attack,AG_NUM_WINDOWS);
@@ -1098,7 +1098,7 @@ for (var i = 1; i <= hg_num_hitboxes; i += 1) {
     }
 }
 #define get_inputs(_player) //Overwrite inputs with the given player's inputs (NOTE: Controller Port, NOT oPlayer)
-with asset_get("oPlayer") { 
+with oPlayer { 
     if player == _player {
         other.down_down = down_down;
         other.up_down = up_down;
@@ -1375,7 +1375,7 @@ with _hbox {
         other.hbox_group = hbox_group;
     }
 }
-art_event = EN_EVENT.GOT_HIT
+art_event = EN_EVENT.GOT_HIT;
 user_event(6); //Custom behavior
 kb_angle = get_hitbox_angle(_hbox);
 if _hbox.player_id != 0 with _hbox.player_id {
