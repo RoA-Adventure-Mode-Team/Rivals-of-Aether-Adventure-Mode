@@ -1,10 +1,10 @@
 //
 if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
-    
-    cam_pos_left = [view_get_xview(),view_get_yview()];
+    with obj_stage_article if num == 3 other.action_manager = id;
+    /*cam_pos_left = [view_get_xview(),view_get_yview()];
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
-    //init_cam_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
+    */
     render_offset = [room_width/2-cell_dim[0],room_height/2-cell_dim[1]];
     reload_rooms();
     switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
@@ -16,7 +16,8 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
 }
 
 if get_gameplay_time() == 3 { //Move the cam to position
-	set_view_position(follow_player.x,follow_player.y);
+	//set_view_position(follow_player.x,follow_player.y);
+	with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
 }
 
 
@@ -41,10 +42,10 @@ if switch_to_room != cur_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
 
 if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
-    cam_pos_left = [view_get_xview(),view_get_yview()];
+    /*cam_pos_left = [view_get_xview(),view_get_yview()];
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
-    
+    */
     if !respawning && follow_player.state != PS_HITSTUN set_follow_point(follow_objects);
     //Frame Cleanups
     last_pos[0] = follow_point.x;
@@ -55,21 +56,26 @@ if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
 }
 
 cur_room_time++;
-#define set_follow_point(_obj_array) //Set the point the room will follow to
+#define set_follow_point(_obj_array) //Set the point the world cam will follow to
 var _x_avg = 0;
 var _y_avg = 0;
 var _count = 0;
+var cam_vel_influence = obj_stage_main.cam_vel_influence;
 for (var i = 0; i < array_length_1d(_obj_array);i++) {
-    if instance_exists(_obj_array[i]) {
-        _x_avg += _obj_array[i].x;
-        _y_avg += _obj_array[i].y;
+    with _obj_array[i] {
+    	if (state_timer != 0) avg_vel = [(cam_vel_influence*avg_vel[0]+hsp)/(cam_vel_influence+1),(cam_vel_influence*avg_vel[1]+vsp)/(cam_vel_influence+1)];
+    	//else avg_vel = [hsp, vsp];
+        _x_avg += x+avg_vel[0]*15;
+        _y_avg += y+avg_vel[1]*10;
+        //_x_avg += _obj_array[i].x+_obj_array[i].hsp*10;
+        //_y_avg += _obj_array[i].y+_obj_array[i].vsp*5;
         _count++;
     }
 }
 _x_avg /= _count;
 _y_avg /= _count;
-follow_point.x = _x_avg + cam_offset[0];//+ follow_player.hsp*10;
-follow_point.y = _y_avg + cam_offset[1];//+ follow_player.vsp*10; //+(follow_player.down_held > 20)*50-(follow_player.up_held > 20)*50;
+follow_point.x = _x_avg + obj_stage_main.cam_offset[0];//+ follow_player.hsp*10;
+follow_point.y = _y_avg + obj_stage_main.cam_offset[1];//+ follow_player.vsp*10; //+(follow_player.down_held > 20)*50-(follow_player.up_held > 20)*50;
 
 #define reload_rooms() //Reload room data, runs on start
 cur_room = 0;
@@ -111,7 +117,7 @@ if _room_id != cur_room {
     }
     
 } else {
-	print_debug("CURRENT ROOM");
+	print_debug("[RM] CURRENT ROOM");
 	despawn_room();
     room_render(cur_room);
 }
@@ -199,6 +205,7 @@ if _room_id < array_length_1d(array_room_data) {
                         cell_data[@j][@6][@0] = art.id;
                         art.custom_args = cell_data[j][6][0];
                         art.room_manager = id;
+                        art.debug = obj_stage_main.debug;
                         //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;
                         articles_spawned++;
                         
@@ -263,7 +270,6 @@ with obj_stage_article {
 with obj_stage_article_platform instance_destroy(id);
 with obj_stage_article_solid instance_destroy(id);
 
-
 #define switch_room_position(_pos) //Switches the room position in grid space (Harbige12)
 if (_pos[0] != -1) {
 	follow_point.x = _pos[0];
@@ -274,8 +280,9 @@ if (_pos[1] != -1) {
 	follow_player.y = follow_point.y;
 }
 follow_player.visible = true;
-set_view_position(follow_point.x,follow_point.y);
-#define set_view_position_smooth(_x,_y)
+//set_view_position(follow_point.x,follow_point.y);
+with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
+/*#define set_view_position_smooth(_x,_y)
 //var sm_x = (((_x + true_pos[0])/2 + true_pos[0])/2 + true_pos[0])/2;
 //var sm_y = (((_y + true_pos[1])/2 + true_pos[1])/2 + true_pos[1])/2;
 var sm_x = true_pos[0];
@@ -287,7 +294,8 @@ else sm_y = round(ease_linear(floor(true_pos[1]),floor(cam_override_obj.cam_over
 //var dir_x = _x - true_pos[0];
 //var dir_y = _y - true_pos[1];
 
-set_view_position(sm_x, sm_y);
+//set_view_position(sm_x, sm_y);
+with obj_stage_main g_cam_pos = [sm_x, sm_y];
 //static_position = [round(sm_x),round(sm_y)];
 with obj_stage_article {
 	if num == 1 && static {
@@ -297,4 +305,4 @@ with obj_stage_article {
 }
 //set_view_position(round(sm_x), round(sm_y));
 //set_view_position(sm_x, sm_y);
-
+*/

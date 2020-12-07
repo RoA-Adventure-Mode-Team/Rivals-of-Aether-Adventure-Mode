@@ -1040,7 +1040,7 @@ if is_free next_state = PS_ATTACK_AIR;
 else next_state = PS_ATTACK_GROUND;
 
 #define get_attack(_attack) //Set attack data, and attack start
-if debug print_debug("[EN] Getting attack data for "+get_attack_name(_attack));
+//if debug print_debug("[EN] Getting attack data for "+get_attack_name(_attack));
 with obj_stage_main { //Main stage script object
     other.ag_category = get_attack_value(_attack,AG_CATEGORY);
     other.ag_num_windows = get_attack_value(_attack,AG_NUM_WINDOWS);

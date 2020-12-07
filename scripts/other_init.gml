@@ -12,6 +12,7 @@ keep_dash = false;
 
 taunt_held = 0;
 attack_held = 0;
+avg_vel = [0,0];
 
 respawn_point = [[77,44],[0,0],1]; //SubCell Position, Cell Position, Room #
 

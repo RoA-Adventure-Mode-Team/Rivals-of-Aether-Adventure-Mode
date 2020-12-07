@@ -1,6 +1,5 @@
 //draw_hud - the x position of your HUD element is 48*(i-1)
 
-
 enum LWO {
     TXT_HUD,
     TXT_WLD,
@@ -182,22 +181,22 @@ if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
     console_command(["debug",get_match_setting(SET_HITBOX_VIS)]);
     debug_toggle = get_match_setting(SET_HITBOX_VIS);
 }
-
-
 #define draw_scene() //Drawing HUD
-gpu_set_blendmode(bm_add);
+gpu_set_blendmode(bm_add); //Reduce draw lag
 var actions_load = [];
+var _param = 0;
+var alive_time = 0;
 with scene_manager {
 	for (var i = 0; i < array_length_1d(cur_actions); i++) {
 		//print_debug("CATCH THIS");
 		actions_load = cur_actions[i][P.LOAD];
+		//var _param = actions_load[L.PARAM];
+		_param =  actions_load[L.PARAM];
+		alive_time = cur_actions[i][P.ALIVE_TIME];
 		switch actions_load[L.ACTION_TYPE] {
 			case ACT.DIALOG:
-				var _param = actions_load[L.PARAM];
-				var alive_time = cur_actions[i][P.ALIVE_TIME];
 				switch _param[0] { //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speed, scroll_sound], 
 					case LWO.TXT_HUD: 
-						//print_debug("Drawing TXT_HUD @ "+string(actions_load[L.PARAM][1])+" "+string(actions_load[L.PARAM][2]));
 						if _param[5] != -1 draw_sprite_ext(_param[5], alive_time * _param[6], _param[1], _param[2], 1, 1, 0, c_white, 1);
 						//draw_set_color(c_white);
 						draw_set_font(_param[8]);
@@ -212,11 +211,9 @@ with scene_manager {
 						break;
 				}
 				break;
-			case ACT.SPRITE: //spr, x, y, spr_speed, alpha
-				var _param = actions_load[L.PARAM];
-				var alive_time = cur_actions[i][P.ALIVE_TIME];
+			/*case ACT.SPRITE: //spr, x, y, spr_speed, alpha
 				draw_sprite_ext(_param[0],sprite_get_number(_param[0])*alive_time*_param[3],_param[1],_param[2],1,1,0,c_white,_param[4]);
-				break;
+				break;*/
 		}
 	}
 }

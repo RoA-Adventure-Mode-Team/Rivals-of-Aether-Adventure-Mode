@@ -11,7 +11,7 @@
     WLD_SPR,
     PLR_CTL
 }*/
-
+//Update enums article3_update, draw_hud, and user_event0
 enum LWO {
     TXT_HUD,
     TXT_WLD,
@@ -20,23 +20,42 @@ enum LWO {
     SPR_WLD,
     PLR_CTL
 }
-
 enum ACT {
-    DIALOG,
+    DIALOG, //See draw scripts, depends on sub-objects
+    //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
+    CAMERA, //Sets the camera to a specific point
+    //action_time, x, y, focus_type, smooth 
     SPRITE,
+    
     WAIT,
+    
     SET
 }
 
-#macro TG_CUSTOM 69 //Run custom trigger code
-#macro TG_COMPLETE 420 //Trigger upon 'completion' (defined per window type: Animation completion [> image_index], Full text display [vis_chars > full_text length])
-#macro TG_BUTTON 2 //Triggers upon button press (any button, attack, shield, taunt, etc)
-#macro TG_TIME 3 //Triggers after frame count
+enum P {
+    LOAD,
+    ACTION_ID,
+    ALIVE_TIME,
+    OBJECT,
+    VISIBLE,
+    DIE
+}
 
+enum L {
+    ACTION_TYPE,
+    PARAM,
+    ON_EXIT
+}
+
+//Reset Arrays
 action_array = [];
 scene_array = [];
 //
-
+/*
+action_add(1, 1, 4, ACT.CAMERA,
+[],
+[]);
+*/
 //Scene Data Here
 scene_add(1, 1, [1]);
 action_add(1, 1, 1, ACT.DIALOG, 
@@ -47,8 +66,13 @@ action_add(1, 1, 2, ACT.DIALOG,
 []); //Actions to start on exit
 action_add(1, 1, 3, ACT.DIALOG, 
 [LWO.TXT_HUD, 300, 500, 200, 50, -1, 0, "Test String3", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
-[]); //Actions to start on exit
-
+[4]); //Actions to start on exit
+action_add(1, 1, 4, ACT.CAMERA,
+[60, 500, 22, 0, 20],//action_time, x, y, focus_type, smooth 
+[5]);
+action_add(1, 1, 5, ACT.CAMERA,
+[60, 0, 0, 1, 20],//action_time, x, y, focus_type, smooth 
+[5]);
 
 
 //Functions DO NOT EDIT BELLOW

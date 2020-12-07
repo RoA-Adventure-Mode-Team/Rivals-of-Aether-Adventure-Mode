@@ -1510,8 +1510,8 @@ switch (enem_id) {
                     
                     //This enemy can't go off ledges
                     if (!is_free && hsp != 0) {
-                        var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4)
-                        var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4)
+                        var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4);
+                        var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4);
                         
                         if ((off_r && hsp > 0) || (off_l && hsp < 0)) {
                             x -= hsp;
@@ -1526,7 +1526,7 @@ switch (enem_id) {
                             if (ai_stop_timer <= ai_stop_full) {
                                 if (ai_target.x > x) {
                                     ai_moving_right = true;
-                                    ai_moving_left = false
+                                    ai_moving_left = false;
                                 } 
                                 if (ai_target.x < x) {
                                     ai_moving_right = false;

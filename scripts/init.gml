@@ -17,6 +17,16 @@ cam_y_right = view_get_hview()+view_get_yview();
 cam_x_left = view_get_xview();
 cam_y_left = view_get_yview();
 
+cam_state = 0;
+cam_smooth = 5;
+g_cam_pos = [cam_x_left,cam_y_left];
+cam_offset = [0,-96];
+cam_vel_influence = 30;
+
+game_paused = false;
+counter = 0;
+
+
 debug_console = false;
 debug_x = 650;
 debug_y = 2;

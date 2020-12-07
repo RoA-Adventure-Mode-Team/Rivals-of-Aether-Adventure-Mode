@@ -1,2 +1,2 @@
-//draw_debug_text(x,y,"HELLO, GORDON! "+string(timer))
+//article2_draw, Empty
 

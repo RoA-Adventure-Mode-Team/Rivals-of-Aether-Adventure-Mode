@@ -1,4 +1,4 @@
-//article3_init, cutscene manager
+//article3_init, action manager
 sprite_index = asset_get("empty_sprite");
 debug = true;
 init_pos = [0,0];
@@ -22,11 +22,13 @@ object_list = [];
 cur_actions = [];
 cur_scene = [];
 
-
+cam_pos = [0,0];
+cam_smooth = 0;
 room_id = 1;
 scene_id = 0;
 scene_time = 0;
 with obj_stage_main other.stage_main = id;
+with obj_stage_article if num == 5 other.room_manager = id;
 //action_temp = 0;
 
 

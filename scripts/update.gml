@@ -14,12 +14,16 @@ if !_init {
 	with obj_stage_article_solid debug = false;
 	with obj_stage_article_platform debug = false;*/
 	debug = true;
-	with obj_stage_article debug = true;
+	with obj_stage_article {
+		if num == 3 other.action_manager = id;
+		if num == 5 other.room_manager = id;
+		debug = true;
+	}
 	with obj_stage_article_solid debug = true;
 	with obj_stage_article_platform debug = true;
+	
 	_init = 1;
 } else {
-	
 	if debug {
 		with oPlayer { //Debug vars
 			djumps = 0; 

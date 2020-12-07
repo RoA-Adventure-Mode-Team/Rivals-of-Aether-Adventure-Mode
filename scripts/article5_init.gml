@@ -39,7 +39,7 @@ respawn_timer_max = 120;
 
 cam_pos_left = [0,0];
 cam_pos_right = [0,0];
-cam_offset = [0,-64];
+
 true_pos = [0,0];
 pos_in_cell = [0,0];
 old_cell_pos = [0,0];
@@ -53,15 +53,11 @@ vert_dir = 0;
 
 smoothing = 1/5;
 cam_override_obj = noone;
+cam_state = 0;
 follow_snap = 5000;
 static_position = [0,0];
 
 paused = false;
-
-//art1_solid = array_create(15);
-//art1_plat = array_create(15);
-//art1_none = array_create(15);
-
 render_distance = 2000;
 entity_render_distance = 800;
 
@@ -87,4 +83,5 @@ follow_point = {
 };
 last_pos = array_create(2);
 follow_offset = 240;
+with obj_stage_article if num == 3 other.action_manager = id;
 //room_data_temp = [article script, x, y, article type, depth, [args0-7], [custom]];
