@@ -1,4 +1,4 @@
-// Load Scene Data - Scene Manager
+// Load Action Data - Action Manager
 
 //Enum & Macro Declarations, DO NOT EDIT
 
@@ -25,15 +25,27 @@ enum ACT {
     //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
     CAMERA, //Sets the camera to a specific point
     //action_time, x, y, focus_type, smooth 
+    WINDOW, //Makes a hud window
+    //window_num, x, y, [contentoverride]
+    CONTROL, //Controls players
+    //player_id, life_time, state_override, input_array
     SPRITE,
     
-    WAIT,
-    
-    SET
+    WAIT, //waits
+    //frames
+    MUSIC, //set music
+    //type, music_file
+    SET //Set article data
+    //article_id, variable, value
 }
+
+
+
 
 enum P {
     LOAD,
+    ROOM_ID,
+    SCENE_ID,
     ACTION_ID,
     ALIVE_TIME,
     OBJECT,
@@ -56,24 +68,36 @@ action_add(1, 1, 4, ACT.CAMERA,
 [],
 []);
 */
-//Scene Data Here
+//Scene Data Here, please go sequentially
 scene_add(1, 1, [1]);
-action_add(1, 1, 1, ACT.DIALOG, 
-[LWO.TXT_HUD, 300, 400, 200, 50, -1, 0, "Test String", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
+action_add(1, 1, 1, ACT.WAIT, 
+[120], //frames
 [2,3]); //Actions to start on exit
+action_add(1, 1, 2, ACT.WINDOW, 
+[0, 100, 200, []], //window_type, x, y, [contentoverride]
+[4,5]); //Actions to start on exit
+action_add(1, 1, 3, ACT.CONTROL, 
+[30, all, PS_SPAWN], //player_id, life_time, state_override, input_array
+[]); //Actions to start on exit
+action_add(1, 1, 4, ACT.SET, 
+[69, "bg_color", $dcf6ff], //player_id, life_time, state_override, input_array
+[]); //Actions to start on exit
+
+/*action_add(1, 1, 1, ACT.DIALOG, 
+[LWO.TXT_HUD, 100, 200, 300, 50, -1, 0, "Dynamic Lighting Test", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
+[2,2]); //Actions to start on exit
 action_add(1, 1, 2, ACT.DIALOG, 
 [LWO.TXT_HUD, 300, 300, 200, 50, -1, 0, "Test String2", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
-[]); //Actions to start on exit
+[1]); //Actions to start on exit
 action_add(1, 1, 3, ACT.DIALOG, 
 [LWO.TXT_HUD, 300, 500, 200, 50, -1, 0, "Test String3", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
 [4]); //Actions to start on exit
 action_add(1, 1, 4, ACT.CAMERA,
 [60, 500, 22, 0, 20],//action_time, x, y, focus_type, smooth 
-[5]);
+[5]); //Actions to start on exit
 action_add(1, 1, 5, ACT.CAMERA,
-[60, 0, 0, 1, 20],//action_time, x, y, focus_type, smooth 
-[5]);
-
+[60, 400, 50, 1, 20],//action_time, x, y, focus_type, smooth 
+[]); //Actions to start on exit*/
 
 //Functions DO NOT EDIT BELLOW
 /*if debug {
@@ -91,7 +115,7 @@ return true;
 
 #define scene_add(_room_id, _scene_id, _action_array)
 while _room_id >= array_length_1d(scene_array) array_push(scene_array, []);
-print_debug(string(scene_array));
+//print_debug(string(scene_array));
 while _scene_id >= array_length_1d(scene_array[_room_id]) array_push(scene_array[_room_id], []);
 scene_array[@_room_id][@_scene_id] = _action_array;
 if debug print_debug("[AM] Scene Loaded: "+string(_scene_id));

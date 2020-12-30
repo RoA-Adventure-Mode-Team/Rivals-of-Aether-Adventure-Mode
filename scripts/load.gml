@@ -12,11 +12,13 @@ sprite_change_offset("column_deco",210, 310);
 sprite_change_offset("column_deco_black",210, 310);
 
 sprite_change_offset("stall",27, 48);
+sprite_change_offset("ground",0, 16);
 sprite_change_offset("stall_empty",27, 48);
 sprite_change_offset("house_main",60, 154);
 sprite_change_offset("house1",64, 72);
 sprite_change_offset("underwater",84, 19);
 sprite_change_offset("well",24, 70);
+sprite_change_offset("light", 40, 49);
 sprite_change_offset("house_main_inside",15, 111);
 sprite_change_offset("house_main_insideb",15, 111);
 sprite_change_collision_mask("house_main_insideb",true, 2, 0, 0, sprite_get_width(sprite_get("house_main_insideb")), sprite_get_height(sprite_get("house_main_insideb")), 0 );
@@ -26,7 +28,7 @@ sprite_change_offset("house_main_transparent",65, 111);
 sprite_change_offset("tree1",80, 229);
 sprite_change_offset("tree2",46, 161);
 sprite_change_offset("bench",13, 9);
-
+sprite_change_offset("arrow",0,28);
 
 //Enemy Declarations - Harbidge
 sprite_change_offset("char_arrow",0,0);

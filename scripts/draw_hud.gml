@@ -10,14 +10,23 @@ enum LWO {
 }
 
 enum ACT {
-    DIALOG,
+    DIALOG, //See draw scripts, depends on sub-objects
+    //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
+    CAMERA, //Sets the camera to a specific point
+    //action_time, x, y, focus_type, smooth 
+    WINDOW, //Makes a hud window
+    //window_num, x, y, [contentoverride]
     SPRITE,
+    
     WAIT,
+    
     SET
 }
 
 enum P {
     LOAD,
+    ROOM_ID,
+    SCENE_ID,
     ACTION_ID,
     ALIVE_TIME,
     OBJECT,
@@ -85,6 +94,8 @@ if debug {
     draw_rectangle_color(0,0,350,110,c_black,c_black,c_black,c_black,c_black);
     draw_set_alpha(1);
     draw_debug_text(2,2,"FPS: "+string(fps));
+    with action_manager draw_debug_text(2,16,string(array_length_1d(cur_actions)));
+    draw_debug_text(2,32,string(array_length_1d(active_win)));
     with room_manager {
     	//print_debug(string(follow_point));
         p_true_pos = real_to_grid([follow_player.x,follow_player.y]);
@@ -113,28 +124,6 @@ if debug {
     }
     //draw_circle_color(view_get_wview()/2,view_get_hview()/2,4,c_red,c_red,false);
     draw_circle_color(follow_player.x-view_get_xview(),follow_player.y-view_get_yview(),4,c_red,c_red,false);
-    
-    /*draw_debug_text(2,2,"FPS: "+string(fps));
-    with room_manager {
-        draw_debug_text(2,16,"CAM POS: "+string(true_pos));
-        draw_debug_text(2,32,"CELL POS: "+string(cell_pos));
-        draw_debug_text(2,48,"POS IN CELL: "+string(pos_in_cell));
-        draw_debug_text(2,64,"FOLLOW POS: "+string(follow_point));
-        //draw_debug_text(2,128, string([horiz_dir,vert_dir]));
-        /*
-        var init_y = 78;
-        var dist_y = 16;
-        draw_debug_text(2,64,"ACTIVE ARTICLE LIST:");
-        for (var i = 0; i < ds_list_size(list_room); i++) {
-            draw_debug_text(2,init_y+i*dist_y,string(list_room[| i].id)+": "+string([list_room[| i].x,list_room[| i].y]));
-        }
-        var _count = 0;
-        with obj_stage_article_solid _count++;
-        with obj_stage_article_platform _count++;
-        with obj_stage_article _count++;
-        draw_debug_text(2,96,"A ACTIVE ARTICLES:"+string(_count));
-        //draw_debug_text(2,112,"VERT, HORIZ:"+string([scroll_vert,scroll_horiz]));
-    }*/
 }
 //Room Swap effects
 with room_manager {
@@ -181,8 +170,15 @@ if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
     console_command(["debug",get_match_setting(SET_HITBOX_VIS)]);
     debug_toggle = get_match_setting(SET_HITBOX_VIS);
 }
+
+win_call = 0;
+user_event(2); //Cursor and Window Draw
+
+
+
+//user_event(); //Draw Endscreen
 #define draw_scene() //Drawing HUD
-gpu_set_blendmode(bm_add); //Reduce draw lag
+gpu_set_blendmode(bm_add); //Reduce draw lag?
 var actions_load = [];
 var _param = 0;
 var alive_time = 0;

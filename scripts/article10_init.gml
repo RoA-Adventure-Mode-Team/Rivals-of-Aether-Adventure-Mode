@@ -11,6 +11,7 @@ init_pos = [0,0];
 cell_pos = [0,0];
 debug_color = c_gray;
 
+event_flag = 0;
 
 
 custom_args = array_create(0);

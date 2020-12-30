@@ -13,15 +13,17 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
 	old_cell_pos = cell_pos;
     last_pos[0] = follow_player.x;
     last_pos[1] = follow_player.y;
+    with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
+    smoothing = 1/5;
 }
 
-if get_gameplay_time() == 3 { //Move the cam to position
+//if get_gameplay_time() == 3 { //Move the cam to position
 	//set_view_position(follow_player.x,follow_player.y);
-	with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
-}
+	//with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
+//}
 
 
-smoothing = 1/5;
+
 with oPlayer { //Respawn Code
 	if state == PS_DEAD || state == PS_RESPAWN {
 		if (state_timer == 89 && state == PS_RESPAWN) {
@@ -203,7 +205,7 @@ if _room_id < array_length_1d(array_room_data) {
                         art.init_pos = [cell_data[j][1],cell_data[j][2]];
                         art.cell_pos = _cell_pos;
                         cell_data[@j][@6][@0] = art.id;
-                        art.custom_args = cell_data[j][6][0];
+                        art.action_article_index = cell_data[j][6][1];
                         art.room_manager = id;
                         art.debug = obj_stage_main.debug;
                         //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;

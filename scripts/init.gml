@@ -56,10 +56,22 @@ list_window = ds_list_create();
 scene_manager = noone;
 
 follow_player = noone;
+is_online = false;
 player_num = 0;
 with oPlayer {
+    if get_player_hud_color(player) == 15297156 {
+        other.is_online = true;
+        break;
+    }
     if (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
     other.player_num++;
+}
+if is_online {
+    player_num = 0;
+    with oPlayer {
+        if get_player_hud_color(player) == 15297156 other.follow_player = id;
+        other.player_num++;
+    }
 }
 //Area Triggers (article4)
 
@@ -68,11 +80,52 @@ room_manager = noone;
 
 //Enemies (article6)
 active_bosses = ds_list_create();
+death_left = 100;
+death_up = 100;
+death_right = 100;
+death_down = 100;
 
 //Camera Controller (article7)
 
 //Room Transitions (article8)
 
+room_width = 10000;
+room_height = 10000;
 
-room_width = 100000;
-room_height = 100000;
+//Window API Init
+win_data = [];
+active_win = [];
+
+//cursor_sprite = sprite_get("arrow");
+cursor_sprite_i = sprite_get("arrow");
+cursor_index = 0;
+cursor_visible = false; //Change to true for debug
+mb_l_click = false;
+mouse_x_i = mouse_x;
+mouse_y_i = mouse_y;
+
+//Window Variables
+//Textboxes
+tb_title_offset_x = 4;
+tb_title_offset_y = 3;
+tb_str_offset_x = 4;
+tb_str_offset_y = 19;
+tb_bar_x = 128*2;
+tb_bar_y = 56*2;
+//
+//Command Entering
+eb_bar_x = 128*2;
+eb_bar_y = 56*2;
+
+mouse_buffer = 16;
+cursor_x_p = 0;
+cursor_y_p = 0;
+cursor_x = mouse_x - view_get_xview();
+cursor_y = mouse_y - view_get_yview();
+win_drag = -1;
+win_active = -1;
+active_thick = 4;
+//
+
+win_call = 1;
+user_event(2);

@@ -20,22 +20,26 @@ with obj_stage_main {
 	}
 	set_view_position_smooth(g_cam_pos[0],g_cam_pos[1],cam_smooth);
 	//set_view_position(g_cam_pos[0],g_cam_pos[1]);
+
 }
+
 /*with oPlayer {
 	draw_debug_text(x,y,string(avg_vel));
 }*/
 #define set_view_position_smooth(_x,_y,_smooth)
-var sm_x = ease_linear(floor(true_pos[0]),floor(_x),1,_smooth);
-var sm_y = ease_linear(floor(true_pos[1]),floor(_y),1,_smooth);
+sm_x = ease_linear(floor(true_pos[0]),floor(_x),1,_smooth);
+sm_y = ease_linear(floor(true_pos[1]),floor(_y),1,_smooth);
 set_view_position(round(sm_x), round(sm_y));
+true_pos[0] += sm_x;
+true_pos[1] += sm_y;
 //set_view_position(sm_x, sm_y);
 //background movements
 with obj_stage_article {
 	if num == 1 && static {
 		//x = round(sm_x);
 		//y = round(sm_y);
-		x = sm_x;
-		y = sm_y;
+		x = other.sm_x;
+		y = other.sm_y;
 	}
 }
 

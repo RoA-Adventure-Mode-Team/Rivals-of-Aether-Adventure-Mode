@@ -21,12 +21,18 @@ object_list = [];
 
 cur_actions = [];
 cur_scene = [];
+action_queue = [];
+end_action_queue = [];
+end_action_index = [];
+
+action_ended = false;
 
 cam_pos = [0,0];
 cam_smooth = 0;
 room_id = 1;
 scene_id = 0;
 scene_time = 0;
+action_index = 0;
 with obj_stage_main other.stage_main = id;
 with obj_stage_article if num == 5 other.room_manager = id;
 //action_temp = 0;

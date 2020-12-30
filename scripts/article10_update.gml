@@ -5,11 +5,18 @@ if !_init {
     sprite_index = spawn_variables[1];
     grav_radius = spawn_variables[2];
     grav_accel = spawn_variables[3];
-    auto_use = spawn_variables[4];
+    use_type = spawn_variables[4];
     item_name = spawn_variables[5];
     name_width = string_width(item_name);
     //prite_index = item_sprite_get(item_id,"idle");
 }
+
+enum EVT {
+    GRAB,
+    IDLE,
+    USE
+}
+
 state_timer++;
 
 if state == 0 { //Normal Operations
@@ -27,11 +34,12 @@ if state == 0 { //Normal Operations
             }
             collis_obj.item_id = id;
             sound_play(asset_get("mfx_coin"));
-            if auto_use {
-                instance_destroy();
-                exit;
+            if use_type == 1 {
+                set_state(3);
             }
             follow_player = collis_obj.id;
+            event_flag = EVT.GRAB;
+            user_event(10);//Item Custom Behavior
             set_state(1);
             vsp = 0;
             hsp = 0;
@@ -48,13 +56,8 @@ if state == 1 { //Following a Player
     vsp = floor(-(y-follow_pos[1])/2);
     hsp = floor(-(x-follow_pos[0])/2);
     spr_dir = follow_player.spr_dir;
-    /*if !follow_player.free && follow_player.down_down down_held++;
-    if down_held > 20 {
-        set_state(2);
-        vsp = -2;
-        follow_player.item_id = noone;
-        down_held = 0;
-    }*/
+    event_flag = EVT.IDLE;
+    user_event(10);//Item Custom Behavior
 }
 
 if state == 2 { //Rejection & Cooldown
@@ -64,8 +67,15 @@ if state == 2 { //Rejection & Cooldown
     vsp *= .98;
     hsp *= .98;
 }
-item_id = id;
-user_event(10);//Item Custom Behavior
+
+if state == 3 { //Used
+    event_flag = EVT.USE;
+    user_event(10);//Item Custom Behavior
+    
+}
+//item_id = id;
+//event_flag = EVT.IDLE;
+//user_event(10);//Item Custom Behavior
 #define item_sprite_get(_num,_sprite) //Get the sprite of this article
 return sprite_get("item_"+string(_num)+"_"+string(_sprite));
 

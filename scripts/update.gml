@@ -7,6 +7,7 @@ if !_init {
 	}
 	print_debug(player_name);
 	scene_manager = instance_create(0,0,"obj_stage_article",3);
+	//action_manager = scene_manager.id;
 	room_manager = instance_create(0,0,"obj_stage_article",5);
 	scene_manager.player_name = player_name;
 	/*debug = false;
