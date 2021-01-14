@@ -275,13 +275,15 @@ with obj_stage_article_solid instance_destroy(id);
 #define switch_room_position(_pos) //Switches the room position in grid space (Harbige12)
 if (_pos[0] != -1) {
 	follow_point.x = _pos[0];
-	follow_player.x = follow_point.x;
+	with oPlayer x = other.follow_point.x;
+	//follow_player.x = follow_point.x;
 }
 if (_pos[1] != -1) {
 	follow_point.y = _pos[1];
-	follow_player.y = follow_point.y;
+	with oPlayer y = other.follow_point.y;
+	//follow_player.y = follow_point.y;
 }
-follow_player.visible = true;
+with oPlayer visible = true;
 //set_view_position(follow_point.x,follow_point.y);
 with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
 /*#define set_view_position_smooth(_x,_y)

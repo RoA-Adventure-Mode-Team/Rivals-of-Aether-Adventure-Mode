@@ -72,10 +72,11 @@ obj_type = "";
 article_frame_limit = 10000;
 art = noone;
 //follow_objects  = [];
-with oPlayer {
+/*with oPlayer {
     if !variable_instance_exists(self, "is_ai") other.follow_player = id;
     //array_push(other.follow_objects,id);
-}
+}*/
+with obj_stage_main other.follow_player = follow_player;
 follow_objects  = [follow_player];
 follow_point = {
     x: 0,

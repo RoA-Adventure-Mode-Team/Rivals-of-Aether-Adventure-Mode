@@ -10,9 +10,19 @@
     VISIBLE,
     DIE
 }*/
+/*
+Font Types
+medFont
+fName
+roundFont
+roaMBLFont
+roaLBLFont
+tinyFont
+*/
 enum WIN {
 	DEBUG,
-	DIALOG_DEFAULT
+	DIALOG_DEFAULT,
+	AREATITLE
 }
 
 enum GUI {
@@ -39,6 +49,12 @@ if win_call == 1 with obj_stage_main { //Load Data
 	new_sprite(sprite_get("gui_test"),0,0),
 	new_textbox("GUI 2.0 TITLE",4,2,200,16,c_white,asset_get("fName")),
 	new_dialogbox("HENLOOOOOOOOOOOOOOOOOOOOOOOOO",asset_get("mfx_back"),"_",0.4,4,16,200,12,c_white,asset_get("roundFont"))]);
+	
+	win_add(i++,[WIN.AREATITLE,
+	new_sprite(sprite_get("title_bg"),0,0),
+	new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont"))
+	]);
+	
 	//win_add(1, [WIN.DEBUG, sprite_get("gui_test"), "Gucci", ""]);
 	//win_add(1, [WIN.DEBUG, sprite_get("gui_test"), "Gucci", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."]);
 	//window_type, bg, title var, string var
@@ -47,24 +63,47 @@ if win_call == 1 with obj_stage_main { //Load Data
 	//0.4, //anim_speed //Bg sprite
 	//]);
 	//window_type
+	exit;
+}
+
+if win_call == 2 with obj_stage_main logic_windows(); //Update Call
+#define logic_windows() //Update Call
+var _x = 0;
+var _y = 0;
+var _param = [];
+var _elements = [];
+var _alpha = 1;
+var alive_time = 0;
+for (var _i = 0; _i < array_length_1d(active_win); _i++) {
+	_x = active_win[_i][0][0];
+	_y = active_win[_i][0][1];
+	_elements = active_win[_i][1];
+	active_win[@_i][@0][@3] += 1;
+	alive_time = active_win[_i][0][3];
+	
+	_alpha = 1;
+	switch _elements[0] {
+		case WIN.AREATITLE:
+			active_win[@_i][@0][@0] = lerp(active_win[_i][0][0],title_x_stop*(alive_time < 360)-title_x_stop*(alive_time > 360),0.1);
+			if active_win[_i][0][0] == -title_x_stop {
+				end_window(_i);
+				_i--;
+			}
+			break;
+	}
+	for (var _j = 1; _j < array_length_1d(_elements);_j++) {
+		_param = _elements[_j];
+		switch _param[0] {
+			case GUI.DIALOGBOX:
+				_param[11] += _param[4];
+				break;
+		}
+	}
 }
 
 
-
-#define new_textbox(_default_string,_x,_y,_w,_sep,_color,_font)
-return [GUI.TEXTBOX,_default_string,_x,_y,_w,_sep,_color,_font];
-#define new_button(_sprite,_x,_y)
-return [GUI.BUTTON,_sprite,_x,_y];
-#define new_sprite(_sprite,_x,_y)
-return [GUI.SPRITE,_sprite,_x,_y];
-#define new_dialogbox(_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font)
-var _char_vis = 0;
-return [GUI.DIALOGBOX,_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font,_char_vis];
-#define win_add(_win_id, _win_data)
-while _win_id >= array_length_1d(win_data)  array_push(win_data, []);
-win_data[@_win_id] = _win_data;
 return true;
-#define draw_windows()
+#define draw_windows() //Draw Call
 var _x = 0;
 var _y = 0;
 var _param = [];
@@ -80,12 +119,16 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	_x = active_win[_i][0][0];
 	_y = active_win[_i][0][1];
 	_elements = active_win[_i][1];
-	alive_time = active_win[_i][0][3];
 	active_win[@_i][@0][@3] += 1;
+	alive_time = active_win[_i][0][3];
+	
 	_alpha = 1;
 	switch _elements[0] {
 		case WIN.DEBUG:
 			_alpha = 1-(win_active != _i)*.5;
+			break;
+		case WIN.AREATITLE:
+			_alpha = 1;
 			break;
 	}
 	for (var _j = 1; _j < array_length_1d(_elements);_j++) {
@@ -99,10 +142,13 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				draw_text_ext_transformed_color(_x+_param[2],_y+_param[3],_param[1],_param[5],_param[4],1,1,0,_param[6],_param[6],_param[6],_param[6],_alpha);
 				break;
 			case GUI.DIALOGBOX:
-				_param[11] += _param[4];
+				//_param[11] += _param[4];
 				draw_set_font(_param[10]);
-				if floor(_param[11]/4) % 2 draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],_alpha);
-				else draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],_alpha);
+				if floor(_param[11]/4) % 2 {
+					draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],_alpha);
+					break;
+				}
+				draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],_alpha);
 				break;
 		}
 	}
@@ -168,7 +214,19 @@ for (var i = 0; i < array_length_1d(active_win); i++) {
 }
 //gpu_set_blendmode(bm_normal);
 return true;*/
-
+#define new_textbox(_default_string,_x,_y,_w,_sep,_color,_font)
+return [GUI.TEXTBOX,_default_string,_x,_y,_w,_sep,_color,_font];
+#define new_button(_sprite,_x,_y)
+return [GUI.BUTTON,_sprite,_x,_y];
+#define new_sprite(_sprite,_x,_y)
+return [GUI.SPRITE,_sprite,_x,_y];
+#define new_dialogbox(_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font)
+var _char_vis = 0;
+return [GUI.DIALOGBOX,_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font,_char_vis];
+#define win_add(_win_id, _win_data)
+while _win_id >= array_length_1d(win_data)  array_push(win_data, []);
+win_data[@_win_id] = _win_data;
+return true;
 #define end_window(_i)
 if debug print_debug("[WA] ENDING W: "+string(active_win[_i][1][0])+" AI: "+string(active_win[_i][0][2]));
 with action_manager array_push(end_action_index,other.active_win[_i][0][2]);

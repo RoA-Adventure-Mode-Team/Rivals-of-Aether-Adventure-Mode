@@ -20,6 +20,7 @@ enum LWO {
     SPR_WLD,
     PLR_CTL
 }
+
 enum ACT {
     DIALOG, //See draw scripts, depends on sub-objects
     //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
@@ -38,9 +39,6 @@ enum ACT {
     SET //Set article data
     //article_id, variable, value
 }
-
-
-
 
 enum P {
     LOAD,
@@ -72,15 +70,18 @@ action_add(1, 1, 4, ACT.CAMERA,
 scene_add(1, 1, [1]);
 action_add(1, 1, 1, ACT.WAIT, 
 [120], //frames
-[2,3]); //Actions to start on exit
+[2,4]); //Actions to start on exit
 action_add(1, 1, 2, ACT.WINDOW, 
 [0, 100, 200, []], //window_type, x, y, [contentoverride]
-[4,5]); //Actions to start on exit
+[]); //Actions to start on exit
 action_add(1, 1, 3, ACT.CONTROL, 
 [30, all, PS_SPAWN], //player_id, life_time, state_override, input_array
 []); //Actions to start on exit
 action_add(1, 1, 4, ACT.SET, 
-[69, "bg_color", $dcf6ff], //player_id, life_time, state_override, input_array
+[69, "bg_color", $dcf6ff], //player_id, life_time, state_override, ease_type, ease_value
+[5]); //Actions to start on exit
+action_add(1, 1, 5, ACT.WINDOW, 
+[1, -300, 200, [[],["VILLAGE"]]], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
 
 /*action_add(1, 1, 1, ACT.DIALOG, 

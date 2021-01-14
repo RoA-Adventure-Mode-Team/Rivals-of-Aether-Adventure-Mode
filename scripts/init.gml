@@ -58,7 +58,7 @@ scene_manager = noone;
 follow_player = noone;
 is_online = false;
 player_num = 0;
-with oPlayer {
+/*with oPlayer {
     if get_player_hud_color(player) == 15297156 {
         other.is_online = true;
         break;
@@ -72,7 +72,17 @@ if is_online {
         if get_player_hud_color(player) == 15297156 other.follow_player = id;
         other.player_num++;
     }
-}
+}*/
+/*with oPlayer if is_player_on(player) {
+    if get_player_hud_color(player) == 15297156 {
+        local_player = -1; //Flag for setting
+        other.is_online = true;
+    }
+    //if get_player_hud_color(player) == 6612290 other.local_player = id;
+    other.player_count++;
+}*/
+with oPlayer if other.follow_player == noone && (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
+
 //Area Triggers (article4)
 
 //Room Manager (article5)
@@ -112,7 +122,10 @@ tb_str_offset_x = 4;
 tb_str_offset_y = 19;
 tb_bar_x = 128*2;
 tb_bar_y = 56*2;
+//Title
+title_x_stop = 100;
 //
+
 //Command Entering
 eb_bar_x = 128*2;
 eb_bar_y = 56*2;

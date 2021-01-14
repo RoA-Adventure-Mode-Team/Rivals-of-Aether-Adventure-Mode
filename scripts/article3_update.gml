@@ -24,8 +24,8 @@ enum ACT {
     //frames
     MUSIC, //set music
     //type, 1, 2
-    SET //Set article data
-    //article_id, variable, value
+    SET, //Set article data
+    //article_id, variable, value, fade_type, fade_length
 }
 
 
@@ -47,7 +47,7 @@ enum L {
 
 if !_init {
 	with obj_stage_article if num == 5 other.room_manager = id;
-	//debug = true;
+	debug = false;
     reload_scenes();
     error_code = change_scene(1);
     //print_debug("ERROR: "+string(error_code));
@@ -124,6 +124,21 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     		_action[@P.DIE] = true;
     	}
     	break;
+    case ACT.SET:
+	    switch _param[3] { //fade_type
+	    	case 0:
+	    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[1],variable_instance_get(id,_param[1]));
+		    	with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
+					variable_instance_set(id,_param[1],ease_linear(variable_instance_get(id,"action_old_"+_param[1]),_param[2],_action[P.ALIVE_TIME],_param[4]));
+					if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+				}
+				if _action[P.ALIVE_TIME] > _param[4] {
+		    		_action[@P.DIE] = true;
+		    	}
+	    	
+	    	break;
+	     }
+    	break;
     case ACT.WAIT: //Does what it says
 	    if _action[P.ALIVE_TIME] > _param[0] {
     		_action[@P.DIE] = true;
@@ -184,17 +199,22 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 	case ACT.WINDOW:
 		var _param = new_action[P.LOAD][L.PARAM];
 		var win_over = _param[3];
+		//print_debug(string(win_over));
 		with obj_stage_main {
 			if array_length_1d(win_data) < _param[0] {
 				print_debug("[AM] WINDOW OUTSIDE OF INITIALIZED RANGE...");
 				return false;
 			}
-			if win_over != [] { //if override
-				//for(var i = 0; i < array_length_1d(win_over); i++) {
-					//win_data[@_param[0]][@(i+1)] = win_over[i];
-				//}
-			}
-			array_push(active_win,[[_param[1],_param[2],new_action[P.ACTION_INDEX],0],array_clone(win_data[_param[0]])]); //Push window data to active windows in the right format 
+			//var gml_arrays_lul = array_clone_seriously_why_isnt_this_how_it_works(win_data[_param[0]]);
+			/*for(var _i = 0; _i < array_length_1d(win_data[_param[0]]);_i++) {
+				if  array_length_1d(win_data[_param[0]][_i]) > 0 array_push(gml_arrays_lul,array_clone(win_data[_param[0]][_i]));
+				else array_push(gml_arrays_lul,win_data[_param[0]][_i]);
+			}*/
+			if win_over != []  //if override
+				for(var i = 0; i < array_length_1d(win_over); i++) 
+					for(var j = 0; j < array_length_1d(win_over[i]); j++) 
+						win_data[@_param[0]][@(i+1)][@(j+1)] = win_over[i][j];
+			array_push(active_win,[[_param[1],_param[2],new_action[P.ACTION_INDEX],0],array_clone_seriously_why_isnt_this_how_it_works(win_data[_param[0]])]); //Push window data to active windows in the right format 
 								//[[pos_x,pos_y,action_id,alive_time], [meta]]
 		}
 		//for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
@@ -204,10 +224,14 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 		var _param = new_action[P.LOAD][L.PARAM];
 		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
 			variable_instance_set(id,_param[1],_param[2]);
-			if other.debug print_debug("[AM] SETTING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+			
 		}
-		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
-		return true; //Never enters the queue
+		if array_length_1d(_param) < 4 {
+			if debug print_debug("[AM] SETTING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+			for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+			return true; //Never enters the queue
+		}
+		if debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 		break;
 	case ACT.MUSIC:
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -280,3 +304,11 @@ for (var i = 0; i < array_length_1d(_array); i++) {
 	}
 }
 return _array_cut;
+
+#define array_clone_seriously_why_isnt_this_how_it_works(_shit)
+var _fuck = [];
+for(var _i = 0;_i < array_length_1d(_shit);_i++) {
+	if array_length_1d(_shit[_i]) > 0 array_push(_fuck,array_clone_seriously_why_isnt_this_how_it_works(_shit[_i]));
+	else array_push(_fuck,_shit[_i]);
+}
+return _fuck;

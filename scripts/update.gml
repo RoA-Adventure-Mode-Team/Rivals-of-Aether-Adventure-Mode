@@ -64,6 +64,7 @@ if !_init {
 		clear_button_buffer(PC_STRONG_PRESSED);
 		clear_button_buffer(PC_TAUNT_PRESSED);*/
 	}
+	/*
 	with oPlayer if other.follow_player != id  {
 			spr_dir = 0;
 	    	//x = other.follow_player.x;
@@ -75,7 +76,7 @@ if !_init {
 	    	visible = false;
 	    	instance_destroy();
 	}
-	
+	*/
 	with follow_player {
 		if down_down down_held++;
 		else down_held = 0;
@@ -130,6 +131,9 @@ if !_init {
         	ds_list_remove(active_bosses,active_bosses[| i]);
         i++;
 	}
+	//Window Update Call
+	win_call = 2;
+	user_event(2);
 
 	/*with oPlayer {
 		other.down_down = down_down;
