@@ -145,9 +145,7 @@ if string_count("`",keyboard_string) {
 }
 
 if debug_console { //debug_console_update();
-
     //#define debug_console_update();
-    
     draw_set_alpha(.5);
     draw_rectangle_color(debug_x,debug_y,debug_ex,debug_ey,c_black,c_black,c_black,c_black,c_black);
     draw_rectangle_color(debug_x,debug_txt_y,debug_ex,debug_txt_y+20,c_black,c_black,c_black,c_black,c_black);
@@ -173,8 +171,6 @@ if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
 
 win_call = 0;
 user_event(2); //Cursor and Window Draw
-
-
 
 //user_event(); //Draw Endscreen
 #define draw_scene() //Drawing HUD
@@ -415,13 +411,11 @@ repeat ds_list_size(active_bosses) {
         if (!show_percent) {
             draw_set_font(asset_get("medFont"));
             draw_set_halign(fa_left);
-            
             draw_sprite(sprite_get("boss_hp_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
             draw_sprite_part_ext(sprite_get("boss_hp_bar"), 0, 0, 0, 640 * hbar_fill, 26, hbar_x - 320 + hbar_shake_x, hbar_y + hbar_shake_y, 1, 1, hbar_color, 1);
             draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
         }
         else {
-            
             draw_sprite(sprite_get("boss_percent_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
             draw_set_font(asset_get("roaLBLFont"));
             draw_set_halign(fa_right);
@@ -448,10 +442,11 @@ with room_manager return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_p
 #define cell_to_grid(_pos, _cell_pos) //Translate cell coordinates to the basegame grid system
 with room_manager return real_to_grid(cell_to_real(_pos,_cell_pos));
 #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
-_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 with room_manager {
+	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+
     return [[(abs(_pos[0]) % ((cell_dim[0]-grid_offset)*cell_size)),
 		    (abs(_pos[1]) % ((cell_dim[1]-grid_offset)*cell_size))],
 		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
-			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
+			floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
 }

@@ -27,6 +27,7 @@ anim_speed = spawn_variables[1]*.01;
 group = spawn_variables[2];
 static = spawn_variables[4];
 alpha_ = spawn_variables[5];
+c_color = spawn_variables[6];
 
 image_xscale = 2;
 image_yscale = 2;

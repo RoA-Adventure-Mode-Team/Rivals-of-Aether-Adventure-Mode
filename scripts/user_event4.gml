@@ -1,4 +1,4 @@
-//Custom Scene Triggers - Scene Manager
+//Custom Scene Triggers - Scene Manager DEPRACATED
 
 //Called upon when TG_CUSTOM is set for a scene.
 

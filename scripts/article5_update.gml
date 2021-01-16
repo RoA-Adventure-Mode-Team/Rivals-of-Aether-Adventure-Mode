@@ -179,7 +179,7 @@ if _room_id < array_length_1d(array_room_data) {
    for (var i = 0; i < array_length_1d(room_data) && articles_spawned < article_frame_limit; i++) { //For each cell
         _cell_pos = room_data[i][0];
         cell_data = room_data[i][1];
-        if abs(abs(_cell_pos[0]) - abs(cell_pos[0])) < 2 && abs(abs(_cell_pos[1]) - abs(cell_pos[1])) < 2 { 
+        //if abs(abs(_cell_pos[0]) - abs(cell_pos[0])) < 2 && abs(abs(_cell_pos[1]) - abs(cell_pos[1])) < 2 { 
             //If the cell is near enough to render
             for (var j = 0; j < array_length_1d(cell_data) && articles_spawned < article_frame_limit; j++) { //Check objects inside the array
                 if cell_data[j][6][0] == 0 { //If it's not flagged as spawned yet
@@ -214,7 +214,7 @@ if _room_id < array_length_1d(array_room_data) {
                 }
                 
             }
-        } else {
+        /*} else {
             //print_debug(string(_cell_pos)+": "+string(abs(_cell_pos[1] - cell_pos[1])));
             for (var j = 0; j < array_length_1d(cell_data); j++) {
                 if cell_data[j][6][0] != 0 && cell_data[j][6][0] != -1 && (!("keep" in cell_data[j][6][0]) || cell_data[j][6][0].keep == false) {
@@ -224,7 +224,7 @@ if _room_id < array_length_1d(array_room_data) {
                 
             }
                 
-        }
+        }*/
     }
 } else if debug print_debug("[RM] Unfound Room ID");
 

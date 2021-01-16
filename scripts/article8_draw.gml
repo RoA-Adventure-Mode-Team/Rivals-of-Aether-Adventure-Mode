@@ -1,6 +1,7 @@
 //draw_debug_text(x,y,"HELLO, GORDON! "+string(timer))
 
 if debug {
+    depth = -100;
     if (active_scene == 0 || cur_scene == active_scene) draw_set_alpha(1);
     else draw_set_alpha(.2);
     switch trigger_shape {

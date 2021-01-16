@@ -1,4 +1,4 @@
-//Custom Item behavior
+//Custom Item behavior - DEPRACATED
 
 enum EVT {
     GRAB,

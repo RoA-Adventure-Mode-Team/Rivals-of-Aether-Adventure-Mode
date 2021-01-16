@@ -8,6 +8,7 @@ custom_args = array_create(0);
 debug = false;
 cell_size = 16;
 cell_dim = [163,85];
+// this is [2608,1360], or [1304,680] pixels
 grid_offset = 4;
 list_room = ds_list_create();
 ds_list_clear(list_room);

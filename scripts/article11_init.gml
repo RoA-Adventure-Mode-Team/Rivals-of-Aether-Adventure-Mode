@@ -27,3 +27,6 @@ static = spawn_variables[7];
 
 room_manager = noone;
 init_cam_pos = [0,0];
+
+image_xscale = 2;
+image_yscale = 2;

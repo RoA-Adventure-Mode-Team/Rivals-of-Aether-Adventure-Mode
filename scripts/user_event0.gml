@@ -78,10 +78,13 @@ action_add(1, 1, 3, ACT.CONTROL,
 [30, all, PS_SPAWN], //player_id, life_time, state_override, input_array
 []); //Actions to start on exit
 action_add(1, 1, 4, ACT.SET, 
-[69, "bg_color", $dcf6ff], //player_id, life_time, state_override, ease_type, ease_value
+[69, "bg_color", $ffffff], //player_id, life_time, state_override, ease_type, ease_value
 [5]); //Actions to start on exit
 action_add(1, 1, 5, ACT.WINDOW, 
-[1, -300, 200, [[],["VILLAGE"]]], //window_type, x, y, [contentoverride]
+[2, 300, 200, [[],["VILLAGE"]]], //window_type, x, y, [contentoverride]
+[]); //Actions to start on exit
+action_add(1, 0, 100, ACT.CONTROL, 
+[30, all, PS_SPAWN], //player_id, life_time, state_override, input_array
 []); //Actions to start on exit
 
 /*action_add(1, 1, 1, ACT.DIALOG, 

@@ -1,4 +1,4 @@
-//article12_update, Dynamic Lighting
+//article12_update, Dynamic Lighting, By CaptnTechnicality
 
 if _init == 0 {
     with obj_stage_article if num == 5 other.room_manager = id;

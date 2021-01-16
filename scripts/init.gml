@@ -124,6 +124,7 @@ tb_bar_x = 128*2;
 tb_bar_y = 56*2;
 //Title
 title_x_stop = 100;
+title_time = 360;
 //
 
 //Command Entering

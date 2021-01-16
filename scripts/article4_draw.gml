@@ -4,6 +4,7 @@
 } draw_set_alpha(.2);*/
 draw_set_alpha(1);
 if debug {
+    depth = -100;
     draw_debug_text(x,y, string(cur_scene));
     if (active_scene == 0 || cur_scene == active_scene) draw_set_alpha(1);
     else draw_set_alpha(.2);

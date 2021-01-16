@@ -55,7 +55,6 @@ if !_init {
     exit;
 }
 
-
 if array_length_1d(end_action_queue) > 0 process_end_queue();
 if array_length_1d(end_action_index) > 0 process_end_index();
 if array_length_1d(action_queue) > 0 process_action_queue();

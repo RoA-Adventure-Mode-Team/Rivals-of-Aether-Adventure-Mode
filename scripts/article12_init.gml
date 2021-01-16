@@ -1,4 +1,4 @@
-//article12_init, Dynamic Lighting
+//article12_init, Dynamic Lighting, By CaptnTechnicality
 sprite_index = asset_get("empty_sprite");
 
 

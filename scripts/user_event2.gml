@@ -22,7 +22,8 @@ tinyFont
 enum WIN {
 	DEBUG,
 	DIALOG_DEFAULT,
-	AREATITLE
+	AREATITLE,
+	AREAFADE
 }
 
 enum GUI {
@@ -30,6 +31,7 @@ enum GUI {
 	TEXTBOX,
 	DIALOGBOX,
 	BUTTON,
+	VARCONT,
 	EXIT
 }
 
@@ -55,6 +57,12 @@ if win_call == 1 with obj_stage_main { //Load Data
 	new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont"))
 	]);
 	
+	win_add(i++,[WIN.AREAFADE,
+	new_sprite(sprite_get("title_bg"),0,0),
+	new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont")),
+	new_varcont([0,0,0,0,0])
+	]);
+	
 	//win_add(1, [WIN.DEBUG, sprite_get("gui_test"), "Gucci", ""]);
 	//win_add(1, [WIN.DEBUG, sprite_get("gui_test"), "Gucci", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."]);
 	//window_type, bg, title var, string var
@@ -72,7 +80,7 @@ var _x = 0;
 var _y = 0;
 var _param = [];
 var _elements = [];
-var _alpha = 1;
+win_alpha = 1;
 var alive_time = 0;
 for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	_x = active_win[_i][0][0];
@@ -81,11 +89,18 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	active_win[@_i][@0][@3] += 1;
 	alive_time = active_win[_i][0][3];
 	
-	_alpha = 1;
+	win_alpha = 1;
 	switch _elements[0] {
 		case WIN.AREATITLE:
 			active_win[@_i][@0][@0] = lerp(active_win[_i][0][0],title_x_stop*(alive_time < 360)-title_x_stop*(alive_time > 360),0.1);
 			if active_win[_i][0][0] == -title_x_stop {
+				end_window(_i);
+				_i--;
+			}
+			break;
+		case WIN.AREAFADE:
+			_elements[@3][@1] = lerp(_elements[3][1],(alive_time < title_time),0.05);
+			if alive_time > title_time*2 {
 				end_window(_i);
 				_i--;
 			}
@@ -108,7 +123,7 @@ var _x = 0;
 var _y = 0;
 var _param = [];
 var _elements = [];
-var _alpha = 1;
+win_alpha = 1;
 var alive_time = 0;
 
 if win_active != -1 {
@@ -122,33 +137,36 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	active_win[@_i][@0][@3] += 1;
 	alive_time = active_win[_i][0][3];
 	
-	_alpha = 1;
+	win_alpha = 1;
 	switch _elements[0] {
 		case WIN.DEBUG:
-			_alpha = 1-(win_active != _i)*.5;
+			win_alpha = 1-(win_active != _i)*.5;
 			break;
 		case WIN.AREATITLE:
-			_alpha = 1;
+			win_alpha = 1;
+			break;
+		case WIN.AREAFADE:
+			win_alpha = _elements[3][1];
 			break;
 	}
 	for (var _j = 1; _j < array_length_1d(_elements);_j++) {
 		_param = _elements[_j];
 		switch _param[0] {
 			case GUI.SPRITE:
-				draw_sprite_ext(_param[1],0,_x+_param[2],_y+_param[3],2,2,0,c_white,_alpha);
+				draw_sprite_ext(_param[1],0,_x+_param[2],_y+_param[3],2,2,0,c_white,win_alpha);
 				break;
 			case GUI.TEXTBOX:
 				draw_set_font(_param[7]);
-				draw_text_ext_transformed_color(_x+_param[2],_y+_param[3],_param[1],_param[5],_param[4],1,1,0,_param[6],_param[6],_param[6],_param[6],_alpha);
+				draw_text_ext_transformed_color(_x+_param[2],_y+_param[3],_param[1],_param[5],_param[4],1,1,0,_param[6],_param[6],_param[6],_param[6],win_alpha);
 				break;
 			case GUI.DIALOGBOX:
 				//_param[11] += _param[4];
 				draw_set_font(_param[10]);
 				if floor(_param[11]/4) % 2 {
-					draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],_alpha);
+					draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
 					break;
 				}
-				draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],_alpha);
+				draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
 				break;
 		}
 	}
@@ -156,64 +174,6 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 
 return true;
 
-/*#define draw_windows() //Do everything windows
-//gpu_set_blendmode(bm_add); //Reduce draw lag?
-var _x = 0;
-var _y = 0;
-var _param = [];
-var _alpha = 1;
-var alive_time = 0;
-//var _string = "";
-if win_active != -1 {
-	//print_debug(string(active_win[@win_active]));
-	_param = _active_win[win_active][1];
-	switch _param[0] {
-		case WIN.DEBUG:
-			if keyboard_string != "" {
-				active_win[@win_active][@1][@3] += keyboard_string;
-				keyboard_string = "";
-			}
-			break;
-	}
-}
-for (var i = 0; i < array_length_1d(active_win); i++) {
-	_x = active_win[i][0][0];
-	_y = active_win[i][0][1];
-	_param = active_win[i][1];
-	alive_time = active_win[i][0][3];
-	active_win[@i][@0][@3] += 1;
-	switch _param[0] {
-		case WIN.DEBUG:
-			_alpha = 1-(win_active != i)*.5;
-			draw_sprite_ext(_param[1],0,_x,_y,2,2,0,c_white,_alpha);
-			draw_text_ext_transformed_color(_x+tb_title_offset_x,_y+tb_title_offset_y,_param[2]+" ("+string(i)+")",1,2*sprite_get_width(_param[1])-tb_title_offset_x,1,1,0,c_white,c_white,c_white,c_white,_alpha);
-			draw_text_ext_color(_x+tb_str_offset_x,_y+tb_str_offset_y,_param[3],16,200,c_white,c_white,c_white,c_white,_alpha);
-			break;
-		case WIN.DIALOG_DEFAULT:
-			//alive_time = action_manager.cur_actions[active_win[i][0][2]][P.ALIVE_TIME];
-			draw_sprite_ext(_param[2],alive_time*_param[9],_x,_y,2,2,0,c_white,_alpha);
-			draw_set_font(_param[7]);
-			//_string = string_copy(_param[1],0,floor(alive_time*_param[5]));
-			//if floor(_param[4]) != floor(_param[4] + alive_time*_param[5]) sound_play(_param[3]);
-			_param[4] += _param[5];
-			if _param[4] > string_length(_param[1]) {
-				with oPlayer if attack_down with other {
-					end_window(i);
-					break;
-				}
-				if alive_time % 30 < 15 {
-					draw_text_ext_color(_x,_y,_param[1]+_param[8],16,_param[6],c_white,c_white,c_white,c_white,_alpha);
-					break;
-				}
-				draw_text_ext_color(_x,_y,_param[1],16,_param[6],c_white,c_white,c_white,c_white,_alpha);
-				break;
-			}
-			draw_text_ext_color(_x,_y,string_copy(_param[1],0,floor(_param[4])),16,_param[6],c_white,c_white,c_white,c_white,_alpha);
-			break;
-	}
-}
-//gpu_set_blendmode(bm_normal);
-return true;*/
 #define new_textbox(_default_string,_x,_y,_w,_sep,_color,_font)
 return [GUI.TEXTBOX,_default_string,_x,_y,_w,_sep,_color,_font];
 #define new_button(_sprite,_x,_y)
@@ -223,6 +183,10 @@ return [GUI.SPRITE,_sprite,_x,_y];
 #define new_dialogbox(_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font)
 var _char_vis = 0;
 return [GUI.DIALOGBOX,_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font,_char_vis];
+#define new_varcont(_var)
+var _s = [GUI.VARCONT];
+for (var _i = 0;_i < array_length_1d(_var);_i++) array_push(_s,_var[_i]);
+return _s;
 #define win_add(_win_id, _win_data)
 while _win_id >= array_length_1d(win_data)  array_push(win_data, []);
 win_data[@_win_id] = _win_data;
@@ -238,6 +202,8 @@ cursor_x_p = cursor_x;
 cursor_y_p = cursor_y;
 cursor_x = mouse_x - view_get_xview();
 cursor_y = mouse_y - view_get_yview();
+var _cursor_grid = grid_to_cell([mouse_x,mouse_y]);
+draw_debug_text(cursor_x,cursor_y,string(_cursor_grid[1])+":"+string([floor((_cursor_grid[0][0])/16),floor((_cursor_grid[0][1])/16)])+":"+string([(_cursor_grid[0][0]) % 16, (_cursor_grid[0][1]) % 16]));
 
 if mouse_button == 1 {
 	if !mb_l_click { //on click
@@ -308,3 +274,12 @@ for (var i = 1; i <= string_length(str); i++) {
     len = string_length(final_str);
 }
 return final_str;
+#define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
+with room_manager {
+	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+
+    return [[(abs(_pos[0]) % ((cell_dim[0]-grid_offset)*cell_size)),
+		    (abs(_pos[1]) % ((cell_dim[1]-grid_offset)*cell_size))],
+		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
+			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
+}

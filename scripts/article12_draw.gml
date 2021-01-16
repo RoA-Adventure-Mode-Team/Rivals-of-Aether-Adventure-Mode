@@ -1,4 +1,4 @@
-//article12_draw, Dynamic Lighting
+//article12_draw, Dynamic Lighting, By CaptnTechnicality
 if(draw)
 {
     gpu_set_blendenable(false);
