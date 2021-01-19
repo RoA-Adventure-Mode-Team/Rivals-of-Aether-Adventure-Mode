@@ -6,6 +6,8 @@ with obj_stage_main {
 	true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
 	
 	switch cam_state {
+		case -1: //nothing
+			break;
 		case 1: //controlled by action manager
 			with action_manager {
 				other.g_cam_pos = cam_pos;

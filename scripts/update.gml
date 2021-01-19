@@ -14,14 +14,14 @@ if !_init {
 	with obj_stage_article debug = false;
 	with obj_stage_article_solid debug = false;
 	with obj_stage_article_platform debug = false;*/
-	debug = true;
+	//debug = true;
 	with obj_stage_article {
 		if num == 3 other.action_manager = id;
 		if num == 5 other.room_manager = id;
-		debug = true;
+		debug = other.debug;
 	}
-	with obj_stage_article_solid debug = true;
-	with obj_stage_article_platform debug = true;
+	with obj_stage_article_solid debug = other.debug;
+	with obj_stage_article_platform debug = other.debug;
 	
 	_init = 1;
 } else {
@@ -121,6 +121,7 @@ if !_init {
 				keep_dash = false;
 			}
 		}
+		rel_pos = [x-view_get_xview(),y-view_get_yview()];
 	}
 	
 	

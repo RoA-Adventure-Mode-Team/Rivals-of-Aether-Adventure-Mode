@@ -25,8 +25,8 @@ image_yscale = 2;
 
 render_sprite = sprite_get("empty_sprite");
 render_index = 0;
-bg_color = $702010;
+bg_color = $ffffff;
 bg_color_true = bg_color;
 color_rate = .02;
-sat_limit = 100;
+val_limit = 20;
 draw = false;

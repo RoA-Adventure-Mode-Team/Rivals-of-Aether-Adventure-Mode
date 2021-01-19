@@ -13,11 +13,19 @@ sprite_change_offset("column_deco_black",210, 310);
 
 sprite_change_offset("stall",27, 48);
 sprite_change_offset("ground",-32, 0);
+sprite_change_offset("marble_ground",-32, 0);
 sprite_change_offset("ground_top",-32, 0);
 sprite_change_offset("black",-32, 0);
+
 sprite_change_collision_mask("ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("marble_ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("sewer_ground_left",true,0,0,0,0,0,0);
+sprite_change_collision_mask("sewer_water1",true,0,0,0,0,0,0);
+sprite_change_collision_mask("sewer_ceil1",true,0,0,0,0,0,0);
 sprite_change_offset("sewer_top",1, -2);
+sprite_change_offset("sewer_sect1",24, 232);
 sprite_change_offset("stall_empty",27, 48);
+sprite_change_offset("sewer_bg",-36, 0);
 sprite_change_offset("house_main",60, 154);
 sprite_change_offset("house1",64, 72);
 sprite_change_offset("house_2stor",38, 136);
@@ -29,7 +37,9 @@ sprite_change_offset("arch1",54, 0);
 //sprite_change_collision_mask("house_2stor_platl",true,0,0,0,0,0,0);
 sprite_change_offset("underwater",84, 19);
 sprite_change_offset("well",24, 70);
-sprite_change_offset("light", 40, 49);
+sprite_change_offset("light", 39, 46);
+sprite_change_offset("light_dimver", 40, 49);
+sprite_change_offset("light_dimver_larg", 40*4, 49*3+25);
 sprite_change_offset("house_main_inside",15, 111);
 sprite_change_offset("house_main_insideb",15, 111);
 sprite_change_collision_mask("house_main_insideb",true,0,0,0,0,0,0);
@@ -38,7 +48,10 @@ sprite_change_offset("house_main_transparent",65, 111);
 sprite_change_offset("tree1",80, 229);
 sprite_change_offset("tree2",46, 161);
 sprite_change_offset("bench",13, 9);
-sprite_change_offset("arrow",0,28);
+sprite_change_offset("arrow",0, 28);
+sprite_change_offset("torch",7, 11);
+sprite_change_offset("steam_lantern",5, 43);
+sprite_change_offset("steam_vfx",32, 32);
 
 //Enemy Declarations - Harbidge
 sprite_change_offset("char_arrow",0,0);

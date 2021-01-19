@@ -19,7 +19,7 @@ custom_args = array_create(0);
 stage_main = asset_get("obj_stage_main");
 
 //Physics Delta
-physics_range = 800; //Range that physics live-updates
+physics_range = 600; //Range that physics live-updates
 in_render = false;
 
 //State Actions

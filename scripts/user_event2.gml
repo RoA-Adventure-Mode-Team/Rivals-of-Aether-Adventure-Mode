@@ -23,7 +23,8 @@ enum WIN {
 	DEBUG,
 	DIALOG_DEFAULT,
 	AREATITLE,
-	AREAFADE
+	AREAFADE,
+	ARCHY_DIALOG
 }
 
 enum GUI {
@@ -53,14 +54,32 @@ if win_call == 1 with obj_stage_main { //Load Data
 	new_dialogbox("HENLOOOOOOOOOOOOOOOOOOOOOOOOO",asset_get("mfx_back"),"_",0.4,4,16,200,12,c_white,asset_get("roundFont"))]);
 	
 	win_add(i++,[WIN.AREATITLE,
-	new_sprite(sprite_get("title_bg"),0,0),
+	new_sprite(sprite_get("area_title"),0,0),
 	new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont"))
 	]);
 	
 	win_add(i++,[WIN.AREAFADE,
-	new_sprite(sprite_get("title_bg"),0,0),
-	new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont")),
-	new_varcont([0,0,0,0,0])
+	new_sprite(sprite_get("area_title"),4,12),
+	new_textbox("TITLE_NAME",2,2,700,32,c_black,asset_get("roaLBLFont")),
+	new_varcont([0,0,0,0,0]),
+	new_textbox("TITLE_NAME",0,0,700,32,c_white,asset_get("roaLBLFont")),
+	]);
+	var _pos = [32,26];
+	var _string ="Test";
+	var _sound = asset_get("sfx_may_arc_talk");
+	var _w = 170;
+	win_add(i++,[WIN.ARCHY_DIALOG,
+	new_varcont([_string,120,0,0,0]),
+	new_sprite(sprite_get("archy_dialog"),0,16),
+	new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("fName")),
+	new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("fName")),
+	new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1],_w,16,c_black,asset_get("fName")),
+	new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1],_w,16,c_black,asset_get("fName")),
+	new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1]+2,_w,16,c_black,asset_get("fName")),
+	new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1]-2,_w,16,c_black,asset_get("fName")),
+	
+	new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,$d252ff,asset_get("fName")) //$ff00ff $ea00ea $d252ff
+	
 	]);
 	
 	//win_add(1, [WIN.DEBUG, sprite_get("gui_test"), "Gucci", ""]);
@@ -79,18 +98,18 @@ if win_call == 2 with obj_stage_main logic_windows(); //Update Call
 var _x = 0;
 var _y = 0;
 var _param = [];
-var _elements = [];
+var _element = [];
 win_alpha = 1;
 var alive_time = 0;
 for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	_x = active_win[_i][0][0];
 	_y = active_win[_i][0][1];
-	_elements = active_win[_i][1];
+	_element = active_win[_i][1];
 	active_win[@_i][@0][@3] += 1;
 	alive_time = active_win[_i][0][3];
 	
 	win_alpha = 1;
-	switch _elements[0] {
+	switch _element[0] {
 		case WIN.AREATITLE:
 			active_win[@_i][@0][@0] = lerp(active_win[_i][0][0],title_x_stop*(alive_time < 360)-title_x_stop*(alive_time > 360),0.1);
 			if active_win[_i][0][0] == -title_x_stop {
@@ -99,18 +118,39 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			}
 			break;
 		case WIN.AREAFADE:
-			_elements[@3][@1] = lerp(_elements[3][1],(alive_time < title_time),0.05);
+			_element[@3][@1] = lerp(_element[3][1],(alive_time < title_time),0.05);
 			if alive_time > title_time*2 {
 				end_window(_i);
 				_i--;
 			}
 			break;
+		case WIN.ARCHY_DIALOG:
+			if alive_time == 1 {
+				//print_debug(string(_element[1][1]));
+				active_win[@_i][1][@3][@1] = _element[1][1];
+				active_win[@_i][1][@4][@1] = _element[1][1];
+				active_win[@_i][1][@5][@1] = _element[1][1];
+				active_win[@_i][1][@6][@1] = _element[1][1];
+				active_win[@_i][1][@7][@1] = _element[1][1];
+				active_win[@_i][1][@8][@1] = _element[1][1];
+				active_win[@_i][1][@9][@1] = _element[1][1];
+			}
+			if _element[3][11] > string_length(_element[3][1])-1 {
+				_element[@1][@3] += 1;
+				//print_debug(string(_element[1][3]));
+				if _element[1][3] > _element[1][2] {
+					end_window(_i);
+					_i--;
+				}
+			}
+			break;
 	}
-	for (var _j = 1; _j < array_length_1d(_elements);_j++) {
-		_param = _elements[_j];
+	for (var _j = 1; _j < array_length_1d(_element);_j++) {
+		_param = _element[_j];
 		switch _param[0] {
 			case GUI.DIALOGBOX:
 				_param[11] += _param[4];
+				if _param[11] < string_length(_element[3][1])-1 && !((floor(_param[11])) % 2) sound_play(_param[2],false,0,0.1,.9);//floor(_param[11] + _param[4]) > floor(_param[11]) sound_play(_param[2]);
 				break;
 		}
 	}
@@ -122,7 +162,7 @@ return true;
 var _x = 0;
 var _y = 0;
 var _param = [];
-var _elements = [];
+var _element = [];
 win_alpha = 1;
 var alive_time = 0;
 
@@ -133,24 +173,21 @@ if win_active != -1 {
 for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	_x = active_win[_i][0][0];
 	_y = active_win[_i][0][1];
-	_elements = active_win[_i][1];
+	_element = active_win[_i][1];
 	active_win[@_i][@0][@3] += 1;
 	alive_time = active_win[_i][0][3];
 	
 	win_alpha = 1;
-	switch _elements[0] {
+	switch _element[0] {
 		case WIN.DEBUG:
 			win_alpha = 1-(win_active != _i)*.5;
 			break;
-		case WIN.AREATITLE:
-			win_alpha = 1;
-			break;
 		case WIN.AREAFADE:
-			win_alpha = _elements[3][1];
+			win_alpha = _element[3][1];
 			break;
 	}
-	for (var _j = 1; _j < array_length_1d(_elements);_j++) {
-		_param = _elements[_j];
+	for (var _j = 1; _j < array_length_1d(_element);_j++) {
+		_param = _element[_j];
 		switch _param[0] {
 			case GUI.SPRITE:
 				draw_sprite_ext(_param[1],0,_x+_param[2],_y+_param[3],2,2,0,c_white,win_alpha);
@@ -204,7 +241,7 @@ cursor_x = mouse_x - view_get_xview();
 cursor_y = mouse_y - view_get_yview();
 var _cursor_grid = grid_to_cell([mouse_x,mouse_y]);
 draw_debug_text(cursor_x,cursor_y,string(_cursor_grid[1])+":"+string([floor((_cursor_grid[0][0])/16),floor((_cursor_grid[0][1])/16)])+":"+string([(_cursor_grid[0][0]) % 16, (_cursor_grid[0][1]) % 16]));
-
+draw_debug_text(cursor_x,cursor_y+16,string([cursor_x,cursor_y]));
 if mouse_button == 1 {
 	if !mb_l_click { //on click
 		//print_debug("MB1 CLICK!");
@@ -281,5 +318,5 @@ with room_manager {
     return [[(abs(_pos[0]) % ((cell_dim[0]-grid_offset)*cell_size)),
 		    (abs(_pos[1]) % ((cell_dim[1]-grid_offset)*cell_size))],
 		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
-			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
+			floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
 }

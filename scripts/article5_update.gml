@@ -1,6 +1,6 @@
 //
 if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
-    with obj_stage_article if num == 3 other.action_manager = id;
+    //with obj_stage_article if num == 3 other.action_manager = id;
     /*cam_pos_left = [view_get_xview(),view_get_yview()];
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
@@ -127,9 +127,10 @@ with oPlayer set_state(PS_IDLE);
 switch_to_room = cur_room;
 #define room_switch_update() //Runs when a room transition is in effect
 with oPlayer {
-	if other.room_switch_timer == 1 set_state(PS_SPAWN);
-	if other.room_switch_timer == other.room_switch_time set_state(PS_IDLE);
+	//if other.room_switch_timer == 1 set_state(PS_SPAWN);
+	//if other.room_switch_timer == other.room_switch_time set_state(PS_IDLE);
 }
+//cam_state = -1;
 switch room_switch_type {
 	case 1: //Rectangle Slide
 		if room_switch_timer == floor(room_switch_time/2) {
@@ -142,8 +143,7 @@ switch room_switch_type {
 			}
 		}
 		if room_switch_timer >= room_switch_time {
-			room_switch_type = 0;
-			room_switch_on = false;
+			switch_reset();
 		}
 		break;
 	case 2: //Fade Out/In
@@ -157,20 +157,28 @@ switch room_switch_type {
 			}
 		}
 		if room_switch_timer >= room_switch_time {
-			room_switch_type = 0;
-			room_switch_on = false;
+			switch_reset();
 		}
 		break;
 	case 0:
-		room_switch_type = 0;
-		room_switch_on = false;
+		
 		despawn_room();
 		room_render(cur_room);
 		switch_room_position(switch_to_room_pos);
+		switch_reset();
 		break;
 }
 room_switch_timer++;
 
+#define switch_reset()
+room_switch_type = 0;
+room_switch_on = false;
+cam_state = 0;
+with action_manager {
+	room_id = other.cur_room;
+	array_push(action_queue, [other.cur_room,1,1]);
+}
+return true;
 #define room_render(_room_id) //Renders the current room. Runs on cell change, room transitions, and respawn usually.
 var articles_spawned = 0;
 if debug print_debug("[RM] Room Render Call");

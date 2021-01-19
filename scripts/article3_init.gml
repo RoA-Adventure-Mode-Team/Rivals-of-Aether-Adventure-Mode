@@ -38,6 +38,14 @@ with obj_stage_article if num == 5 other.room_manager = id;
 //action_temp = 0;
 
 
+
+//Archytas Dialog
+archy_dialog = [
+    "Hello Everyone! This is a test for linebreaks and readability. Hopefully I can say at least this much per box!",
+    "Test Two!",
+    "Test Three!",
+    ];
+
 /*
 //Scene Manager
 list_window = ds_list_create();

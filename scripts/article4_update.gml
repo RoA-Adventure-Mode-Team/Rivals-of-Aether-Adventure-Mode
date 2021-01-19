@@ -52,25 +52,19 @@ if state == 1 { //trigger active
     }
     if collis_obj != noone && (trigger_negative == 0 || ("num" in collis_obj && num == trigger_negative)) &&
     (item_needed == 0 || item_needed == collis_obj.item_id) && (active_scene == 0 || cur_scene == active_scene) {
-        if debug print_debug("[TZ] TRIGGERED "+string(action_id));
-        with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);
-        if destroy_on_trigger state = 2;
-    }
-    
-    /*if collis_obj != noone print_debug("[TZ] COLLIDE");
-    if collis_obj != noone && 
-    (trigger_negative == 0 || ("num" in collis_obj && num == trigger_negative)) &&
-    (item_needed == 0 || item_needed == collis_obj.item_id) && (active_scene == 0 || cur_scene == active_scene) {
-        if debug print_debug("[TZ] TRIGGERED "+string(action_id));
-        with obj_stage_article if num == 3 {
-            event_triggered = true;
-            trigger_id = other.id;
-            obj_triggered = other.collis_obj;
-            action_id_start = other.action_id;
-            if other.destroy_on_trigger other.state = 2;
+        if trigger_cooldown == 0 {
+            if debug print_debug("[TZ] TRIGGERED "+string(action_id));
+            with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);
+            if destroy_on_trigger state = 2;
+            trigger_cooldown = trigger_cooldown_max;
         }
-        
-    }*/
+        //trigger_cooldown = trigger_cooldown_max;
+    } else {
+        if trigger_cooldown > 0 {
+            trigger_cooldown--;
+            exit;
+        }
+    }
 }
 
 if state == 2 { //destroy

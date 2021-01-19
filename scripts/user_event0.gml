@@ -35,9 +35,13 @@ enum ACT {
     WAIT, //waits
     //frames
     MUSIC, //set music
-    //type, music_file
-    SET //Set article data
-    //article_id, variable, value
+    //type, 1, 2
+    SET, //Set article data
+    //article_id, variable, value, fade_type, fade_length
+    ON_INPUT, //Do a thing when a player presses a button
+    //follow_player?, input_type
+    SW_ROOM, //Switch the room
+    //to_room
 }
 
 enum P {
@@ -67,10 +71,11 @@ action_add(1, 1, 4, ACT.CAMERA,
 []);
 */
 //Scene Data Here, please go sequentially
+
 scene_add(1, 1, [1]);
 action_add(1, 1, 1, ACT.WAIT, 
 [120], //frames
-[2,4]); //Actions to start on exit
+[8]); //Actions to start on exit
 action_add(1, 1, 2, ACT.WINDOW, 
 [0, 100, 200, []], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
@@ -81,11 +86,41 @@ action_add(1, 1, 4, ACT.SET,
 [69, "bg_color", $ffffff], //player_id, life_time, state_override, ease_type, ease_value
 [5]); //Actions to start on exit
 action_add(1, 1, 5, ACT.WINDOW, 
-[2, 300, 200, [[],["VILLAGE"]]], //window_type, x, y, [contentoverride]
+[2, 200, 100, [[],["TOPSOIL VILLAGE"],[],["TOPSOIL VILLAGE"]]], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
 action_add(1, 0, 100, ACT.CONTROL, 
 [30, all, PS_SPAWN], //player_id, life_time, state_override, input_array
 []); //Actions to start on exit
+action_add(1, 1, 6, ACT.ON_INPUT, //Archy Presentation
+[0,PC_ATTACK_PRESSED], //follow_player?
+[]); //Actions to start on exit
+action_add(1, 1, 7, ACT.SW_ROOM, 
+[4], //player_id, life_time, state_override, ease_type, ease_value
+[]); //Actions to start on exit
+/*
+var _j = 0;
+for(var _i = 8; _j < array_length_1d(archy_dialog);_i += 2) {
+    action_add(1, 1, _i, ACT.ON_INPUT, //Archy Presentation
+    [0,PC_ATTACK_PRESSED], //follow_player?
+    [_i+1]); //Actions to start on exit
+    action_add(1, 1, _i+1, ACT.WINDOW, //Archy Presentation
+    [3, 320, 70, [[archy_dialog[_j]]]], //window_type, x, y, [contentoverride]
+    [_i+2]);
+    //print_debug(string(archy_dialog[_j]));
+    _j++;
+}*/
+/*
+action_add(4, 1, 1, ACT.SET, 
+[69, "bg_color", $999999], //player_id, life_time, state_override, ease_type, ease_value
+[2]); //Actions to start on exit
+action_add(4, 1, 2, ACT.WINDOW,
+[2, 200, 100, [[],["UNDERGROUND AQUEDUCT"],[],["UNDERGROUND AQUEDUCT"]]], //window_type, x, y, [contentoverride]
+[]); //Actions to start on exit
+action_add(4, 1, 3, ACT.SW_ROOM, 
+[1], //player_id, life_time, state_override, ease_type, ease_value
+[]); //Actions to start on exit*/
+
+
 
 /*action_add(1, 1, 1, ACT.DIALOG, 
 [LWO.TXT_HUD, 100, 200, 300, 50, -1, 0, "Dynamic Lighting Test", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 

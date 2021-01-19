@@ -82,7 +82,7 @@ if is_online {
     other.player_count++;
 }*/
 with oPlayer if other.follow_player == noone && (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
-
+with oPlayer if player == 2 other.follow_player = id;
 //Area Triggers (article4)
 
 //Room Manager (article5)

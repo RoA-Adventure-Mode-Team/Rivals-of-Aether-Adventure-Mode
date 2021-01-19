@@ -11,6 +11,7 @@ switch(type)
         gpu_set_colorwriteenable(true, true, true, true);
         draw_set_alpha(1);
         gpu_set_blendenable(true);
+        //print_debug("0");
     break;
     
     case 1:
@@ -29,7 +30,7 @@ switch(type)
         
         with(oPlayer)
         {
-            draw_sprite_ext(sprite_index, image_index, x, y, spr_dir, 1, image_angle, c_white, 1);
+            draw_sprite_ext(sprite_index, image_index, x, y, spr_dir*visible*(1+small_sprites), visible*(1+small_sprites), image_angle, c_white, 1);
         }
         with(obj_stage_article)
         {
@@ -40,5 +41,6 @@ switch(type)
         gpu_set_fog(fog[0], fog[1], fog[2], fog[3]);
         gpu_set_blendmode(bm_normal);
         gpu_set_alphatestenable(false);
+        //print_debug("1");
     break;
 }

@@ -18,5 +18,6 @@ if _init == 0 {
     if bg_color_true != bg_color {
         bg_color_true = merge_color(bg_color_true,bg_color,color_rate);
     }
+    //print_debug(string(val_limit < color_get_saturation(bg_color_true)));
 }
 draw = true;

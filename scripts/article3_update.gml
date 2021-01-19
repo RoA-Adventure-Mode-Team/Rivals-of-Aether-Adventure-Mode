@@ -26,8 +26,11 @@ enum ACT {
     //type, 1, 2
     SET, //Set article data
     //article_id, variable, value, fade_type, fade_length
+    ON_INPUT, //Do a thing when a player presses a button
+    //follow_player?, input_type
+    SW_ROOM, //Switch the room
+    //to_room
 }
-
 
 enum P {
     LOAD,
@@ -138,6 +141,40 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
 	    	break;
 	     }
     	break;
+    case ACT.ON_INPUT:
+    	var _input_done = 0;
+    	with oPlayer {
+    		if !_param[0] || other.follow_player == id {
+    			switch _param[1] {
+    				case PC_TAUNT_PRESSED:
+    					if taunt_down _input_done = 1;
+    					break;
+    				case PC_ATTACK_PRESSED:
+    					if attack_down _input_done = 1;
+    					break;
+    				case PC_SHIELD_PRESSED:
+    					if shield_down _input_done = 1;
+    					break;
+    				case PC_JUMP_PRESSED:
+    					if jump_down _input_done = 1;
+    					break;
+    				case PC_DOWN_STICK_PRESSED:
+    					if down_down _input_done = 1;
+    					break;
+    				case PC_UP_STICK_PRESSED:
+    					if up_down _input_done = 1;
+    					break;
+    				case PC_LEFT_STICK_PRESSED:
+    					if left_down _input_done = 1;
+    					break;
+    				case PC_RIGHT_STICK_PRESSED:
+    					if right_down _input_done = 1;
+    					break;
+    			}
+    		}
+    	}
+    	if _input_done _action[@P.DIE] = true;
+    	break;
     case ACT.WAIT: //Does what it says
 	    if _action[P.ALIVE_TIME] > _param[0] {
     		_action[@P.DIE] = true;
@@ -198,7 +235,7 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 	case ACT.WINDOW:
 		var _param = new_action[P.LOAD][L.PARAM];
 		var win_over = _param[3];
-		//print_debug(string(win_over));
+		print_debug(string(win_over));
 		with obj_stage_main {
 			if array_length_1d(win_data) < _param[0] {
 				print_debug("[AM] WINDOW OUTSIDE OF INITIALIZED RANGE...");
@@ -249,6 +286,15 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 				break;
     		default:
     			break;
+    	}
+    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+		return true; //Never enters the queue
+	case ACT.SW_ROOM:
+		var _param = new_action[P.LOAD][L.PARAM];
+    	with room_manager {
+    		switch_to_room_pos = [-1,-1];
+    		room_switch_type = 2;
+    		switch_to_room = _param[0];
     	}
     	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
 		return true; //Never enters the queue

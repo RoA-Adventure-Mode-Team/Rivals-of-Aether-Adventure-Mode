@@ -39,7 +39,7 @@ enum L {
     PARAM,
     ON_EXIT
 }
-draw_scene();
+//draw_scene();
 //draw_set_font(asset_get("medFont"));
 //draw_text_trans_outline(temp_x,temp_y,"TEST FONT",10,1000,1,1,0,c_white,c_black,1);
 //draw_debug_text(temp_x-200,temp_y-470,string(cur_scene));
@@ -96,6 +96,11 @@ if debug {
     draw_debug_text(2,2,"FPS: "+string(fps));
     with action_manager draw_debug_text(2,16,string(array_length_1d(cur_actions)));
     draw_debug_text(2,32,string(array_length_1d(active_win)));
+    var _count = 0;
+    with obj_stage_article _count++;
+    with obj_stage_article_platform _count++;
+    with obj_stage_article_solid _count++;
+    draw_debug_text(2,32+16,string(_count));
     with room_manager {
     	//print_debug(string(follow_point));
         p_true_pos = real_to_grid([follow_player.x,follow_player.y]);
@@ -174,7 +179,7 @@ user_event(2); //Cursor and Window Draw
 
 //user_event(); //Draw Endscreen
 #define draw_scene() //Drawing HUD
-gpu_set_blendmode(bm_add); //Reduce draw lag?
+//gpu_set_blendmode(bm_add); //Reduce draw lag?
 var actions_load = [];
 var _param = 0;
 var alive_time = 0;
@@ -209,7 +214,7 @@ with scene_manager {
 		}
 	}
 }
-gpu_set_blendmode(bm_normal);
+//gpu_set_blendmode(bm_normal);
 return true;
 
 #define console_command(_console_parse)
@@ -414,8 +419,7 @@ repeat ds_list_size(active_bosses) {
             draw_sprite(sprite_get("boss_hp_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
             draw_sprite_part_ext(sprite_get("boss_hp_bar"), 0, 0, 0, 640 * hbar_fill, 26, hbar_x - 320 + hbar_shake_x, hbar_y + hbar_shake_y, 1, 1, hbar_color, 1);
             draw_text_trans_outline(xx, yy, str, 1, -1, 1, 1, 0, c_white, c_black, 1);
-        }
-        else {
+        } else {
             draw_sprite(sprite_get("boss_percent_back"), 0, hbar_x + hbar_shake_x, hbar_y + hbar_shake_y);
             draw_set_font(asset_get("roaLBLFont"));
             draw_set_halign(fa_right);

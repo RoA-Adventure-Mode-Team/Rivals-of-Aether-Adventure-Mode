@@ -23,6 +23,9 @@ trigger_h = spawn_variables[6];
 trigger_negative = spawn_variables[7];
 cur_scene = 0;
 
+trigger_cooldown = 0;
+trigger_cooldown_max = 600;
+
 trigger_var = noone;
 //trigger_objects = [pHitBox];
 //trigger_player = [all];

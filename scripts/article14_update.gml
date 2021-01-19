@@ -10,7 +10,7 @@ if _init == 0 {
     alpha_ = spawn_variables[6];
     active_particles = [];
     debug = true;
-    depth = -10;
+    //depth = -10;
     _init = 1;
 } else {
     if alive_time % spawn_time == 0 && obj_stage_main.fps > 59 {
@@ -58,7 +58,6 @@ if _init == 0 {
             _i--;
         }
     }
-    print_debug(string(array_length_1d(active_particles)));
     alive_time++;
 }
 #define array_cut(_array, _index)
