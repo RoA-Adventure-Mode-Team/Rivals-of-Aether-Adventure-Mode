@@ -1,6 +1,5 @@
 //article6_init, Enemy
 //Rework done by Harbige12
-
 _init = 0;
 collision_box = asset_get("ex_guy_hurt_box");
 colis_width = sprite_get_width(collision_box);
@@ -10,6 +9,7 @@ mask_index =  collision_box; // Collision Mask
 hurtbox_spr = collision_box; //Hurtbox Sprite
 
 debug = false;
+debug_info = false;
 init_pos = [0,0];
 can_be_grounded = true;
 ignores_walls = false;

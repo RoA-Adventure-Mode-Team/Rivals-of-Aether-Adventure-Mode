@@ -42,8 +42,6 @@ enum ACT {
     //follow_player?, input_type
     SW_ROOM, //Switch the room
     //to_room
-    QUEST_PROGRESS, //Quest-related actions
-    //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
 }
 
 enum P {
@@ -63,14 +61,6 @@ enum L {
     ON_EXIT
 }
 
-enum B {
-    ATTACK,
-    SPECIAL,
-    JUMP,
-    PARRY,
-    TAUNT,
-}
-
 //Reset Arrays
 action_array = [];
 scene_array = [];
@@ -82,15 +72,14 @@ action_add(1, 1, 4, ACT.CAMERA,
 */
 //Scene Data Here, please go sequentially
 
-//Room 1: Topsoil
 scene_add(1, 1, [1]);
 action_add(1, 1, 1, ACT.WAIT, 
 [120], //frames
-[201,202]); //Actions to start on exit
+[200,200]); //Actions to start on exit
 action_add(1, 1, 2, ACT.WINDOW, 
 [0, 100, 200, []], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
-action_add(1, 1, 3, ACT.CONTROL, //ACT.CONTROL has Issues
+action_add(1, 1, 3, ACT.CONTROL, 
 [30, all, PS_SPAWN], //player_id, life_time, state_override, input_array
 []); //Actions to start on exit
 action_add(1, 1, 4, ACT.SET, 
@@ -112,32 +101,6 @@ action_add(1, 1, 7, ACT.SW_ROOM,
 action_add(1, 1, 200, ACT.WINDOW, 
 [0, 200, 100, [[],[],[],["Hello! You can type here..."]]], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
-
-action_add(1, 1, 201, ACT.WINDOW, 
-[5, 200, 100, []], //window_type, x, y, [contentoverride]
-[]); //Actions to start on exit
-
-action_add(1, 1, 202, ACT.QUEST_PROGRESS, 
-[3, 0, 1], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-[203]); //Actions to start on exit
-
-action_add(1, 1, 203, ACT.ON_INPUT, //Archy Presentation
-[0,PC_TAUNT_PRESSED], //follow_player?
-[204,205]); //Actions to start on exit
-
-action_add(1, 1, 204, ACT.QUEST_PROGRESS, 
-[3, 2, 1], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-[]); //Actions to start on exit
-
-action_add(1, 1, 205, ACT.ON_INPUT, //Archy Presentation
-[0,PC_ATTACK_PRESSED], //follow_player?
-[206]); //Actions to start on exit
-
-action_add(1, 1, 206, ACT.QUEST_PROGRESS, 
-[2, 0, 3], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-[]); //Actions to start on exit
-
-
 /*action_add(1, 1, 200, ACT.ON_INPUT, //Archy Presentation
 [0,PC_SHIELD_PRESSED], //follow_player?
 [201]); //Actions to start on exit
@@ -146,7 +109,26 @@ action_add(1, 1, 201, ACT.WINDOW,
 []); //Actions to start on exit
 */
 
-//Room 4: Sewer
+
+
+var _j = 0;
+for(var _i = 8; _j < array_length_1d(archy_dialog);_i += 2) {
+    action_add(1, 1, _i, ACT.ON_INPUT, //Archy Presentation
+    [0,PC_ATTACK_PRESSED], //follow_player?
+    [_i+1]); //Actions to start on exit
+    action_add(1, 1, _i+1, ACT.WINDOW, //Archy Presentation
+    [3, 5555, 5252, [[archy_dialog[_j]]]], //window_type, x, y, [contentoverride]
+    //[3, 320, 70, [[archy_dialog[_j]]]], //window_type, x, y, [contentoverride]
+    [_i+2]);
+    //print_debug(string(archy_dialog[_j]));
+    _j++;
+}
+action_add(1, 1, _i++, ACT.WAIT, 
+[2], //player_id, life_time, state_override, input_array
+[5]); //Actions to start on exit
+
+
+
 action_add(4, 1, 1, ACT.SET, 
 [69, "bg_color", $999999], //player_id, life_time, state_override, ease_type, ease_value
 [2,4,8]); //Actions to start on exit
@@ -195,19 +177,6 @@ action_add(1, 1, 5, ACT.CAMERA,
 [60, 400, 50, 1, 20],//action_time, x, y, focus_type, smooth 
 []); //Actions to start on exit*/
 
-
-
-//Quest Init
-quest_add(3,1,"Test Quest1.1","This is a test quest!",sprite_get("borgar"));
-quest_add(3,2,"Test Quest1.2","This is a test quest! Part 2!",sprite_get("borgar"));
-quest_add(3,3,"Dfferent Title!1.3","Completely different text!",sprite_get("borgar"));
-
-quest_add(2,1,"Test Quest2","This is a test quest also!",sprite_get("borgar"));
-quest_add(2,2,"Test Quest2.1","This is a test quest also also!",sprite_get("borgar"));
-quest_add(2,3,"Dfferent Title!2.2","Completely different text again!",sprite_get("borgar"));
-
-
-
 //Functions DO NOT EDIT BELLOW
 /*if debug {
     print_debug("LOADED ARRAYS:");
@@ -230,21 +199,6 @@ scene_array[@_room_id][@_scene_id] = _action_array;
 if debug print_debug("[AM] Scene Loaded: "+string(_scene_id));
 return true;
 
-#define quest_add(_id,_progress,_title,_description,_spr)
-if quest_init return false;
-if _progress == 0 {
-    print("[AM] ERROR: Do not override progress 0!");
-    return false;
-}
-while _id >= array_length_1d(quest_array) array_push(quest_array,[]);
-while _progress >= array_length_1d(quest_array[_id]) array_push(quest_array[_id],[]);
-quest_array[@_id][@0] = noone;//Save quest progress here
-quest_array[@_id][@_progress] = [_title,_description,_spr];
-if debug print_debug("[AM] Quest Edited: "+string(_id)+" : "+string(_progress));
-return true;
-
-// #define control(_dir,_but)
-// return [_dir,_but];
 //Global Scenes
 
 /*scene_add(1,[

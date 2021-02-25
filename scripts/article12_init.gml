@@ -1,12 +1,13 @@
 //article12_init, Dynamic Lighting, By CaptnTechnicality
 sprite_index = asset_get("empty_sprite");
-
+disable_movement = true;
 
 custom_args = [];
 action_article_index = 0;
 _init = 0;
 group = 0;
-debug = 0;
+debug = false;
+debug_info = false;
 init_pos = [0,0];
 init_x = x;
 init_y = y;

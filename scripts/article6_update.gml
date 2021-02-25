@@ -43,9 +43,14 @@ if !_init {
     	}
     }
     _init = 1;
+    exit;
     //print_debug(get_attack_name(attacks[0]));
 } else {
-    in_render = physics_range == -1 || (point_distance(x,y,view_get_xview()+view_get_wview()/2,view_get_yview()+view_get_hview()/2) < physics_range);
+    with oPlayer {
+        //print(other.in_render);
+        if !other.in_render other.in_render = other.physics_range == -1 || (point_distance(other.x,other.y,x,y) < other.physics_range);
+    }
+    // in_render = physics_range == -1 || (point_distance(x,y,view_get_xview()+view_get_wview()/2,view_get_yview()+view_get_hview()/2) < physics_range); Breaks on Multiplayer
     if in_render {
         if (!destroyed) {
             if hitpause <= 1 { 

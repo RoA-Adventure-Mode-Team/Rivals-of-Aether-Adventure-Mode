@@ -13,9 +13,9 @@ room_add(1,[
             
             //Ground & BG Declarations
             [1, 0, 0, 2, -1, [sprite_get("marble_ground"), 0, 0, true, false, 0, 0, 0], [0,0]],
-            //[1, 0, 0, 0, -8, [sprite_get("ground_top"), 0, 0, false, false, 0, 0, 0], [0,0]],
-            //[1, 66, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
-            //[1, 126, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("ground_top"), 0, 0, false, false, 0, 0, 0], [0,0]],
+            [1, 66, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 126, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 30, [sprite_get("bg2"), 0, 0, 0, true, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 29, [sprite_get("bg3"), 0, 0, 0, true, 0, 0, 0], [0,0]],
             /*  DITHER ARGS: [dither type, transparency (0 = partial transparency, 1 = full transparency), dither frames]
@@ -88,8 +88,8 @@ room_add(1,[
     [ //Each Cell
         [-1,0], //Cell Coordinates
         [
-            [1, 0, 0, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
-            [1, 2, 0, 0, -8, [sprite_get("ground_top"), 0, 0, false, false, 0, 0, 0], [0,0]],
+            //[1, 0, 0, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            //[1, 2, 0, 0, -8, [sprite_get("ground_top"), 0, 0, false, false, 0, 0, 0], [0,0]],
             //[1, 66, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             //[1, 126, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]]
             
@@ -372,7 +372,7 @@ room_add(4,[
             [1, 0, 0, 0, 3, [sprite_get("black"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 65, 0, 0, 2, [sprite_get("sewer_bg1"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
             //[1, 65, 0, 0, 1, [sprite_get("sewer_pipes1"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
-            [1, 65, 0, 2, 1, [sprite_get("sewer_ceil1"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
+            [1, 65, 0, 2, -3, [sprite_get("sewer_ceil1"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 30, 54, 0, 1, [sprite_get("sewer_sect1"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
             
             [1, 59, 46, 0, -1, [sprite_get("torch"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
@@ -387,8 +387,8 @@ room_add(4,[
             [12, 72, 50, 0, -20, [sprite_get("light"), 12, 0, 0, 0, 0, 0, 0], [0,69]],
             
             [1, 76, 48, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
-            [1, 90, 52, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
-            [1, 104, 44, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
+            [1, 95, 52, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
+            [1, 114, 44, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 154, 48, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 76, 48, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 76, 48, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
@@ -401,13 +401,14 @@ room_add(4,[
             
             [14, 117, 58, 0, 1, [sprite_get("steam_vfx"), 60, 180, .2, 0, [.5,-1], 1, 0, 0], [0,0]],
             [6, 80, 48, 0, -5, [2, 0, 0, 0, 0, 0, 0, 0], [0,0]],
-            [6, 80, 48, 0, -5, [2, 0, 0, 0, 0, 0, 0, 0], [0,0]]
+            //[6, 80, 48, 0, -5, [2, 0, 0, 0, 0, 0, 0, 0], [0,0]]
             ]
         ],
     [ //Each Cell
         [1,2], //Cell Coordinates
         [
-            [1, 63, 0, 0, 2, [sprite_get("sewer_bg"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("sewer_bg2"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
+            [1, 65, 0, 2, -3, [sprite_get("sewer_ceil1"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
             //[1, 0, 0, 0, 2, [sprite_get("black"), 0, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 0, 0, 2, -1, [sprite_get("sewer_water1"), 0, 0, 0, false, 0, 0, 0], [0,0]],
 

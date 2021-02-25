@@ -1,13 +1,14 @@
 //article8_init, Room Transitions
 
 sprite_index = asset_get("empty_sprite");
-
+disable_movement = true;
 _init = 0;
 init_pos = [0,0];
 state = 0;
 state_old = 0;
 state_timer = 0;
 debug = false;
+debug_info = false;
 debug_color = c_fuchsia;
 anim_speed = 0;
 

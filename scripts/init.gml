@@ -6,7 +6,7 @@ _init = 0;
 
 //Debug Vars
 debug = true;
-debug_info = true;
+debug_info = false;
 down_down = 0;
 up_down = 0;
 last_ID = 0;
@@ -21,7 +21,8 @@ cam_state = 0;
 cam_smooth = 5;
 g_cam_pos = [cam_x_left,cam_y_left];
 cam_offset = [0,-96];
-cam_vel_influence = 30;
+cam_vel_influence = 20;
+//cam_vel_influence = 30;
 
 game_paused = false;
 counter = 0;
@@ -59,17 +60,17 @@ follow_player = noone;
 is_online = false;
 player_num = 0;
 /*with oPlayer {
-    if get_player_hud_color(player) == 15297156 {
+    if get_player_hud_color(player) == 6612290 {
         other.is_online = true;
         break;
     }
-    if (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
+    //if (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
     other.player_num++;
 }
 if is_online {
     player_num = 0;
     with oPlayer {
-        if get_player_hud_color(player) == 15297156 other.follow_player = id;
+        if get_player_hud_color(player) == 6612290 other.follow_player = id;
         other.player_num++;
     }
 }*/
@@ -78,11 +79,12 @@ if is_online {
         local_player = -1; //Flag for setting
         other.is_online = true;
     }
-    //if get_player_hud_color(player) == 6612290 other.local_player = id;
+    if get_player_hud_color(player) == 6612290 other.local_player = id;
     other.player_count++;
 }*/
-with oPlayer if other.follow_player == noone && (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
-with oPlayer if player == 2 other.follow_player = id;
+with oPlayer if get_player_hud_color(player) == 6612290 other.follow_player = id;
+if follow_player == noone with oPlayer if other.follow_player == noone && (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
+with oPlayer if player == 1 other.follow_player = id;
 //Area Triggers (article4)
 
 //Room Manager (article5)
@@ -109,7 +111,7 @@ active_win = [];
 //cursor_sprite = sprite_get("arrow");
 cursor_sprite_i = sprite_get("arrow");
 cursor_index = 0;
-cursor_visible = false; //Change to true for debug
+cursor_visible = true; //Change to true for debug
 mb_l_click = false;
 mouse_x_i = mouse_x;
 mouse_y_i = mouse_y;

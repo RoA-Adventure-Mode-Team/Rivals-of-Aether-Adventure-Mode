@@ -1,6 +1,8 @@
 //article3_init, action manager
 sprite_index = asset_get("empty_sprite");
+disable_movement = true;
 debug = true;
+debug_info = false;
 init_pos = [0,0];
 custom_args = array_create(0);
 //Only One Thing to Exist
@@ -35,16 +37,60 @@ scene_time = 0;
 action_index = 0;
 with obj_stage_main other.stage_main = id;
 with obj_stage_article if num == 5 other.room_manager = id;
+
+
+//Quests
+quest_init = false;
+quest_array = [];
+quest_active = [];
+
+
+// quest_add(3,1,"Test Quest","This is a test quest!");
+// quest_add(3,2,"Test Quest","This is a test quest! Part 2!");
+// quest_add(3,3,"Dfferent Title!","Completely different text!");
+// quest_set(3,1);
+
+
+// #define quest_add(_id,_progress,_title,_description)
+// if _progress == 0 {
+//     print("[AM] ERROR: Do not override progress 0!");
+//     return false;
+// }
+// while _id >= array_length_1d(quest_array) array_push(quest_array,[]);
+// while _progress >= array_length_1d(quest_array[_id]) array_push(quest_array[_id],[]);
+// quest_array[@_id][@0] = [noone];//Save quest progress here
+// quest_array[@_id][@_progress] = [_title,_description];
+// if debug print_debug("[AM] Quest Edited: "+string(_id)+" : "+string(_progress));
+// return true;
+
+// #define quest_set(_id,_progress)
+// quest_array[@_id][@0] = [_progress];//Save current quest progress
+// if debug print_debug("[AM] Quest Progress: "+string(_id)+" : "+string(_progress));
+// if _progress < 0 return noone;
+// return quest_array[_id][_progress];
 //action_temp = 0;
 
 
 
-//Archytas Dialog
+//Archytas Dialog, Chess
+/*
 archy_dialog = [
-    "Hello Everyone! This is a test for linebreaks and readability. Hopefully I can say at least this much per box!",
-    "Test Two!",
-    "Test Three!",
+    "Hello everyone! It's been a while, huh?",
+    "I'm excited to release something that I've been working towards for a while now!",
+    "It really is that time folks!",
+    "I hope you have fun in this exciting new chapter in Workshop. Send me your feedback on Discord!",
     ];
+    
+archy_dialog = [
+    "Hello everyone again! I got you, didn't I?",
+    "Here's the actual update of the progress of Adventure Mode!",
+    "I've gone back and rewritten the entire back-end of the API sofar.",
+    "And introduced some major upgrades to systems for ease of use and performance.",
+    "Captain Technicality has helped add in some really neat features that are now possible.",
+    "We're taking our time on the project, to make sure it'll be quality.",
+    "Enough talking! Let's show what can be done in Adventure Mode..",
+    ];
+*/
 
 /*
 //Scene Manager

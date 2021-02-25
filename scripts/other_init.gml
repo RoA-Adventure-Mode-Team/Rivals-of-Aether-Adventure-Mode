@@ -13,6 +13,7 @@ keep_dash = false;
 taunt_held = 0;
 attack_held = 0;
 avg_vel = [0,0];
+prev_free = free;
 
 //respawn_point = [[79,44],[-1,0],1]; //SubCell Position, Cell Position, Room #
 respawn_point = [[58,44],[0,0],1]; //SubCell Position, Cell Position, Room #

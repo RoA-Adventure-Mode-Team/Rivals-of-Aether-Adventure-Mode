@@ -65,7 +65,7 @@ var _count = 0;
 var cam_vel_influence = obj_stage_main.cam_vel_influence;
 for (var i = 0; i < array_length_1d(_obj_array);i++) {
     with _obj_array[i] {
-    	if (state_timer != 0) avg_vel = [(cam_vel_influence*avg_vel[0]+hsp)/(cam_vel_influence+1),(cam_vel_influence*avg_vel[1]+vsp)/(cam_vel_influence+1)];
+    	avg_vel = [(cam_vel_influence*avg_vel[0]+hsp)/(cam_vel_influence+1),(cam_vel_influence*avg_vel[1]+vsp)/(cam_vel_influence+1)];
     	//else avg_vel = [hsp, vsp];
         _x_avg += x+avg_vel[0]*15;
         _y_avg += y+avg_vel[1]*10;
@@ -209,13 +209,15 @@ if _room_id < array_length_1d(array_room_data) {
                         }
                         art.spawn_variables = cell_data[j][5];
                         art.depth = cell_data[j][4];
+                        art.og_depth = cell_data[j][4];
                         art.cell_size = cell_size;
                         art.init_pos = [cell_data[j][1],cell_data[j][2]];
                         art.cell_pos = _cell_pos;
                         cell_data[@j][@6][@0] = art.id;
-                        art.action_article_index = cell_data[j][6][1];
+                        art.action_article_index = cell_data[j][6][1]; //array_room_data[_room_id][i][1][j][6][1] 6D Array!
                         art.room_manager = id;
                         art.debug = obj_stage_main.debug;
+                        
                         //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;
                         articles_spawned++;
                         

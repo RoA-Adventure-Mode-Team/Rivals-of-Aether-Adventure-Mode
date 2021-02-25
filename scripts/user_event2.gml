@@ -24,7 +24,9 @@ enum WIN {
 	DIALOG_DEFAULT,
 	AREATITLE,
 	AREAFADE,
-	ARCHY_DIALOG
+	ARCHY_DIALOG,
+	POINTOUT,
+	QUESTLIST
 }
 
 enum GUI {
@@ -39,61 +41,81 @@ enum GUI {
 if win_call == 0 {
 	if mouse_x_i != mouse_x || mouse_y_i != mouse_y cursor_visible = true;
 	with obj_stage_main {
-		if cursor_visible do_cursor();
+		if cursor_visible && debug do_cursor();
 		draw_windows(); //Draw Objects
-		if cursor_visible draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
+		if cursor_visible && debug draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
 	}
 	exit;
 }
 
 if win_call == 1 with obj_stage_main { //Load Data
 	var i = 0;
+	var _string ="";
 	win_add(i++,[WIN.DEBUG,
-	new_sprite(sprite_get("gui_test"),0,0),
-	new_textbox("GUI 2.0 TITLE",4,2,200,16,c_white,asset_get("fName")),
-	new_dialogbox("HENLOOOOOOOOOOOOOOOOOOOOOOOOO",asset_get("mfx_back"),"_",0.4,4,16,200,12,c_white,asset_get("roundFont"))]);
+		new_varcont([_string,0,0,0,0,0]),
+		new_sprite(sprite_get("gui_test"),0,0),
+		new_textbox("GUI 2.0 TITLE",4,2,200,16,c_white,asset_get("fName")),
+		//new_dialogbox("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",asset_get("mfx_back"),"_",0.4,4,16,200,12,c_white,asset_get("fName"))
+		new_textbox("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",4,18,238,12,c_white,asset_get("fName")),
+		new_dialogbox(_string,noone,"_",0.4,4,100,238,12,c_white,asset_get("fName"))
+	]);
 	
 	win_add(i++,[WIN.AREATITLE,
-	new_sprite(sprite_get("area_title"),0,0),
-	new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont"))
+		new_sprite(sprite_get("area_title"),0,0),
+		new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont"))
 	]);
 	
 	win_add(i++,[WIN.AREAFADE,
-	new_sprite(sprite_get("area_title"),4,12),
-	new_textbox("TITLE_NAME",2,2,700,32,c_black,asset_get("roaLBLFont")),
-	new_varcont([0,0,0,0,0]),
-	new_textbox("TITLE_NAME",0,0,700,32,c_white,asset_get("roaLBLFont")),
+		new_sprite(sprite_get("area_title"),4,12),
+		new_textbox("TITLE_NAME",2,2,700,32,c_black,asset_get("roaLBLFont")),
+		new_varcont([0,0,0,0,0]),
+		new_textbox("TITLE_NAME",0,0,700,32,c_white,asset_get("roaLBLFont")),
 	]);
 	var _pos = [32,26];
 	var _string ="Test";
 	var _sound = asset_get("sfx_may_arc_talk");
-	var _w = 170;
+	var _w = 176;
 	win_add(i++,[WIN.ARCHY_DIALOG,
-	new_varcont([_string,120,0,0,0]),
-	new_sprite(sprite_get("archy_dialog"),0,16),
-	new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("fName")),
-	new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("fName")),
-	new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1],_w,16,c_black,asset_get("fName")),
-	new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1],_w,16,c_black,asset_get("fName")),
-	new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1]+2,_w,16,c_black,asset_get("fName")),
-	new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1]-2,_w,16,c_black,asset_get("fName")),
-	
-	new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,$d252ff,asset_get("fName")) //$ff00ff $ea00ea $d252ff
-	
+		new_varcont([_string,120,0,0,0,0]),
+		new_sprite(sprite_get("archy_dialog"),0,16),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("fName")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("fName")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1],_w,16,c_black,asset_get("fName")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1],_w,16,c_black,asset_get("fName")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1]+2,_w,16,c_black,asset_get("fName")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1]-2,_w,16,c_black,asset_get("fName")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,$d252ff,asset_get("fName")) //$ff00ff $ea00ea $d252ff
+	]);
+	var _string ="Test";
+	var _sound = noone;
+	//var _sound = asset_get("sfx_propeller_dagger_loop");
+	var _sound = asset_get("sfx_shop_move");
+	var _w = 400;
+	win_add(i++,[WIN.POINTOUT,
+		new_varcont([_string,120,0,0,0,0]),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("roaLBLFont")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("roaLBLFont")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1],_w,16,c_black,asset_get("roaLBLFont")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1],_w,16,c_black,asset_get("roaLBLFont")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1]+2,_w,16,c_black,asset_get("roaLBLFont")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1]-2,_w,16,c_black,asset_get("roaLBLFont")),
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,c_white,asset_get("roaLBLFont")) //$ff00ff $ea00ea $d252ff
 	]);
 	
-	//win_add(1, [WIN.DEBUG, sprite_get("gui_test"), "Gucci", ""]);
-	//win_add(1, [WIN.DEBUG, sprite_get("gui_test"), "Gucci", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."]);
-	//window_type, bg, title var, string var
-	//win_add(2, [WIN.DIALOG_DEFAULT, "", asset_get("empty_sprite"), asset_get("mfx_back"), //String, Bg Sprite, Click Sound
-	//0, .25, 200, asset_get("roundFont"),"_", //char_vis, char_speed, w, font, clicker, //Text
-	//0.4, //anim_speed //Bg sprite
-	//]);
-	//window_type
+	win_add(i++,[WIN.QUESTLIST, //Expansive Custom Window, Shows Quest List
+		new_varcont([1,16,300,42,sprite_get("Quest Logo")]), //alpha, sep, w, sep_things
+		//new_sprite(sprite_get("gui_test"),0,0),
+		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
+		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
+	]);
 	exit;
 }
 
-if win_call == 2 with obj_stage_main logic_windows(); //Update Call
+if win_call == 2 {//Update Call
+	if debug with obj_stage_main logic_cursor();
+	with obj_stage_main logic_windows(); 
+	
+}
 #define logic_windows() //Update Call
 var _x = 0;
 var _y = 0;
@@ -110,6 +132,15 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	
 	win_alpha = 1;
 	switch _element[0] {
+		case WIN.DEBUG:
+			if win_active == _i {
+				//print_debug("DB Active: "+string(_i));
+				if keyboard_string != "" {
+					_element[@5][@1] += keyboard_string;
+					keyboard_string = "";
+				}
+			}
+			break;
 		case WIN.AREATITLE:
 			active_win[@_i][@0][@0] = lerp(active_win[_i][0][0],title_x_stop*(alive_time < 360)-title_x_stop*(alive_time > 360),0.1);
 			if active_win[_i][0][0] == -title_x_stop {
@@ -134,7 +165,15 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				active_win[@_i][1][@7][@1] = _element[1][1];
 				active_win[@_i][1][@8][@1] = _element[1][1];
 				active_win[@_i][1][@9][@1] = _element[1][1];
+				//TEST
+				_element[@1][@4] = _x;
+				_element[@1][@5] = _y;
+				//TEST
 			}
+			//TEST
+			active_win[@_i][@0][@0] = _element[1][4]-view_get_xview();
+			active_win[@_i][@0][@1] = _element[1][5]-view_get_yview();
+			//
 			if _element[3][11] > string_length(_element[3][1])-1 {
 				_element[@1][@3] += 1;
 				//print_debug(string(_element[1][3]));
@@ -144,13 +183,43 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				}
 			}
 			break;
+		case WIN.POINTOUT:
+			if alive_time == 1 {
+				//print_debug(string(_element[1][1]));
+				active_win[@_i][1][@2][@1] = _element[1][1];
+				active_win[@_i][1][@3][@1] = _element[1][1];
+				active_win[@_i][1][@4][@1] = _element[1][1];
+				active_win[@_i][1][@5][@1] = _element[1][1];
+				active_win[@_i][1][@6][@1] = _element[1][1];
+				active_win[@_i][1][@7][@1] = _element[1][1];
+				active_win[@_i][1][@8][@1] = _element[1][1];
+				_element[@1][@4] = _x;
+				_element[@1][@5] = _y;
+			}
+			//TEST
+			active_win[@_i][@0][@0] = _element[1][4]-view_get_xview();
+			active_win[@_i][@0][@1] = _element[1][5]-view_get_yview();
+			//
+			if _element[3][11] > string_length(_element[3][1])-1 {
+				_element[@1][@3] += 1;
+				//print_debug(string(_element[1][3]));
+				if _element[1][3] > _element[1][2] {
+					end_window(_i);
+					_i--;
+				}
+			}
+			break;
+		case WIN.QUESTLIST:
+			_quests = action_manager.quest_active;
+			// print(_quests[0][_quests[0][0][0]][0]);
+			break;
 	}
 	for (var _j = 1; _j < array_length_1d(_element);_j++) {
 		_param = _element[_j];
 		switch _param[0] {
 			case GUI.DIALOGBOX:
 				_param[11] += _param[4];
-				if _param[11] < string_length(_element[3][1])-1 && !((floor(_param[11])) % 2) sound_play(_param[2],false,0,0.1,.9);//floor(_param[11] + _param[4]) > floor(_param[11]) sound_play(_param[2]);
+				if _param[11] < string_length(_element[3][1])-1 && !((floor(_param[11])) % 2) sound_play(_param[2],false,0,0.05,.9);//floor(_param[11] + _param[4]) > floor(_param[11]) sound_play(_param[2]);
 				break;
 		}
 	}
@@ -165,28 +234,33 @@ var _param = [];
 var _element = [];
 win_alpha = 1;
 var alive_time = 0;
-
-if win_active != -1 {
-	
-}
-
+var _windows = "";
 for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	_x = active_win[_i][0][0];
 	_y = active_win[_i][0][1];
 	_element = active_win[_i][1];
 	active_win[@_i][@0][@3] += 1;
 	alive_time = active_win[_i][0][3];
-	
+	_windows += string(active_win[_i][1][0])+" : ";
 	win_alpha = 1;
 	switch _element[0] {
 		case WIN.DEBUG:
-			win_alpha = 1-(win_active != _i)*.5;
+			win_alpha = .5+(win_active == _i)*.5;
 			break;
 		case WIN.AREAFADE:
 			win_alpha = _element[3][1];
 			break;
+		case WIN.QUESTLIST:
+			win_alpha = _element[1][1];
+			draw_sprite_ext(sprite_get("gui_test"),0,_x,_y,2,2,0,c_white,win_alpha);
+			for (var _a = 0; _a < array_length_1d(_quests); _a++) {
+				draw_sprite_ext(_quests[_a][_quests[_a][0]][2],0,_x,_y,2,2,0,c_white,win_alpha); //Get Logo Working
+				draw_text_drop(_x+42,_y+_a*_element[1][4]+4,_quests[_a][_quests[_a][0]][0],_element[1][2],_element[1][3],1,1,0,win_alpha);
+				draw_text_drop(_x+42+16,_y+_a*_element[1][4]+4+16,_quests[_a][_quests[_a][0]][1],_element[1][2],_element[1][3],1,1,0,win_alpha);
+			}
+			break;
 	}
-	for (var _j = 1; _j < array_length_1d(_element);_j++) {
+	if win_alpha > 0 for (var _j = 1; _j < array_length_1d(_element); _j++) {
 		_param = _element[_j];
 		switch _param[0] {
 			case GUI.SPRITE:
@@ -208,7 +282,7 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 		}
 	}
 }
-
+//print_debug(_windows);
 return true;
 
 #define new_textbox(_default_string,_x,_y,_w,_sep,_color,_font)
@@ -239,12 +313,38 @@ cursor_x_p = cursor_x;
 cursor_y_p = cursor_y;
 cursor_x = mouse_x - view_get_xview();
 cursor_y = mouse_y - view_get_yview();
-var _cursor_grid = grid_to_cell([mouse_x,mouse_y]);
-draw_debug_text(cursor_x,cursor_y,string(_cursor_grid[1])+":"+string([floor((_cursor_grid[0][0])/16),floor((_cursor_grid[0][1])/16)])+":"+string([(_cursor_grid[0][0]) % 16, (_cursor_grid[0][1]) % 16]));
-draw_debug_text(cursor_x,cursor_y+16,string([cursor_x,cursor_y]));
+var _cursor_grid = grid_to_cell([mouse_x+64,mouse_y+64]);
+if debug {
+	//draw_debug_text(cursor_x,cursor_y,string(_cursor_grid[1])+":"+string([floor((_cursor_grid[0][0])/16),floor((_cursor_grid[0][1])/16)])+":"+string([(_cursor_grid[0][0]) % 16, (_cursor_grid[0][1]) % 16]));
+	draw_debug_text(cursor_x,cursor_y,"["+string(_cursor_grid[1][0])+","+string(_cursor_grid[1][0])+"]:["+string(floor((_cursor_grid[0][0])/16))+","+string(floor((_cursor_grid[0][1])/16))+"]:["+string((_cursor_grid[0][0]) % 16)+","+string((_cursor_grid[0][1]) % 16)+"]");
+	draw_debug_text(cursor_x,cursor_y+16,string([cursor_x,cursor_y]));
+	draw_debug_text(cursor_x,cursor_y+32,string([mouse_x,mouse_y]));
+}
+return true;
+#define logic_cursor()
 if mouse_button == 1 {
+	keyboard_string = "";
 	if !mb_l_click { //on click
-		//print_debug("MB1 CLICK!");
+		// print_debug("MB1 CLICK!");
+		
+		//Debug View Objects
+		with obj_stage_article_solid {
+			if collision_point(other.mouse_x,other.mouse_y,self,true,false) != noone debug_info = !debug_info;
+			depth = (-100*debug_info)+(og_depth*(!debug_info));
+			// if debug_info draw_debug_info();
+		}
+		with obj_stage_article_platform {
+			if collision_point(other.mouse_x,other.mouse_y,self,true,false) != noone debug_info = !debug_info;
+			depth = (-100*debug_info)+(og_depth*(!debug_info));
+			// if debug_info draw_debug_info();
+		}
+		with obj_stage_article {
+			if (!("static" in self) || !static) && collision_point(other.mouse_x,other.mouse_y,self,true,false) != noone debug_info = !debug_info;
+			depth = (-100*debug_info)+(og_depth*!debug_info);
+			// if debug_info draw_debug_info();
+		}
+		
+		//Windows
 		var _x = 0;
 		var _y = 0;
 		var _param = [];
@@ -254,7 +354,7 @@ if mouse_button == 1 {
 			_param = active_win[i][1];
 			switch _param[0] {
 				case WIN.DEBUG:
-					if _x < cursor_x && _y < cursor_y  && _x + tb_bar_x > cursor_x && _y+tb_bar_y > cursor_y  {
+					if point_distance(_x,_y,cursor_x,cursor_y) < 64 {
 						win_drag = i;
 						win_active = i;
 					}
@@ -263,20 +363,37 @@ if mouse_button == 1 {
 		}
 		if win_drag == -1 win_active = -1;
 	}
+	//print_debug(string(win_active));
 	if win_drag != -1 {
 		active_win[@win_drag][@0][@0] += cursor_x - cursor_x_p;
 		active_win[@win_drag][@0][@1] += cursor_y - cursor_y_p;
 	}
-	//if !mb_l_click pointer_art = collision_rectangle_all(mouse_x,mouse_y,32,32,obj_stage_article);
-	//for (var i = 0; i < array_length_1d(pointer_art);i++) pointer_art[i].mb_click = mouse_button;
 	mb_l_click = true;
 } else {
 	if mb_l_click { //on release
 		win_drag = -1;
-		//print_debug("MB1 UN CLICK!");
+		//print_debug("MB1 UN CLICK!8");
 	}
 	mb_l_click = false;
 }
+// with obj_stage_article_solid if collision_point(other.mouse_x,other.mouse_x,self,true,true) != noone {
+// 	print("OVERLAP");
+// 	draw_debug_info();
+// }
+return true;
+
+// #define draw_debug_info() //Done in the scope of an article; Here so there's no performance impact
+
+// switch num {
+// 	case 1:
+// 		debug_pos = grid_to_cell([x+64,y+64]);
+// 		draw_debug_text(floor(x),floor(y),"["+string(debug_pos[1][0])+","+string(debug_pos[1][0])+"]:["+string(floor((debug_pos[0][0])/16))+","+string(floor((debug_pos[0][1])/16))+"]:["+string((debug_pos[0][0]) % 16)+","+string((debug_pos[0][1]) % 16)+"]");
+//     	draw_rectangle_color(x-sprite_get_xoffset(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2,
+//                 			 x-sprite_get_xoffset(sprite_index)*2+sprite_get_width(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2+sprite_get_height(sprite_index)*2,
+//                         	 c_fuchsia,c_fuchsia,c_fuchsia,c_fuchsia,true);
+// 		break;
+// }
+return true;
 #define collision_circle_all(_x,_y,_r,_obj)
 var _collis_array = [];
 with _obj if point_distance(x,y,_x,_y) < _r array_push(_collis_array,id);
@@ -320,3 +437,8 @@ with room_manager {
 		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
 			floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
 }
+
+#define draw_text_drop(_x,_y,_str,_sep,_w,_x1,_y1,_ang,_alp)
+
+draw_text_ext_transformed_color(_x+2,_y+2,_str,_sep,_w,_x1,_y1,_ang,c_black,c_black,c_black,c_black,_alp);
+draw_text_ext_transformed_color(_x,_y,_str,_sep,_w,_x1,_y1,_ang,c_white,c_white,c_white,c_white,_alp);

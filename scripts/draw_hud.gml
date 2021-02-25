@@ -39,7 +39,7 @@ enum L {
     PARAM,
     ON_EXIT
 }
-//draw_scene();
+
 //draw_set_font(asset_get("medFont"));
 //draw_text_trans_outline(temp_x,temp_y,"TEST FONT",10,1000,1,1,0,c_white,c_black,1);
 //draw_debug_text(temp_x-200,temp_y-470,string(cur_scene));
@@ -93,14 +93,14 @@ if debug {
     draw_set_alpha(.7);
     draw_rectangle_color(0,0,350,110,c_black,c_black,c_black,c_black,c_black);
     draw_set_alpha(1);
-    draw_debug_text(2,2,"FPS: "+string(fps));
-    with action_manager draw_debug_text(2,16,string(array_length_1d(cur_actions)));
-    draw_debug_text(2,32,string(array_length_1d(active_win)));
+    draw_debug_text(2,0,"FPS: "+string(fps));
+    with action_manager draw_debug_text(2,16,"ACT: "+string(array_length_1d(cur_actions)));
+    draw_debug_text(2,32,"WIN: "+string(array_length_1d(active_win)));
     var _count = 0;
     with obj_stage_article _count++;
     with obj_stage_article_platform _count++;
     with obj_stage_article_solid _count++;
-    draw_debug_text(2,32+16,string(_count));
+    draw_debug_text(2,32+16,"ART: "+string(_count));
     with room_manager {
     	//print_debug(string(follow_point));
         p_true_pos = real_to_grid([follow_player.x,follow_player.y]);
@@ -108,7 +108,7 @@ if debug {
         //draw_debug_text(2,16,"CAM POS: "+string(true_pos));
         //draw_debug_text(2,32,"CELL POS: "+string(cell_pos));
         //draw_debug_text(2,48,"POS IN CELL: "+string([floor((pos_in_cell[0])/16),floor((pos_in_cell[1])/16)]));
-        draw_debug_text(2,64,"PLAYER POS: "+string(p_cell_pos[1])+":"+string([floor((p_cell_pos[0][0])/16),floor((p_cell_pos[0][1])/16)])+":"+string([(p_cell_pos[0][0]) % 16, (p_cell_pos[0][1]) % 16]));
+        draw_debug_text(2,64,"PLAYER POS: "+"["+string(p_cell_pos[1][0])+","+string(p_cell_pos[1][0])+"]:["+string(floor((p_cell_pos[0][0])/16))+","+string(floor((p_cell_pos[0][1])/16))+"]:["+string((p_cell_pos[0][0]) % 16)+","+string((p_cell_pos[0][1]) % 16)+"]");
         //print_debug(string(p_cell_pos));
         //draw_debug_text(2,64,"FOLLOW POS: "+string(follow_point));
         //draw_debug_text(2,82,"PLAYER POS: "+string(follow_player_pos));
@@ -144,78 +144,78 @@ with room_manager {
     }
 }
 
-if string_count("`",keyboard_string) {
-    debug_console = !debug_console;
-    keyboard_string = "";
-}
+// if string_count("`",keyboard_string) {
+//     debug_console = !debug_console;
+//     keyboard_string = "";
+// }
 
-if debug_console { //debug_console_update();
-    //#define debug_console_update();
-    draw_set_alpha(.5);
-    draw_rectangle_color(debug_x,debug_y,debug_ex,debug_ey,c_black,c_black,c_black,c_black,c_black);
-    draw_rectangle_color(debug_x,debug_txt_y,debug_ex,debug_txt_y+20,c_black,c_black,c_black,c_black,c_black);
+// if debug_console { //debug_console_update();
+//     //#define debug_console_update();
+//     draw_set_alpha(.5);
+//     draw_rectangle_color(debug_x,debug_y,debug_ex,debug_ey,c_black,c_black,c_black,c_black,c_black);
+//     draw_rectangle_color(debug_x,debug_txt_y,debug_ex,debug_txt_y+20,c_black,c_black,c_black,c_black,c_black);
     
-    draw_set_alpha(1);
-    draw_set_font(asset_get("fName"));
-    draw_text_transformed(debug_x,debug_txt_ey,keyboard_string,1,1,0);
-    draw_text_transformed(debug_x,-10,console_output,1,1,0);
-    if follow_player.attack_down && follow_player.attack_held == 1 {
-        console_parse = string_parse(keyboard_string, " ");
-        key_string_old = keyboard_string;
-        keyboard_string = "";
-        //print_debug(string(console_parse));
-        if console_parse != [] console_command(console_parse);
+//     draw_set_alpha(1);
+//     draw_set_font(asset_get("fName"));
+//     draw_text_transformed(debug_x,debug_txt_ey,keyboard_string,1,1,0);
+//     draw_text_transformed(debug_x,-10,console_output,1,1,0);
+//     if follow_player.attack_down && follow_player.attack_held == 1 {
+//         console_parse = string_parse(keyboard_string, " ");
+//         key_string_old = keyboard_string;
+//         keyboard_string = "";
+//         //print_debug(string(console_parse));
+//         if console_parse != [] console_command(console_parse);
         
-    }
-}
+//     }
+// }
 
-if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
-    console_command(["debug",get_match_setting(SET_HITBOX_VIS)]);
-    debug_toggle = get_match_setting(SET_HITBOX_VIS);
-}
+// if debug_toggle != get_match_setting(SET_HITBOX_VIS) {
+//     console_command(["debug",get_match_setting(SET_HITBOX_VIS)]);
+//     debug_toggle = get_match_setting(SET_HITBOX_VIS);
+// }
 
 win_call = 0;
 user_event(2); //Cursor and Window Draw
 
 //user_event(); //Draw Endscreen
-#define draw_scene() //Drawing HUD
-//gpu_set_blendmode(bm_add); //Reduce draw lag?
-var actions_load = [];
-var _param = 0;
-var alive_time = 0;
-with scene_manager {
-	for (var i = 0; i < array_length_1d(cur_actions); i++) {
-		//print_debug("CATCH THIS");
-		actions_load = cur_actions[i][P.LOAD];
-		//var _param = actions_load[L.PARAM];
-		_param =  actions_load[L.PARAM];
-		alive_time = cur_actions[i][P.ALIVE_TIME];
-		switch actions_load[L.ACTION_TYPE] {
-			case ACT.DIALOG:
-				switch _param[0] { //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speed, scroll_sound], 
-					case LWO.TXT_HUD: 
-						if _param[5] != -1 draw_sprite_ext(_param[5], alive_time * _param[6], _param[1], _param[2], 1, 1, 0, c_white, 1);
-						//draw_set_color(c_white);
-						draw_set_font(_param[8]);
-						draw_text_ext_transformed(_param[1], _param[2], string_copy(_param[7], 0, floor(alive_time * _param[10])), 16, _param[3], 1, 1, 0);
-						if _param[11] != -1 && alive_time * _param[10] == floor(alive_time * _param[10]) sound_play(_param[11]);
-						//draw_text_trans_outline(_param[1], _param[2], _param[7], 16, _param[3], 1, 1, 0, c_white, c_black, 1);
-						break; 
-					case LWO.SPR_HUD: //obj_type, x, y, l, h, bg_spr, bg_spr_speed, spr, spr_speed], 
-						//It's generally more efficient to just use a SPRITE object, but it's here for standardization
-						if _param[5] != -1 draw_sprite_ext(_param[5], alive_time * _param[6], _param[1], _param[2], 1, 1, 0, c_white, 1);
-						if _param[7] != -1 draw_sprite_ext(_param[7], alive_time * _param[8], _param[1], _param[2], 1, 1, 0, c_white, 1);
-						break;
-				}
-				break;
-			/*case ACT.SPRITE: //spr, x, y, spr_speed, alpha
-				draw_sprite_ext(_param[0],sprite_get_number(_param[0])*alive_time*_param[3],_param[1],_param[2],1,1,0,c_white,_param[4]);
-				break;*/
-		}
-	}
-}
-//gpu_set_blendmode(bm_normal);
-return true;
+// #define draw_scene() //Drawing HUD
+// //gpu_set_blendmode(bm_add); //Reduce draw lag?
+// var actions_load = [];
+// var _param = 0;
+// var alive_time = 0;
+// with scene_manager {
+// 	for (var i = 0; i < array_length_1d(cur_actions); i++) {
+// 		//print_debug("CATCH THIS");
+// 		actions_load = cur_actions[i][P.LOAD];
+// 		//var _param = actions_load[L.PARAM];
+// 		_param =  actions_load[L.PARAM];
+// 		alive_time = cur_actions[i][P.ALIVE_TIME];
+// 		switch actions_load[L.ACTION_TYPE] {
+// 			case ACT.DIALOG:
+// 				switch _param[0] { //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speed, scroll_sound], 
+// 					case LWO.TXT_HUD: 
+// 						if _param[5] != -1 draw_sprite_ext(_param[5], alive_time * _param[6], _param[1], _param[2], 1, 1, 0, c_white, 1);
+// 						//draw_set_color(c_white);
+// 						draw_set_font(_param[8]);
+// 						draw_text_ext_transformed(_param[1], _param[2], string_copy(_param[7], 0, floor(alive_time * _param[10])), 16, _param[3], 1, 1, 0);
+// 						if _param[11] != -1 && alive_time * _param[10] == floor(alive_time * _param[10]) sound_play(_param[11]);
+// 						//draw_text_trans_outline(_param[1], _param[2], _param[7], 16, _param[3], 1, 1, 0, c_white, c_black, 1);
+// 						break; 
+// 					case LWO.SPR_HUD: //obj_type, x, y, l, h, bg_spr, bg_spr_speed, spr, spr_speed], 
+// 						//It's generally more efficient to just use a SPRITE object, but it's here for standardization
+// 						if _param[5] != -1 draw_sprite_ext(_param[5], alive_time * _param[6], _param[1], _param[2], 1, 1, 0, c_white, 1);
+// 						if _param[7] != -1 draw_sprite_ext(_param[7], alive_time * _param[8], _param[1], _param[2], 1, 1, 0, c_white, 1);
+// 						break;
+// 				}
+// 				break;
+// 			/*case ACT.SPRITE: //spr, x, y, spr_speed, alpha
+// 				draw_sprite_ext(_param[0],sprite_get_number(_param[0])*alive_time*_param[3],_param[1],_param[2],1,1,0,c_white,_param[4]);
+// 				break;*/
+// 		}
+// 	}
+// }
+// //gpu_set_blendmode(bm_normal);
+// return true;
 
 #define console_command(_console_parse)
 switch _console_parse[0] {

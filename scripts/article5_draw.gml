@@ -24,10 +24,7 @@ with obj_stage_main {
 	//set_view_position(g_cam_pos[0],g_cam_pos[1]);
 
 }
-
-/*with oPlayer {
-	draw_debug_text(x,y,string(avg_vel));
-}*/
+if debug with oPlayer draw_debug_text(x,y,string([floor(x/16),floor(y/16)]));
 #define set_view_position_smooth(_x,_y,_smooth)
 sm_x = ease_linear(floor(true_pos[0]),floor(_x),1,_smooth);
 sm_y = ease_linear(floor(true_pos[1]),floor(_y),1,_smooth);

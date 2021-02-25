@@ -1,11 +1,12 @@
 //article14_init, Particles
 sprite_index = asset_get("empty_sprite");
-
+disable_movement = true;
 custom_args = array_create(0);
 
 _init = 0;
 group = 0;
-debug = 0;
+debug = false;
+debug_info = false;
 init_pos = [0,0];
 init_x = x;
 init_y = y;

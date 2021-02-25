@@ -1,11 +1,13 @@
 //article5_init, Room Manager
 
 sprite_index = asset_get("empty_sprite");
+disable_movement = true;
 room_manager = id;
 _init = 0;
 init_pos = [0,0];
 custom_args = array_create(0);
 debug = false;
+debug_info = false;
 cell_size = 16;
 cell_dim = [163,85];
 // this is [2608,1360], or [1304,680] pixels

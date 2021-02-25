@@ -7,7 +7,7 @@ if !_init {
 	}
 	print_debug(player_name);
 	scene_manager = instance_create(0,0,"obj_stage_article",3);
-	//action_manager = scene_manager.id;
+	action_manager = scene_manager.id;
 	room_manager = instance_create(0,0,"obj_stage_article",5);
 	scene_manager.player_name = player_name;
 	/*debug = false;
@@ -16,12 +16,19 @@ if !_init {
 	with obj_stage_article_platform debug = false;*/
 	//debug = true;
 	with obj_stage_article {
-		if num == 3 other.action_manager = id;
-		if num == 5 other.room_manager = id;
+		// if num == 3 other.action_manager = id;
+		// if num == 5 other.room_manager = id;
 		debug = other.debug;
+		og_depth = depth;
 	}
-	with obj_stage_article_solid debug = other.debug;
-	with obj_stage_article_platform debug = other.debug;
+	with obj_stage_article_solid {
+		debug = other.debug;
+		og_depth = depth;
+	}
+	with obj_stage_article_platform {
+		debug = other.debug;
+		og_depth = depth;
+	}
 	
 	_init = 1;
 } else {
@@ -94,6 +101,7 @@ if !_init {
 	}
 	var wall_here;
 	with oPlayer { //Fixes for various things due to article solids
+		if attack_down && taunt_down end_match();
 		//Land Spam Fix
 		if state == PS_LAND && free set_state(PS_IDLE_AIR);
 		//Wall Jumps
@@ -101,16 +109,14 @@ if !_init {
 		if !free has_walljump_actual = true;
 		wall_here = (right_down && place_meeting(x+22,y,obj_stage_article_solid) ) || (left_down && place_meeting(x-22,y,obj_stage_article_solid)) ;
 		has_walljump = wall_here && has_walljump_actual;
-		//print_debug("has_walljump_actual: "+string(has_walljump_actual));
+		
 		//Keep dash upon landing
-		if state == PS_JUMPSQUAT && (prev_state == PS_DASH || prev_state == PS_DASH_START) keep_dash = true;
+		if !prev_free && free && (prev_state == PS_DASH || prev_state == PS_DASH_START) keep_dash = true;
 		if keep_dash {
-			//print_debug("KEEP DASH ACTIVE");
 			if !(left_held > 0 || right_held > 0) || 
 			(free && (state == PS_ATTACK_AIR || state == PS_ATTACK_GROUND)) ||
 			state == PS_WAVELAND || shield_pressed {
 				keep_dash = false;
-				//print_debug("KEEP DASH END");
 			}
 			if !free && state != PS_JUMPSQUAT && state != PS_WAVELAND && state != PS_DASH_START {
 				if ((left_held != 0) || (right_held != 0)) {
@@ -122,6 +128,7 @@ if !_init {
 			}
 		}
 		rel_pos = [x-view_get_xview(),y-view_get_yview()];
+		prev_free = free;
 	}
 	
 	
