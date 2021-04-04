@@ -19,31 +19,5 @@ if _init == 0 {
     //if static image_alpha = 0;
     _init = 1;
 } else {
-	/*if static {
-		//with room_manager {
-			x = room_manager.static_position[0];
-			y = room_manager.static_position[1];
-		//}
-	}*/
-    /*with room_manager {
-        other.x = view_get_xview()+init_pos[0]*16;
-		other.y = view_get_yview()+init_pos[1]*16;
-        //other.init_cam_pos = init_cam_pos;
-    }*/
-    //visible = false;
-    //print_debug(string(marker[current_marker]));
-    /*if wait_time > 0 {
-        wait_time--;
-        hsp = 0;
-        vsp = 0;
-    }
-    if wait_time == 0 && marker[current_marker] != 0 move_to(current_marker,spe);*/
-    
-    //frame_update();
-    
-    //if static print_debug(string([x,y]));
-    /*x = init_x;
-    y = init_y;*/
-    image_index = (image_index + anim_speed) % image_number;
-
+    image_index += anim_speed;
 }

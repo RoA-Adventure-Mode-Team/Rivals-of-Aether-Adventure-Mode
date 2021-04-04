@@ -32,6 +32,8 @@ prev_state = 0;
 state_free = 1;
 test = noone;
 art_event = 0;
+freeze = 0;
+peace = 0;
 
 //Character Variables
 enem_id = spawn_variables[0];

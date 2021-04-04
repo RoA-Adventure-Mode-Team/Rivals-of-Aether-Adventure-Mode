@@ -1,5 +1,4 @@
 //draw_hud - the x position of your HUD element is 48*(i-1)
-
 enum LWO {
     TXT_HUD,
     TXT_WLD,
@@ -108,7 +107,7 @@ if debug {
         //draw_debug_text(2,16,"CAM POS: "+string(true_pos));
         //draw_debug_text(2,32,"CELL POS: "+string(cell_pos));
         //draw_debug_text(2,48,"POS IN CELL: "+string([floor((pos_in_cell[0])/16),floor((pos_in_cell[1])/16)]));
-        draw_debug_text(2,64,"PLAYER POS: "+"["+string(p_cell_pos[1][0])+","+string(p_cell_pos[1][0])+"]:["+string(floor((p_cell_pos[0][0])/16))+","+string(floor((p_cell_pos[0][1])/16))+"]:["+string((p_cell_pos[0][0]) % 16)+","+string((p_cell_pos[0][1]) % 16)+"]");
+        draw_debug_text(2,64,"PLAYER POS: "+"R: "+string(cur_room)+" S: "+string(action_manager.cur_scene[0])+" ["+string(p_cell_pos[1][0])+","+string(p_cell_pos[1][1])+"]:["+string(floor((p_cell_pos[0][0])/16))+","+string(floor((p_cell_pos[0][1])/16))+"]:["+string((p_cell_pos[0][0]) % 16)+","+string((p_cell_pos[0][1]) % 16)+"]");
         //print_debug(string(p_cell_pos));
         //draw_debug_text(2,64,"FOLLOW POS: "+string(follow_point));
         //draw_debug_text(2,82,"PLAYER POS: "+string(follow_player_pos));
@@ -144,10 +143,15 @@ with room_manager {
     }
 }
 
-// if string_count("`",keyboard_string) {
-//     debug_console = !debug_console;
-//     keyboard_string = "";
-// }
+if string_count("`",keyboard_string) {
+	cmd_toggle = !cmd_toggle;
+	if cmd_toggle {
+		keyboard_string = "";
+		array_push(active_win,[[cmd_x,cmd_y,noone,0],array_clone_seriously_why_isnt_this_how_it_works(win_data[0])]);
+		win_active = array_length_1d(active_win)-1;
+		active_win[@win_active][@1][@3][@1] = cmd_output;
+	}
+}
 
 // if debug_console { //debug_console_update();
 //     //#define debug_console_update();
@@ -217,95 +221,95 @@ user_event(2); //Cursor and Window Draw
 // //gpu_set_blendmode(bm_normal);
 // return true;
 
-#define console_command(_console_parse)
-switch _console_parse[0] {
-    case "debug":
-        debug = !debug;
-        var _debug = debug;
-        with obj_stage_article_solid debug = _debug;
-        with obj_stage_article_platform debug = _debug;
-        with obj_stage_article debug = _debug;
-        break;
-    case "set":
-        if _console_parse[1] in self && _console_parse[2] in variable_instance_get(self,_console_parse[1]) {
-            variable_instance_set(variable_instance_get(self,_console_parse[1]),_console_parse[2], _console_parse[3]);
-            print_to_console("SET "+_console_parse[2]+" IN "+_console_parse[1]+" TO "+_console_parse[3]);
-        } else print_to_console("UNKNOWN SET");
-        break;
-    case "kill":
-        //var _with_foder = noone;
-        if array_length_1d(_console_parse) < 2 with follow_player create_deathbox(x,y,10,10,player,1,1,3,0);
-        else {
-            switch _console_parse[1] {
-                case "enemies":
-                    with obj_stage_article if num == 6 create_deathbox(x,y,10,10,-1,1,1,3,0);
-                    break;
-                case "players":
-                    with oPlayer create_deathbox(x,y,10,10,-1,1,1,3,0);
-                    break;
-            }
-        }
-        break;
-    case "instances":
-        var _str = "";
-        with asset_get(_console_parse[1]) {
-            if !("num" in self) || num == _console_parse[2] _str += string(id)+", ";
-        }
-        print_to_console(_str);
-        break;
-    case "help":
-        print_to_console("COMMAND LIST:
-    color [article] [color] -
-    set the debug color of an article.
-    debug [article] - 
-    toggle debug info for an 
-    article type. 
-    help - show this message.
-    kill ['' || 'players' || 'enemies'] -
-    kill self, players, or enemies
-    set [instance] [variable] [value] - 
-    set a variable to a value in 
-    a named instance.
-    instances [article] [num] - 
-    list the instances of an article.
+// #define console_command(_console_parse)
+// switch _console_parse[0] {
+//     case "debug":
+//         debug = !debug;
+//         var _debug = debug;
+//         with obj_stage_article_solid debug = _debug;
+//         with obj_stage_article_platform debug = _debug;
+//         with obj_stage_article debug = _debug;
+//         break;
+//     case "set":
+//         if _console_parse[1] in self && _console_parse[2] in variable_instance_get(self,_console_parse[1]) {
+//             variable_instance_set(variable_instance_get(self,_console_parse[1]),_console_parse[2], _console_parse[3]);
+//             print_to_console("SET "+_console_parse[2]+" IN "+_console_parse[1]+" TO "+_console_parse[3]);
+//         } else print_to_console("UNKNOWN SET");
+//         break;
+//     case "kill":
+//         //var _with_foder = noone;
+//         if array_length_1d(_console_parse) < 2 with follow_player create_deathbox(x,y,10,10,player,1,1,3,0);
+//         else {
+//             switch _console_parse[1] {
+//                 case "enemies":
+//                     with obj_stage_article if num == 6 create_deathbox(x,y,10,10,-1,1,1,3,0);
+//                     break;
+//                 case "players":
+//                     with oPlayer create_deathbox(x,y,10,10,-1,1,1,3,0);
+//                     break;
+//             }
+//         }
+//         break;
+//     case "instances":
+//         var _str = "";
+//         with asset_get(_console_parse[1]) {
+//             if !("num" in self) || num == _console_parse[2] _str += string(id)+", ";
+//         }
+//         print_to_console(_str);
+//         break;
+//     case "help":
+//         print_to_console("COMMAND LIST:
+//     color [article] [color] -
+//     set the debug color of an article.
+//     debug [article] - 
+//     toggle debug info for an 
+//     article type. 
+//     help - show this message.
+//     kill ['' || 'players' || 'enemies'] -
+//     kill self, players, or enemies
+//     set [instance] [variable] [value] - 
+//     set a variable to a value in 
+//     a named instance.
+//     instances [article] [num] - 
+//     list the instances of an article.
     
-    room/scene [id] - 
-    set the current room/scene to id.");
-        break;
-    case "color":
-        if string_digits(_console_parse[1]) != "" {
-            with obj_stage_article_solid if num == real(_console_parse[1]) debug_color = _console_parse[2];
-            with obj_stage_article_platform if num == real(_console_parse[1]) debug_color = _console_parse[2];
-            with obj_stage_article if num == real(_console_parse[1]) debug_color = _console_parse[2];
-            print_to_console("NEW ARTICLE COLOR: "+_console_parse[2]);
-        } else print_to_console("UNKNOWN ARGUMENTS");
+//     room/scene [id] - 
+//     set the current room/scene to id.");
+//         break;
+//     case "color":
+//         if string_digits(_console_parse[1]) != "" {
+//             with obj_stage_article_solid if num == real(_console_parse[1]) debug_color = _console_parse[2];
+//             with obj_stage_article_platform if num == real(_console_parse[1]) debug_color = _console_parse[2];
+//             with obj_stage_article if num == real(_console_parse[1]) debug_color = _console_parse[2];
+//             print_to_console("NEW ARTICLE COLOR: "+_console_parse[2]);
+//         } else print_to_console("UNKNOWN ARGUMENTS");
         
-        break;
-    case "room":
-        if string_digits(_console_parse[1]) != "" {
-            with obj_stage_article if num == 5 switch_to_room = real(_console_parse[1]);
-        }
-        break;
-    case "scene":
-        if string_digits(_console_parse[1]) != "" {
-            with obj_stage_article if num == 3 switch_to_scene = real(_console_parse[1]);
-        }
-        break;
-    case "":
-        break;
-    default:
-        print_to_console("UNKNOWN COMMAND");
-        break;
-}
+//         break;
+//     case "room":
+//         if string_digits(_console_parse[1]) != "" {
+//             with obj_stage_article if num == 5 switch_to_room = real(_console_parse[1]);
+//         }
+//         break;
+//     case "scene":
+//         if string_digits(_console_parse[1]) != "" {
+//             with obj_stage_article if num == 3 switch_to_scene = real(_console_parse[1]);
+//         }
+//         break;
+//     case "":
+//         break;
+//     default:
+//         print_to_console("UNKNOWN COMMAND");
+//         break;
+// }
 
-#define print_to_console(_str)
-console_output = console_output + "
-> " + key_string_old + "
-: " + _str;
-if string_height(console_output) > debug_ey {
-    console_output = string_copy(console_output,string_pos("
-: ",console_output)+1,string_length(console_output));
-}
+// #define print_to_console(_str)
+// console_output = console_output + "
+// > " + key_string_old + "
+// : " + _str;
+// if string_height(console_output) > debug_ey {
+//     console_output = string_copy(console_output,string_pos("
+// : ",console_output)+1,string_length(console_output));
+// }
 
 
 #define string_parse(_str,_delim) // BECAUSE THIS ISN'T DEFAULT FOR SOME REASON
@@ -454,3 +458,10 @@ with room_manager {
 		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
 			floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
 }
+#define array_clone_seriously_why_isnt_this_how_it_works(_shit)
+var _fuck = [];
+for(var _i = 0;_i < array_length_1d(_shit);_i++) {
+	if array_length_1d(_shit[_i]) > 0 array_push(_fuck,array_clone_seriously_why_isnt_this_how_it_works(_shit[_i]));
+	else array_push(_fuck,_shit[_i]);
+}
+return _fuck;

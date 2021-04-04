@@ -1,7 +1,7 @@
 //article3_init, action manager
 sprite_index = asset_get("empty_sprite");
 disable_movement = true;
-debug = true;
+debug = false;
 debug_info = false;
 init_pos = [0,0];
 custom_args = array_create(0);

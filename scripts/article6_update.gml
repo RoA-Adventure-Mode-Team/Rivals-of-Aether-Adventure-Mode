@@ -185,7 +185,15 @@ switch target_behavior {
         with oPlayer if other.ai_target.damage > damage ai_target = id;
         break;
 }
-
+if freeze {
+    right_down = false;
+    left_down = false;
+    jump_down = false;
+    left_hard_pressed = false;
+    right_hard_pressed = false;
+    down_hard_pressed = false;
+    return;
+}
 if (art_state != PS_DEAD) {
     art_event = EN_EVENT.UPDATE;
     user_event(6); //Custom behavior
@@ -538,7 +546,7 @@ if hitpause <= 0 switch art_state { //Display Logic
 art_event = EN_EVENT.ANIMATION;
 user_event(6); //Custom behavior
 
-if next_attack != -1 attack_start();
+if next_attack != -1 && !peace attack_start();
 #define input_process() //For inputs in more than 1 state
 
 if right_down || left_down to_dir = right_down-left_down;
@@ -895,31 +903,19 @@ switch (battle_state) {
 
 
 #define place_meet(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (place_meeting(__x,__y,asset_get("solid_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_solid) || 
         place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_platform));
 #define position_meet(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (position_meeting(__x,__y,asset_get("solid_32_obj")) || 
         position_meeting(__x,__y,obj_stage_article_solid) || 
         position_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         position_meeting(__x,__y,obj_stage_article_platform));
 #define place_meet_solid(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true));*/
 return (place_meeting(__x,__y,asset_get("solid_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_solid));
 #define place_meet_plat(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_platform));
 #define get_plat(__x,__y)

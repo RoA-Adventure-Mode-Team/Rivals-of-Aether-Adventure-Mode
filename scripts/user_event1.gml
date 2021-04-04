@@ -1,5 +1,24 @@
 // Load Room Data - Room Manager
 
+
+enum A {
+    NONE,
+    TERRAIN,
+    EMPTY,
+    SM,
+    TRIGGER,
+    RM,
+    ENEMY,
+    CAM,
+    RMT,
+    CHECKPOINT,
+    ITEM,
+    DITHER,
+    LIGHT,
+    SHADOW,
+    PARTICLE_EMITTER,
+    DESTUCTABLE
+}
 //Add Room Data Here
 room_add(0,[]); //Empty Room
 //room_data_temp = [article script, x, y, article type, depth, [args0-7], [custom]];
@@ -13,7 +32,7 @@ room_add(1,[
             
             //Ground & BG Declarations
             [1, 0, 0, 2, -1, [sprite_get("marble_ground"), 0, 0, true, false, 0, 0, 0], [0,0]],
-            [1, 0, 0, 0, -8, [sprite_get("ground_top"), 0, 0, false, false, 0, 0, 0], [0,0]],
+            //[1, 0, 0, 0, -8, [sprite_get("ground_top"), 0, 0, false, false, 0, 0, 0], [0,0]],
             [1, 66, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             [1, 126, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 30, [sprite_get("bg2"), 0, 0, 0, true, 0, 0, 0], [0,0]],
@@ -31,9 +50,7 @@ room_add(1,[
             //[7, 63, 30, 0, 0, [0, 700, 300, 0, 0, 0, 0, 0], [0,0]],
             //[7, 0, 25, 0, 0, [0, 900, 500, 2, 0, 0, 0, 0], [0,0]],
             //[9, 117, 25, 0, 0, [1, 900, 500, 1, 0, 3, 0, 0], [0,0]],
-            
             [1, 90, 44, 0, 2, [sprite_get("stall"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
-            
             [1, 101, 44, 0, 1, [sprite_get("house_main"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 70, 44, 0, -7, [sprite_get("house1"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             [11, 83, 44, 0, 4, [sprite_get("tree1"), 0, 0, 0, 0, .2, 0, 0], [0,0]],
@@ -49,6 +66,7 @@ room_add(1,[
             //[12, 106, 43, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,69]],
             
             [1, 16, 44, 0, 1, [sprite_get("house_2stor"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
+            [15, 20, 20, 0, 1, [sprite_get("torchtower"), 2, 0, sound_get("sfx_fade"), 0, 0, 0, 20], [0,0]],
             [1, 16, 28.125, 1, 1, [sprite_get("house_2stor_plath"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             [1, 16, 36.125, 1, 1, [sprite_get("house_2stor_platl"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             
@@ -400,7 +418,7 @@ room_add(4,[
             [1, 76, 48, 1, 0, [sprite_get("sewer_plat"), 2, 0, 0, 0, 0, 0, 0], [0,0]],
             
             [14, 117, 58, 0, 1, [sprite_get("steam_vfx"), 60, 180, .2, 0, [.5,-1], 1, 0, 0], [0,0]],
-            [6, 80, 48, 0, -5, [2, 0, 0, 0, 0, 0, 0, 0], [0,0]],
+            [6, 80, 48, 0, -5, [2, 0, 0, 0, 0, 0, 0, 0], [0,0]], //Flying Spitter
             //[6, 80, 48, 0, -5, [2, 0, 0, 0, 0, 0, 0, 0], [0,0]]
             ]
         ],

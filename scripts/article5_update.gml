@@ -7,7 +7,7 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
     */
     render_offset = [room_width/2-cell_dim[0],room_height/2-cell_dim[1]];
     reload_rooms();
-    switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
+    switch_to_room_pos = [follow_player.respawn_point[0],follow_player.respawn_point[1]];
     room_switch(follow_player.respawn_point[2]);
     
 	old_cell_pos = cell_pos;
@@ -22,23 +22,40 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
 	//with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
 //}
 
-
-
 with oPlayer { //Respawn Code
+	print(respawn_point);
 	if state == PS_DEAD || state == PS_RESPAWN {
-		if (state_timer == 89 && state == PS_RESPAWN) {
-			visible = false;
-			set_state(PS_IDLE_AIR);
-			with other {
-				room_switch_type = 1;
-    			switch_to_room_pos = cell_to_grid(follow_player.respawn_point[0],follow_player.respawn_point[1]);
-			    print_debug(string(follow_player.respawn_point));
-			    room_switch(follow_player.respawn_point[2]);
-		        room_switch_on = true;
-		        room_switch_timer = 0;
-			}
+		x = dead_pos[0];
+		y = dead_pos[1];
+		if state_timer > 89 {
+			x = respawn_point[0];
+			y = respawn_point[1];
 		}
+		
+		// x = (respawn_point[0][0]+respawn_point[1][0]*cell_dim[0])*cell_size;
+		// y = (respawn_point[0][1]+respawn_point[1][1]*cell_dim[1])*cell_size;	
+		// with other other.x = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[0];
+		// y = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[1];
+		// if (state_timer >= 89) {
+		// 	set_state(PS_IDLE);
+		// 	free = false;
+		// 	visible = false;
+		// 	x = 5500;
+		// 	y = 5300;
+		// 	with other {
+		// 		if !room_switch_on {
+		// 			print(other.player);
+		// 			room_switch_type = 1;
+		//   		switch_to_room_pos = cell_to_grid(other.respawn_point[0],other.respawn_point[1]);
+		// 		    // print_debug(string(other.respawn_point));
+		// 		    room_switch(other.respawn_point[2]);
+		// 	        room_switch_oIn all n = true;
+		// 	        room_switch_timer = 0;
+		// 		}
+		// 	}
+		// }
 	}
+	if state == PS_SPAWN respawn_point = [x,y,other.cur_room]; //Spawn state sets checkpoint?
 }
 if switch_to_room != cur_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
@@ -48,7 +65,7 @@ if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
     */
-    if !respawning && follow_player.state != PS_HITSTUN set_follow_point(follow_objects);
+    if follow_player.state != PS_HITSTUN && follow_player.state != PS_DEAD set_follow_point(follow_objects);
     //Frame Cleanups
     last_pos[0] = follow_point.x;
     last_pos[1] = follow_point.y;
@@ -119,12 +136,17 @@ if _room_id != cur_room {
     }
     
 } else {
-	print_debug("[RM] CURRENT ROOM");
+	if debug print_debug("[RM] CURRENT ROOM");
 	despawn_room();
     room_render(cur_room);
 }
-with oPlayer set_state(PS_IDLE);
+free = false;
+with oPlayer {
+	set_state(PS_IDLE);
+	respawn_point = [x,y,other.cur_room]; //Reset respawn every room change ^^;
+}
 switch_to_room = cur_room;
+return;
 #define room_switch_update() //Runs when a room transition is in effect
 with oPlayer {
 	//if other.room_switch_timer == 1 set_state(PS_SPAWN);
@@ -217,10 +239,8 @@ if _room_id < array_length_1d(array_room_data) {
                         art.action_article_index = cell_data[j][6][1]; //array_room_data[_room_id][i][1][j][6][1] 6D Array!
                         art.room_manager = id;
                         art.debug = obj_stage_main.debug;
-                        
                         //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;
                         articles_spawned++;
-                        
                 }
                 
             }
@@ -248,21 +268,19 @@ return _pos;
 return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0] != 0))*cell_size + render_offset[0], 
 		(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1] != 0))*cell_size + render_offset[1]];
 #define cell_to_grid(_pos, _cell_pos) //Translate cell coordinates to the basegame grid system
-return real_to_grid(cell_to_real(_pos,_cell_pos));
+with room_manager return cell_to_real(_pos,_cell_pos);
 #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
 _pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 cell_pos = [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
 			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
 return [cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),
 		cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))];
-
 #define base_to_am(_pos) //Translate base-game coordinates to AM coordinates
 _pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 return [[cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),
 		 cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))],
 		[-floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
-		 -floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
-
+		 -floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))],cur_room];
 #define am_to_base(_pos,_cell_pos)//Translate AM coordinates to base-game coordinates
 return [_cell_pos[0]*cell_dim[0]+_pos[0]+render_offset[0]];
 
@@ -285,12 +303,18 @@ with obj_stage_article_solid instance_destroy(id);
 #define switch_room_position(_pos) //Switches the room position in grid space (Harbige12)
 if (_pos[0] != -1) {
 	follow_point.x = _pos[0];
-	with oPlayer x = other.follow_point.x;
+	with oPlayer {
+		x = other.follow_point.x;
+		
+	}
 	//follow_player.x = follow_point.x;
 }
 if (_pos[1] != -1) {
 	follow_point.y = _pos[1];
-	with oPlayer y = other.follow_point.y;
+	with oPlayer {
+		y = other.follow_point.y;
+	}
+	
 	//follow_player.y = follow_point.y;
 }
 with oPlayer visible = true;

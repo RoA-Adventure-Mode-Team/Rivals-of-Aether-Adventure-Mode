@@ -1,5 +1,4 @@
 //article3 - Action Manager
-
 //Update enums article3_update, draw_hud, and user_event0
 enum LWO {
     TXT_HUD,
@@ -60,7 +59,7 @@ enum B {
 
 if !_init {
 	with obj_stage_article if num == 5 other.room_manager = id;
-	debug = true;
+	debug = false;
     reload_scenes();
     error_code = change_scene(1);
     //print_debug("ERROR: "+string(error_code));
@@ -224,7 +223,7 @@ for (var i = 0; i < array_length_1d(cur_actions); i++) {
 return true;
 
 #define start_action(_room_id, _scene_id, _action_id)
-if _action_id > array_length_1d(action_array[_room_id][_scene_id]) {
+if _scene_id > array_length_1d(action_array[_room_id]) || _action_id > array_length_1d(action_array[_room_id][_scene_id]) {
 	print_debug("[AM] ACTION "+string(_action_id)+" OUTSIDE INITIALIZED RANGE...");
 	return false;
 }

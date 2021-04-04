@@ -10,6 +10,7 @@ debug = false;
 debug_info = false;
 cell_size = 16;
 cell_dim = [163,85];
+cur_scene = [1];
 // this is [2608,1360], or [1304,680] pixels
 grid_offset = 4;
 list_room = ds_list_create();

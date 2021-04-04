@@ -4,7 +4,7 @@ sprite_index = asset_get("empty_sprite");
 disable_movement = true;
 
 _init = 0;
-state = 0;
+state = 1;
 state_old = 0;
 state_timer = 0;
 debug = false;
@@ -33,7 +33,6 @@ trigger_var = noone;
 collis_obj = noone;
 destroy_on_trigger = false;
 destroy_effect = asset_get("sfx_ice_shatter_big");
-
 
 switch trigger_obj_type {
     case 0:

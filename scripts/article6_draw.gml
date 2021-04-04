@@ -21,7 +21,7 @@ enum EN_EVENT {
 
 if !_init exit; //Only draw stuff after initializing
 if in_render {
-    if debug {
+    if debug_info {
         draw_sprite_ext(hurtbox_spr,-1,x,y,spr_dir,1,0,c_white,.6);
         draw_debug_text(x-128,y,string(attack_down));
         draw_debug_text(x-128,y+16,string(down_down));
@@ -43,6 +43,9 @@ if in_render {
                       place_meeting(x,y+1,obj_stage_article_platform))));*/
         if array_length_1d(custom_args) > 1 && custom_args[1] != 0 {
         draw_sprite(custom_args[1],0,x,y);
+        draw_rectangle_color(x-sprite_get_xoffset(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2,
+                             x-sprite_get_xoffset(sprite_index)*2+sprite_get_width(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2+sprite_get_height(sprite_index)*2,
+                             c_fuchsia,c_fuchsia,c_fuchsia,c_fuchsia,true);
     }
     
     }

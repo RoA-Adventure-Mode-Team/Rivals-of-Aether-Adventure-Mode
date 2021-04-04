@@ -1,14 +1,16 @@
 //
 //user_event(1);
-
 if !_init {
-	with follow_player {
-		other.player_name  = get_char_info(player,INFO_STR_NAME);
-	}
-	print_debug(player_name);
+	
 	scene_manager = instance_create(0,0,"obj_stage_article",3);
 	action_manager = scene_manager.id;
 	room_manager = instance_create(0,0,"obj_stage_article",5);
+	
+	with follow_player {
+		other.player_name  = get_char_info(player,INFO_STR_NAME);
+		action_manager = other.action_manager;
+		room_manager = other.room_manager;
+	}
 	scene_manager.player_name = player_name;
 	/*debug = false;
 	with obj_stage_article debug = false;
@@ -29,7 +31,6 @@ if !_init {
 		debug = other.debug;
 		og_depth = depth;
 	}
-	
 	_init = 1;
 } else {
 	if debug {
@@ -42,14 +43,14 @@ if !_init {
 		with obj_stage_article if num == 6 && player_controller != 0 djumps = max_djumps;
 	}
 	if get_gameplay_time() == 3 with oPlayer {
-		if taunt_down {
-			with other {
-				debug = true;
-				with obj_stage_article debug = true;
-				with obj_stage_article_solid debug = true;
-				with obj_stage_article_platform debug = true;
-			}
-		}
+		// if taunt_down {
+		// 	with other {
+		// 		debug = true;
+		// 		with obj_stage_article debug = true;
+		// 		with obj_stage_article_solid debug = true;
+		// 		with obj_stage_article_platform debug = true;
+		// 	}
+		// }
 		set_state(PS_SPAWN);
 		/*spr_dir = 1;
 		clear_button_buffer(PC_LEFT_HARD_PRESSED);
@@ -97,10 +98,16 @@ if !_init {
 		else taunt_held = 0;
 		if attack_down attack_held++;
 		else attack_held = 0;
+		if special_down special_held++;
+		else special_held = 0;
 		//if taunt_held == 10 other.debug_console = !other.debug_console;
 	}
 	var wall_here;
 	with oPlayer { //Fixes for various things due to article solids
+		if god {
+			invincible = true;
+			invince_time = 10;
+		}
 		if attack_down && taunt_down end_match();
 		//Land Spam Fix
 		if state == PS_LAND && free set_state(PS_IDLE_AIR);

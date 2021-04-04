@@ -1,28 +1,10 @@
-//draw_debug_text(x,y,"HELLO, GORDON! "+string(timer))
-
-draw_set_alpha(.3);
-if debug {
-    switch trigger_shape {
-        case 0:
-            draw_rectangle_color(x,y,x+trigger_w,y+trigger_h,debug_color,debug_color,debug_color,debug_color,c_black);
-            break;
-        case 1:
-            draw_circle_color(x,y,trigger_w,debug_color,debug_color,c_black);
-            break;
-        case 2:
-            visible = debug;
-            break;
-    
-    } 
-}
-draw_set_alpha(1);
-
+//article15_draw, Destructable Terrain
 if !debug_info exit; //Debug info; check user_event2 draw_debug_info
 debug_pos = grid_to_cell([x+64,y+64]);
 draw_debug_text(floor(x),floor(y),string(id)+"
 ["+string(debug_pos[1][0])+","+string(debug_pos[1][0])+"]:["+string(floor((debug_pos[0][0])/16))+","+string(floor((debug_pos[0][1])/16))+"]:["+string((debug_pos[0][0]) % 16)+","+string((debug_pos[0][1]) % 16)+"]");
-draw_rectangle_color(x,y,
-                    x+trigger_w,y+trigger_h,
+draw_rectangle_color(x-sprite_get_xoffset(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2,
+                    x-sprite_get_xoffset(sprite_index)*2+sprite_get_width(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2+sprite_get_height(sprite_index)*2,
                     c_fuchsia,c_fuchsia,c_fuchsia,c_fuchsia,true);
 
 

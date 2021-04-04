@@ -86,7 +86,7 @@ action_add(1, 1, 4, ACT.CAMERA,
 scene_add(1, 1, [1]);
 action_add(1, 1, 1, ACT.WAIT, 
 [120], //frames
-[201,202]); //Actions to start on exit
+[]); //Actions to start on exit
 action_add(1, 1, 2, ACT.WINDOW, 
 [0, 100, 200, []], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
@@ -109,8 +109,8 @@ action_add(1, 1, 7, ACT.SW_ROOM,
 [4], //player_id, life_time, state_override, ease_type, ease_value
 []); //Actions to start on exit
 
-action_add(1, 1, 200, ACT.WINDOW, 
-[0, 200, 100, [[],[],[],["Hello! You can type here..."]]], //window_type, x, y, [contentoverride]
+action_add(1, 1, 200, ACT.WINDOW, //Debug Window
+[0, 200, 100, []], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
 
 action_add(1, 1, 201, ACT.WINDOW, 
