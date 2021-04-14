@@ -12,8 +12,6 @@ init_pos = [0,0];
 cell_pos = [0,0];
 debug_color = c_gray;
 
-
-
 custom_args = array_create(0);
 trigger_shape = spawn_variables[0];
 trigger_w = spawn_variables[1];

@@ -16,7 +16,7 @@ if !_init {
 	with obj_stage_article debug = false;
 	with obj_stage_article_solid debug = false;
 	with obj_stage_article_platform debug = false;*/
-	//debug = true;
+	debug = false;
 	with obj_stage_article {
 		// if num == 3 other.action_manager = id;
 		// if num == 5 other.room_manager = id;
@@ -43,6 +43,7 @@ if !_init {
 		with obj_stage_article if num == 6 && player_controller != 0 djumps = max_djumps;
 	}
 	if get_gameplay_time() == 3 with oPlayer {
+		
 		// if taunt_down {
 		// 	with other {
 		// 		debug = true;
@@ -72,20 +73,7 @@ if !_init {
 		clear_button_buffer(PC_STRONG_PRESSED);
 		clear_button_buffer(PC_TAUNT_PRESSED);*/
 	}
-	/*
-	with oPlayer if other.follow_player != id  {
-			spr_dir = 0;
-	    	//x = other.follow_player.x;
-	    	//y = other.follow_player.y;
-	    	hitstop = 1000;
-	    	hitpause = true;
-	    	x = 0;
-	    	y = 0;
-	    	visible = false;
-	    	instance_destroy();
-	}
-	*/
-	with follow_player {
+	with oPlayer {
 		if down_down down_held++;
 		else down_held = 0;
 		if up_down up_held++;
@@ -106,7 +94,7 @@ if !_init {
 	with oPlayer { //Fixes for various things due to article solids
 		if god {
 			invincible = true;
-			invince_time = 10;
+			invince_time = 2;
 		}
 		if attack_down && taunt_down end_match();
 		//Land Spam Fix
@@ -116,6 +104,11 @@ if !_init {
 		if !free has_walljump_actual = true;
 		wall_here = (right_down && place_meeting(x+22,y,obj_stage_article_solid) ) || (left_down && place_meeting(x-22,y,obj_stage_article_solid)) ;
 		has_walljump = wall_here && has_walljump_actual;
+		if (place_meeting(x+22,y,obj_stage_article_solid) || place_meeting(x-22,y,obj_stage_article_solid)) && state == PS_HITSTUN && get_player_damage(player) > 150 {
+			
+			dead_pos = [x,y];
+			create_deathbox(x,y-32,10,10,player,true,0,2,2);
+		}
 		
 		//Keep dash upon landing
 		if !prev_free && free && (prev_state == PS_DASH || prev_state == PS_DASH_START) keep_dash = true;
@@ -134,8 +127,13 @@ if !_init {
 				keep_dash = false;
 			}
 		}
+		// if state == PS_AIR_DODGE && old_pos[1] - y > 16 { //SNAPPING GRRR
+		// 	y = old_pos[1];
+		// 	print("SNAP");
+		// }
 		rel_pos = [x-view_get_xview(),y-view_get_yview()];
 		prev_free = free;
+		// if state != PS_AIR_DODGE old_pos = [x,y];
 	}
 	
 	

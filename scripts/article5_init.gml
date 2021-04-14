@@ -1,6 +1,7 @@
 //article5_init, Room Manager
 
 sprite_index = asset_get("empty_sprite");
+depth = -120;
 disable_movement = true;
 room_manager = id;
 _init = 0;
@@ -88,5 +89,6 @@ follow_point = {
 };
 last_pos = array_create(2);
 follow_offset = 240;
+cam_smooth = 5;
 with obj_stage_article if num == 3 other.action_manager = id;
 //room_data_temp = [article script, x, y, article type, depth, [args0-7], [custom]];

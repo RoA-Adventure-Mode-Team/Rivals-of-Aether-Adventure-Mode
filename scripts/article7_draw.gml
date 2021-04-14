@@ -3,8 +3,9 @@
 /*with obj_stage_article if num == 3 && (other.active_scene == 0 || cur_scene == other.active_scene) {
     draw_set_alpha(1);
 } draw_set_alpha(.2);*/
-draw_set_alpha(.3);
+
 if debug {
+	draw_set_alpha(.3);
     switch trigger_shape {
         case 0:
             draw_rectangle_color(x,y,x+trigger_w,y+trigger_h,c_blue,c_blue,c_blue,c_blue,c_black);

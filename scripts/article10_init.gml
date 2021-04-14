@@ -1,7 +1,6 @@
 //article10_init, Items
 
 sprite_index = asset_get("empty_sprite");
-disable_movement = true;
 _init = 0;
 state = 0;
 state_old = 0;
@@ -13,6 +12,9 @@ cell_pos = [0,0];
 debug_color = c_gray;
 
 event_flag = 0;
+
+pickup_cooldown = 0;
+pickup_cooldown_max = 60;
 
 
 custom_args = array_create(0);
@@ -33,3 +35,6 @@ follow_offset_x = 42;
 follow_pos = [0,0];
 
 keep = false;
+
+image_xscale = 2;
+image_yscale = 2;

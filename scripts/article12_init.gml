@@ -29,5 +29,5 @@ render_index = 0;
 bg_color = $ffffff;
 bg_color_true = bg_color;
 color_rate = .02;
-val_limit = 20;
+val_limit = 70;
 draw = false;

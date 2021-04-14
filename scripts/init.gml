@@ -83,9 +83,14 @@ if is_online {
     if get_player_hud_color(player) == 6612290 other.local_player = id;
     other.player_count++;
 }*/
+
+//Camera Variables
 with oPlayer if get_player_hud_color(player) == 6612290 other.follow_player = id;
 if follow_player == noone  with oPlayer if player == 1 other.follow_player = id;
+cam_override_obj = noone;
 // if follow_player == noone with oPlayer if other.follow_player == noone && (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
+
+
 //Area Triggers (article4)
 
 //Room Manager (article5)
@@ -152,12 +157,17 @@ cmd_toggle = false;
 cmd_lucid = true; //True for debug purposes, controls whether debug stuff is enabled
 cmd_x = 664;
 cmd_y = 4;
-cmd_w = 288;
+cmd_w = 280;
 // cmd_h = 176;
 cmd_h = 416;
 
 cmd_char = '>';
-cmd_output = "Type 'help' for command list.
+cmd_output = "Hello Aether Studios!
+Here is a very early build of Adventure Mode, and a showcase of some the dev tools I have been working on for it.
+You can select objects with left click and move them with right.
+Most other things through the console.
+Can also reference resources with r:'res_name' as an arg.
+Type 'help' for command list.
 "; //Parsed string for storing command log
 cmd_save_output = false; // If the output is saved, or overwritten with every command (VERY LAGGY)
 cmd_title = "LUCID DREAM v0.4";

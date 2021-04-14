@@ -24,13 +24,15 @@ enum ACT {
     MUSIC, //set music
     //type, 1, 2
     SET, //Set article data
-    //article_id, variable, value, fade_type, fade_length
+    //article_id, variable, value, ease_type, ease_length
     ON_INPUT, //Do a thing when a player presses a button
     //follow_player?, input_type
     SW_ROOM, //Switch the room
     //to_room
-    QUEST_PROGRESS, //Quest-related actions
+    QUEST_PROG, //Quest-related actions
     //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
+    SUS, //Suspend Action by ID
+    //suspend_bool, action_id
 }
 
 enum P {
@@ -61,8 +63,7 @@ if !_init {
 	with obj_stage_article if num == 5 other.room_manager = id;
 	debug = false;
     reload_scenes();
-    error_code = change_scene(1);
-    //print_debug("ERROR: "+string(error_code));
+    change_scene(1);
     _init = true;
     quest_init = true;
     exit;
@@ -139,7 +140,7 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     	}
     	break;
     case ACT.SET:
-	    switch _param[3] { //fade_type
+	    switch _param[3] { //ease_type
 	    	case 0:
 	    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[1],variable_instance_get(id,_param[1]));
 		    	with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
@@ -224,7 +225,7 @@ return true;
 
 #define start_action(_room_id, _scene_id, _action_id)
 if _scene_id > array_length_1d(action_array[_room_id]) || _action_id > array_length_1d(action_array[_room_id][_scene_id]) {
-	print_debug("[AM] ACTION "+string(_action_id)+" OUTSIDE INITIALIZED RANGE...");
+	if debug print_debug("[AM] ACTION "+string(_action_id)+" OUTSIDE INITIALIZED RANGE...");
 	return false;
 }
 if debug print_debug("[AM] ACTION LIVE: "+string(_action_id));
@@ -247,23 +248,15 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 	case ACT.WINDOW:
 		var _param = new_action[P.LOAD][L.PARAM];
 		var win_over = _param[3];
-		//print_debug(string(win_over));
 		with obj_stage_main {
 			if array_length_1d(win_data) < _param[0] {
 				print_debug("[AM] WINDOW OUTSIDE OF INITIALIZED RANGE...");
 				return false;
 			}
-			//var gml_arrays_lul = array_clone_seriously_why_isnt_this_how_it_works(win_data[_param[0]]);
-			/*for(var _i = 0; _i < array_length_1d(win_data[_param[0]]);_i++) {
-				if  array_length_1d(win_data[_param[0]][_i]) > 0 array_push(gml_arrays_lul,array_clone(win_data[_param[0]][_i]));
-				else array_push(gml_arrays_lul,win_data[_param[0]][_i]);
-			}*/
 			if win_over != [] for(var i = 0; i < array_length_1d(win_over); i++) for(var j = 0; j < array_length_1d(win_over[i]); j++) win_data[@_param[0]][@(i+1)][@(j+1)] = win_over[i][j];
 			array_push(active_win,[[_param[1],_param[2],new_action[P.ACTION_INDEX],0],array_clone_seriously_why_isnt_this_how_it_works(win_data[_param[0]])]); //Push window data to active windows in the right format 
 								//[[pos_x,pos_y,action_id,alive_time], [meta]]
 		}
-		//for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
-		//return true; //Never enters the queue
 		break;
 	case ACT.SET:
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -294,7 +287,7 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 				music_fade(_param[1],_param[2]);
 				break;
 			case 3: //volume
-				//sound_volume(_param[1]);
+				// sound_volume(_param[1]);
 				break;
 			case 4: //pitch
 				//sound_pitch(_param[1]);
@@ -303,6 +296,30 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     			break;
     	}
     	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+		return true; //Never enters the queue
+	case ACT.SUS:
+		var _param = new_action[P.LOAD][L.PARAM];
+		if _param[0] { // Suspend Action
+			while array_length_1d(suspened_actions)-1 < room_id array_push(suspened_actions,[]);
+			for (var i = 0; i < array_length_1d(cur_actions); i++) {
+		    	if array_length_1d(cur_actions[i]) > 1 && cur_actions[i][P.ACTION_ID] ==  _param[1] {
+		    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" SUSPENDED");
+		    		array_push(suspened_actions[room_id],cur_actions[i]);
+		    		cur_actions = array_cut(cur_actions, i);
+		    	}
+			}
+		} else { //Unsuspend Action
+			for (var i = 0; i < array_length_1d(suspened_actions); i++) {
+		    	if suspened_actions[room_id][i][P.ACTION_ID] == _param[1] {
+		    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" SUSPENDED");
+		    		array_push(cur_actions, suspened_actions[room_id][i]);
+		    		suspened_actions[room_id] = array_cut(suspened_actions[room_id], i);
+		    		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+					return true; //Never enters the queue
+		    	}
+			}
+		}
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
 		return true; //Never enters the queue
 	case ACT.SW_ROOM:
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -313,7 +330,7 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     	}
     	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
 		return true; //Never enters the queue
-	case ACT.QUEST_PROGRESS: //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
+	case ACT.QUEST_PROG: //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
     	var _param = new_action[P.LOAD][L.PARAM];
     	switch _param[1] {
     		case 2: //add/subtract
