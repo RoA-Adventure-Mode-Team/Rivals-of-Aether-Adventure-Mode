@@ -123,6 +123,7 @@ sprite_change_offset("enemy_3_utilt",96, 158);
 
 sprite_change_offset("enemy_4_idle",74, 94);
 sprite_change_offset("enemy_4_hurt",74, 94);
+sprite_change_offset("enemy_4_walk",74, 94);
 sprite_change_offset("enemy_4_walkturn",74, 94);
 sprite_change_offset("enemy_4_jumpstart",74, 94);
 sprite_change_offset("enemy_4_land",74, 94);

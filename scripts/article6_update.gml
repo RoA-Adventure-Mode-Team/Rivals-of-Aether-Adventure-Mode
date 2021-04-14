@@ -1396,7 +1396,7 @@ with _hbox {
 
 //Run hit_player_event for characters with compatability
 if _hbox.player_id != 0 with _hbox.player_id {
-    if hit_player_event != -1 {
+    if "hit_player_event" in self && hit_player_event != -1 {
         hit_player_obj = other;
         hit_player = -1; //Not a player
         my_hitboxID = _hbox;

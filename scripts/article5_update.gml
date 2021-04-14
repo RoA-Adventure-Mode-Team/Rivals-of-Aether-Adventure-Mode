@@ -23,10 +23,7 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
 //}
 
 with oPlayer { //Respawn Code
-<<<<<<< HEAD
 	// print(respawn_point);
-=======
->>>>>>> 339d04351b79a9795b490c4c41f3112f2851842b
 	if state == PS_DEAD || state == PS_RESPAWN {
 		x = dead_pos[0];
 		y = dead_pos[1];
