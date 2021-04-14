@@ -33,6 +33,7 @@ enum EN {
     ABRAWLER, //1
     FLEYE, //2
     ROCKO, //3
+    LSBIRD, //4
 };
 
 switch (enem_id) {
@@ -2030,6 +2031,242 @@ switch (enem_id) {
                 }
             break;
         }
+    break;
+    
+    case EN.LSBIRD:
+    	switch(art_event) {
+    		case EN_EVENT.INIT:
+                sprite_name = "laserbird";
+    			hitpoints_max = 35;
+                
+                collision_box = asset_get("ex_guy_hurt_box");
+                mask_index =  collision_box; // Collision Mask
+                colis_width = bbox_right - bbox_left;
+                colis_height = bbox_bottom - bbox_top;
+                enemy_class = 0;
+                can_be_grounded = true;
+                ignores_walls = false;
+                
+                //AI Behavior
+                able_to_crouch = false;
+                able_to_shield = false;
+                able_to_jump = true;
+                able_to_dash = true;
+                        
+                ai_attack_frequency = 45; //How often to attack.
+                ai_attack_cooldown = 0;
+                ai_attack_timer = 0;
+                
+                //Animation Actions
+                char_height = 30;
+                char_arrow = sprite_get("char_arrow");
+                anim_speed = .02;
+                idle_anim_speed = .3;
+                crouch_anim_speed = .1;
+                walk_anim_speed = .25;
+                dash_anim_speed = .2;
+                pratfall_anim_speed = .25;
+                full_time = 20;
+                anim_type = 0; //0 is cycle; 1 is once per state
+                
+                //Movement Variables
+                walk_speed = 7;
+                walk_accel = 0.3;
+                walk_turn_time = 3;
+                initial_dash_time = 10;
+                initial_dash_speed = 5.5;
+                dash_speed = 5;
+                dash_turn_time = 10;
+                dash_turn_accel = 2;
+                dash_stop_time = 4;
+                dash_stop_percent = .35; //the value to multiply your hsp by when going into idle from dash or dashstop
+                ground_friction = .5;
+                moonwalk_accel = 1.4;
+                
+                jump_start_time = 6;
+                jump_speed = 12;
+                short_hop_speed = 8;
+                djump_speed = 10;
+                leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
+                max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
+                air_max_speed = 6; //the maximum hsp you can accelerate to when in a normal aerial state
+                jump_change = 3; //maximum hsp when double jumping. If already going faster, it will not slow you down
+                air_accel = .3;
+                prat_fall_accel = 1; //multiplier of air_accel while in pratfall
+                air_friction = .03;
+                max_djumps = 1;
+                double_jump_time = 32; //the number of frames to play the djump animation. Can't be less than 31.
+                
+                max_fall = 8; //maximum fall speed without fastfalling
+                fast_fall = 10; //fast fall speed
+                gravity_speed = .5;
+                hitstun_grav = .5;
+                knockback_adj = 1.1; //the multiplier to KB dealt to you. 1 = default, >1 = lighter, <1 = heavier
+                
+                land_time = 4; //normal landing frames
+                prat_land_time = 20;
+                wave_land_time = 15;
+                wave_land_adj = 1.5; //the multiplier to your initial hsp when wavelanding. Usually greater than 1
+                wave_friction = .04; //grounded deceleration when wavelanding
+                
+                //parry animation frames
+                dodge_startup_frames = 1;
+                dodge_active_frames = 1;
+                dodge_recovery_frames = 4;
+                
+                //tech animation frames
+                tech_active_frames = 3;
+                tech_recovery_frames = 1;
+                
+                //tech roll animation frames
+                techroll_startup_frames = 2;
+                techroll_active_frames = 2;
+                techroll_recovery_frames = 2;
+                techroll_speed = 10;
+                
+                //airdodge animation frames
+                air_dodge_startup_frames = 1;
+                air_dodge_active_frames = 3;
+                air_dodge_recovery_frames = 3;
+                air_dodge_speed = 7.5;
+                
+                
+                //roll animation frames
+                roll_forward_startup_frames = 2;
+                roll_forward_active_frames = 2;
+                roll_forward_recovery_frames = 2;
+                roll_back_startup_frames = 2;
+                roll_back_active_frames = 2;
+                roll_back_recovery_frames = 2;
+                roll_forward_max = 9; //roll speed
+                roll_backward_max = 9;
+                
+                
+                land_sound = asset_get("sfx_land");
+                landing_lag_sound = asset_get("sfx_land");
+                waveland_sound = asset_get("sfx_waveland_wra");
+                jump_sound = asset_get("sfx_jumpground");
+                djump_sound = asset_get("sfx_jumpair");
+                air_dodge_sound = asset_get("sfx_quick_dodge");
+                death_sound = asset_get("sfx_death2");
+                fx_enemy_abyssdeath = hit_fx_create(sprite_get("fx_enemy_abyssdeath"), 16);
+                fx_enemy_abyssdeath2 = hit_fx_create(sprite_get("fx_enemy_abyssdeath2"), 16);
+            break;
+            case EN_EVENT.UPDATE:
+                //AI Routine
+                if (instance_exists(ai_target) && player_controller == 0 && hitstun <= 0) {
+                    var t_dist = point_distance(x, y, ai_target.x, ai_target.y);
+                    var t_xd = abs(ai_target.x - x);
+                    var t_yd = abs(ai_target.y - y);
+                    
+                    // right_down = ai_moving_right;
+                    // left_down = ai_moving_left;
+                    left_hard_pressed = false;
+                    right_hard_pressed = false;
+                    down_hard_pressed = false;
+                    
+                    var to_player = sign(ai_target.x - x);
+                    if(to_player == -1) {
+                    	if(spr_dir == 1) {
+                    		left_down = true;
+                    	}
+                    }
+                    else if(spr_dir == -1) {
+                    	right_down = true;
+                    }
+                    
+                    if(!committed && to_player == spr_dir && t_xd < 450) {                    
+                    	if (!is_free) {
+                    		if(art_state == PS_IDLE) {
+	                        	jump_down = true;
+                    		}
+                    		if(art_state == PS_JUMPSQUAT && t_xd < 270)
+                    		{
+		                    	right_hard_pressed = to_player == -1;
+		                    	left_hard_pressed = to_player == 1;
+                    		}
+	                    }
+	                    else {
+	                    	if (ai_target.free || state_timer > 4) {
+	                    		next_attack = AT_NSPECIAL_2;
+	                    	}
+	                    }
+                    }
+                }
+            break;
+            case EN_EVENT.ANIMATION:
+				if(art_state == PS_FIRST_JUMP && abs(hsp) > 1 && sign(hsp) != spr_dir) {
+					sprite_index = enemy_sprite_get(enem_id,"jump_back");
+				}
+				if(art_state == PS_ATTACK_AIR && abs(hsp) > 1 && sign(hsp) != spr_dir) {
+					sprite_index = enemy_sprite_get(enem_id,"nspecial_back");
+				}
+            break;
+            case EN_EVENT.SET_ATTACK:
+            	with(obj_stage_main)
+            	{
+            		switch(other.attack) {
+                        case AT_NSPECIAL_2:
+                            set_attack_value(AT_NSPECIAL_2, AG_CATEGORY, 0);
+                            set_attack_value(AT_NSPECIAL_2, AG_SPRITE, sprite_get("enemy_4_nspecial"));
+                            set_attack_value(AT_NSPECIAL_2, AG_NUM_WINDOWS, 3);
+                            set_attack_value(AT_NSPECIAL_2, AG_HAS_LANDING_LAG, 1);
+                            set_attack_value(AT_NSPECIAL_2, AG_LANDING_LAG, 4);
+                            set_attack_value(AT_NSPECIAL_2, AG_HURTBOX_SPRITE, sprite_get("enemy_4_nspecial_hurt"));
+                            
+                            set_window_value(AT_NSPECIAL_2, 1, AG_WINDOW_LENGTH, 14);
+                            set_window_value(AT_NSPECIAL_2, 1, AG_WINDOW_ANIM_FRAMES, 7);
+                            
+                            set_window_value(AT_NSPECIAL_2, 2, AG_WINDOW_LENGTH, 8);
+                            set_window_value(AT_NSPECIAL_2, 2, AG_WINDOW_ANIM_FRAMES, 4);
+                            set_window_value(AT_NSPECIAL_2, 2, AG_WINDOW_ANIM_FRAME_START, 7);
+                            set_window_value(AT_NSPECIAL_2, 2, AG_WINDOW_HAS_SFX, 1);
+                            set_window_value(AT_NSPECIAL_2, 2, AG_WINDOW_SFX, asset_get("sfx_boss_shine"));
+                            set_window_value(AT_NSPECIAL_2, 2, AG_WINDOW_SFX_FRAME, 0);
+                            
+                            set_window_value(AT_NSPECIAL_2, 3, AG_WINDOW_LENGTH, 21);
+                            set_window_value(AT_NSPECIAL_2, 3, AG_WINDOW_ANIM_FRAMES, 1);
+                            set_window_value(AT_NSPECIAL_2, 3, AG_WINDOW_ANIM_FRAME_START, 11);
+                            
+                            set_num_hitboxes(AT_NSPECIAL_2, 2);
+                            
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_HITBOX_TYPE, 2);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_WINDOW, 2);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_WINDOW_CREATION_FRAME, 2);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_LIFETIME, 100);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_HITBOX_X, 44);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_HITBOX_Y, -20);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_WIDTH, 48);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_HEIGHT, 10);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_SHAPE, 2);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_PRIORITY, 1);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_DAMAGE, 3);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_ANGLE, 361);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_BASE_KNOCKBACK, 0.5);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_KNOCKBACK_SCALING, 0);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_BASE_HITPAUSE, 6);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_HITPAUSE_SCALING, 0);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_HITBOX_GROUP, -1);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_VISUAL_EFFECT, 20);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_HIT_SFX, asset_get("sfx_absa_singlezap1"));
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_IGNORES_PROJECTILES, 0);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_PROJECTILE_SPRITE, sprite_get("enemy_bird_laser"));
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_PROJECTILE_MASK, -1);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_PROJECTILE_HSPEED, 20);
+                            set_hitbox_value(AT_NSPECIAL_2, 1, HG_PROJECTILE_ANIM_SPEED, 0.3);
+            		}
+            	}
+        	break;
+        	case EN_EVENT.ATTACK_UPDATE:
+        		if(vsp > 0)
+        		{
+        			vsp = fast_fall;
+        		}
+    		break;
+            case EN_EVENT.DEATH:
+            	destroyed = true;
+        	break;
+    	}
     break;
 }
 

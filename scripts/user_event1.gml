@@ -37,6 +37,7 @@ room_add(1,[
             [1, 126, 44, 2, 1, [sprite_get("ground"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 30, [sprite_get("bg2"), 0, 0, 0, true, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 29, [sprite_get("bg3"), 0, 0, 0, true, 0, 0, 0], [0,0]],
+            [6, 84, 44, 0, -5, [4, 0, 0, 0, 0, 0, 0, 0], [0,0]],
             /*  DITHER ARGS: [dither type, transparency (0 = partial transparency, 1 = full transparency), dither frames]
                                             [11, 20, 44, 0, 10, [0, 0, 0, 0, 5, 2, 0, 0], [0,0]], //[no dither] 
             ///*[partial w/ regular dither] [11, 50, 44, 0, -5, [1, 0, 20, 0, 0, 0, 0, 0], [0,0]],

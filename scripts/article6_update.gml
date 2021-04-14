@@ -213,10 +213,12 @@ is_ai = (player_controller == 0);
 
 switch (enemy_class) {
     case 0:
+        var hard_press_dir = -left_hard_pressed + right_hard_pressed;
+    
         switch art_state { //Gameplay Logic
             case PS_ATTACK_AIR:
                 committed = 1;
-                if !is_free art_state = PS_LAND;
+                if !is_free next_state = PS_LAND;
                 attack_update();
                 break;
             case PS_ATTACK_GROUND:
@@ -262,6 +264,9 @@ switch (enemy_class) {
                 break;
             case PS_JUMPSQUAT:
                 committed = 1;
+                if (left_hard_pressed || right_hard_pressed) {
+                    hsp = hard_press_dir*initial_dash_speed;
+                }
                 if state_timer >= jump_start_time {
                     if !shield_down && shield_held == 0 {
                         if jump_down vsp = -jump_speed;
@@ -302,7 +307,10 @@ switch (enemy_class) {
                 if spr_dir != to_dir next_state = PS_WALK_TURN;
                 hsp = clamp(hsp -walk_accel*left_down + walk_accel*right_down, -walk_speed, walk_speed);
                 if (left_hard_pressed || right_hard_pressed) {
-                    if (left_down || right_down) && able_to_dash next_state = PS_DASH_START;
+                    if (left_down || right_down) && able_to_dash {
+                        next_state = PS_DASH_START;
+                        hsp = hard_press_dir*initial_dash_speed
+                    }
                 }
                 else if !(left_down || right_down) next_state = PS_IDLE;
                 if down_down && able_to_crouch next_state = PS_CROUCH;
@@ -350,7 +358,10 @@ switch (enemy_class) {
             case PS_IDLE:
                 if is_free next_state = PS_IDLE_AIR;
                 if (left_hard_pressed || right_hard_pressed) {
-                    if (left_down || right_down) && able_to_dash next_state = PS_DASH_START;
+                    if (left_down || right_down) && able_to_dash {
+                        next_state = PS_DASH_START;
+                        hsp = hard_press_dir*initial_dash_speed
+                    }
                 } else if (left_down || right_down) {
                     next_state = PS_WALK;
                     if spr_dir != to_dir next_state = PS_WALK_TURN;
@@ -407,7 +418,10 @@ switch (enemy_class) {
                 hsp = clamp(hsp, -walk_speed, walk_speed);
                 vsp = clamp(vsp, -walk_speed, walk_speed);
                 if (left_hard_pressed || right_hard_pressed) {
-                    if !joy_pad_idle && able_to_dash next_state = PS_DASH_START;
+                    if !joy_pad_idle && able_to_dash {
+                        next_state = PS_DASH_START;
+                        hsp = hard_press_dir*initial_dash_speed
+                    }
                 }
                 else if joy_pad_idle next_state = PS_IDLE;
                 break;
@@ -450,7 +464,10 @@ switch (enemy_class) {
             break;
             case PS_IDLE:
                 if (left_hard_pressed || right_hard_pressed) {
-                    if !joy_pad_idle && able_to_dash next_state = PS_DASH_START;
+                    if !joy_pad_idle && able_to_dash {
+                        next_state = PS_DASH_START;
+                        hsp = hard_press_dir*initial_dash_speed
+                    }
                 } else if !joy_pad_idle {
                     next_state = PS_WALK;
                     if spr_dir != to_dir next_state = PS_WALK_TURN;
@@ -508,7 +525,7 @@ if hitpause <= 0 switch art_state { //Display Logic
             image_index += walk_anim_speed;
             break;
         case PS_JUMPSQUAT:
-            image_index = (state_timer/(2*jump_start_time))*image_number;
+            image_index = (state_timer/(jump_start_time+1))*image_number;
             break;
         case PS_FIRST_JUMP:
             image_index = ease_linear(0,image_number,floor(vsp+jump_speed), jump_speed*2);
@@ -680,7 +697,7 @@ if invincible == 0 {
     mask_index = collision_box;
     if hit_id == noone has_hit = 0;
     if hit_lockout > 0 hit_lockout--;
-    if instance_exists(hit_id) && (!("hit_owner" in hit_id) || hit_id.hit_owner != id) && (!("team" in hit_id) || hit_id.team != team)  && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
+    if instance_exists(hit_id) && hit_id.player != player_id.player && (get_player_team(hit_id.player) != team)  && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
         enemy_got_hit(hit_id);
         if (health_share_mode == 0) {
             if (array_length(health_children) > 0) {

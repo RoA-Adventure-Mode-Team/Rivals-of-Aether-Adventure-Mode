@@ -121,5 +121,16 @@ sprite_change_offset("enemy_3_jab",96, 158);
 sprite_change_offset("enemy_3_ftilt",128, 158);
 sprite_change_offset("enemy_3_utilt",96, 158);
 
+sprite_change_offset("enemy_4_idle",74, 94);
+sprite_change_offset("enemy_4_hurt",74, 94);
+sprite_change_offset("enemy_4_walkturn",74, 94);
+sprite_change_offset("enemy_4_jumpstart",74, 94);
+sprite_change_offset("enemy_4_land",74, 94);
+sprite_change_offset("enemy_4_jump",74, 88);
+sprite_change_offset("enemy_4_jump_back",74, 88);
+sprite_change_offset("enemy_4_nspecial",74, 88);
+sprite_change_offset("enemy_4_nspecial_back",74, 88);
+sprite_change_offset("enemy_bird_laser",24, 5);
+
 sprite_change_offset("fx_enemy_abyssdeath",48, 48);
 sprite_change_offset("fx_enemy_abyssdeath2",52, 52);
