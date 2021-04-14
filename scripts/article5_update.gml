@@ -23,7 +23,6 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
 //}
 
 with oPlayer { //Respawn Code
-	print(respawn_point);
 	if state == PS_DEAD || state == PS_RESPAWN {
 		x = dead_pos[0];
 		y = dead_pos[1];
@@ -218,15 +217,15 @@ if _room_id < array_length_1d(array_room_data) {
                         switch cell_data[j][3] {
                             case 2:
                                 //obj_type = "obj_stage_article_solid";
-                                art = instance_create(rel_pos[0],rel_pos[1],"obj_stage_article_solid",cell_data[j][0]);
+                                art = instance_create(floor(rel_pos[0]),floor(rel_pos[1]),"obj_stage_article_solid",cell_data[j][0]);
                                 break;
                             case 1:
                                 //obj_type = "obj_stage_article_platform";
-                                art = instance_create(rel_pos[0],rel_pos[1],"obj_stage_article_platform",cell_data[j][0]);
+                                art = instance_create(floor(rel_pos[0]),floor(rel_pos[1]),"obj_stage_article_platform",cell_data[j][0]);
                                 break;
                             case 0:
                                 //obj_type = "obj_stage_article";
-                                art = instance_create(rel_pos[0],rel_pos[1],"obj_stage_article",cell_data[j][0]);
+                                art = instance_create(floor(rel_pos[0]),floor(rel_pos[1]),"obj_stage_article",cell_data[j][0]);
                             break;
                         }
                         art.spawn_variables = cell_data[j][5];
@@ -265,16 +264,28 @@ if _room_id < array_length_1d(array_room_data) {
 return _pos;
 #define cell_to_real(_pos,_cell_pos) //Translate cell coordinates to real
 //_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
-return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0] != 0))*cell_size + render_offset[0], 
-		(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1] != 0))*cell_size + render_offset[1]];
+return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0]))*cell_size + render_offset[0], 
+		(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1]))*cell_size + render_offset[1]];
 #define cell_to_grid(_pos, _cell_pos) //Translate cell coordinates to the basegame grid system
 with room_manager return cell_to_real(_pos,_cell_pos);
 #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
-_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
-cell_pos = [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
-			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
-return [cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),
-		cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))];
+with room_manager {
+	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+	var _sub_pos_x = [(_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size))];
+	var _sub_pos_y = [(_pos[1] % ((cell_dim[1]-grid_offset)*cell_size)),floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
+	if sign(_sub_pos_x[0]) == -1 _sub_pos_x[0] += ((cell_dim[0]-grid_offset)*cell_size); 
+	if sign(_sub_pos_y[0]) == -1 _sub_pos_y[0] += ((cell_dim[1]-grid_offset)*cell_size);
+    return [[_sub_pos_x[0], //Subcell
+		    _sub_pos_y[0]],
+		   [_sub_pos_x[1], //Cell
+			_sub_pos_y[1]]];
+}
+// #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
+// _pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+// cell_pos = [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
+// 			-floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
+// return [cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),
+// 		cell_dim[1]*16 - (_pos[1] % ((cell_dim[1]-grid_offset)*cell_size))];
 #define base_to_am(_pos) //Translate base-game coordinates to AM coordinates
 _pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 return [[cell_dim[0]*16 - (_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),

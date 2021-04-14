@@ -14,12 +14,14 @@ if !_init {
 enum EVT {
     GRAB,
     IDLE,
-    USE
+    USE,
+    ALTUSE,
+    DESTROY,
 }
 
 state_timer++;
 
-if state == 0 { //Normal Operations
+if state == EVT.GRAB { //Normal Operations
     collis_obj = collision_circle(x,y,grav_radius,oPlayer,true,true);
     if collis_obj != noone  && collis_obj.item_id == noone {
         vsp += grav_accel*-dsin(point_direction(x,y,collis_obj.x,collis_obj.y-collis_obj.char_height/2));//(point_distance(x,y,collis_obj.x,collis_obj.y+collis_obj.char_height/2));
@@ -27,7 +29,7 @@ if state == 0 { //Normal Operations
         if place_meeting(x,y,collis_obj) {
             if collis_obj.item_id != noone {
                 with collis_obj.item_id {
-                    set_state(2);
+                    set_state(EVT.ALTUSE);
                     vsp = -2;
                     keep = false;
                 }
@@ -35,12 +37,12 @@ if state == 0 { //Normal Operations
             collis_obj.item_id = id;
             sound_play(asset_get("mfx_coin"));
             if use_type == 1 {
-                set_state(3);
+                set_state(EVT.USE);
             }
             follow_player = collis_obj.id;
             event_flag = EVT.GRAB;
             user_event(10);//Item Custom Behavior
-            set_state(1);
+            set_state(EVT.IDLE);
             vsp = 0;
             hsp = 0;
         }
@@ -49,7 +51,7 @@ if state == 0 { //Normal Operations
     hsp *= .95;
 }
 
-if state == 1 { //Following a Player
+if state == EVT.IDLE { //Following a Player
     keep = true;
     follow_pos[0] = follow_player.x - follow_player.spr_dir*follow_offset_x;
     follow_pos[1] = follow_player.y - follow_player.char_height*3/4;
@@ -60,19 +62,24 @@ if state == 1 { //Following a Player
     user_event(10);//Item Custom Behavior
 }
 
-if state == 2 { //Rejection & Cooldown
-    if state_timer >= cooldown_timer {
-        set_state(0);
-    }
-    vsp *= .98;
-    hsp *= .98;
-}
-
-if state == 3 { //Used
+if state == EVT.USE { //Used
     event_flag = EVT.USE;
     user_event(10);//Item Custom Behavior
     
 }
+
+if state == EVT.ALTUSE { //Rejection & Cooldown
+    event_flag = EVT.ALTUSE;
+    user_event(10);//Item Custom Behavior
+}
+
+if state == EVT.DESTROY {
+    event_flag = EVT.DESTROY;
+    user_event(10);//Item Custom Behavior
+    instance_destroy();
+    exit;
+}
+
 //item_id = id;
 //event_flag = EVT.IDLE;
 //user_event(10);//Item Custom Behavior

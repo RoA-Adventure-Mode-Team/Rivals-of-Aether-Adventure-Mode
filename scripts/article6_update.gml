@@ -1376,6 +1376,17 @@ with _hbox {
         other.hbox_group = hbox_group;
     }
 }
+
+//Run hit_player_event for characters with compatability
+if _hbox.player_id != 0 with _hbox.player_id {
+    if hit_player_event != -1 {
+        hit_player_obj = other;
+        hit_player = -1; //Not a player
+        my_hitboxID = _hbox;
+        user_event(hit_player_event);
+    }
+}
+
 art_event = EN_EVENT.GOT_HIT;
 user_event(6); //Custom behavior
 kb_angle = get_hitbox_angle(_hbox);

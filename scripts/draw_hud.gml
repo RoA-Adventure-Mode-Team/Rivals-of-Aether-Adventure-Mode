@@ -108,26 +108,12 @@ if debug {
         //draw_debug_text(2,32,"CELL POS: "+string(cell_pos));
         //draw_debug_text(2,48,"POS IN CELL: "+string([floor((pos_in_cell[0])/16),floor((pos_in_cell[1])/16)]));
         draw_debug_text(2,64,"PLAYER POS: "+"R: "+string(cur_room)+" S: "+string(action_manager.cur_scene[0])+" ["+string(p_cell_pos[1][0])+","+string(p_cell_pos[1][1])+"]:["+string(floor((p_cell_pos[0][0])/16))+","+string(floor((p_cell_pos[0][1])/16))+"]:["+string((p_cell_pos[0][0]) % 16)+","+string((p_cell_pos[0][1]) % 16)+"]");
-        //print_debug(string(p_cell_pos));
-        //draw_debug_text(2,64,"FOLLOW POS: "+string(follow_point));
-        //draw_debug_text(2,82,"PLAYER POS: "+string(follow_player_pos));
-        //draw_debug_text(2,128, string([horiz_dir,vert_dir]));
-        /*
-        var init_y = 78;
-        var dist_y = 16;
-        draw_debug_text(2,64,"ACTIVE ARTICLE LIST:");
-        for (var i = 0; i < ds_list_size(list_room); i++) {
-            draw_debug_text(2,init_y+i*dist_y,string(list_room[| i].id)+": "+string([list_room[| i].x,list_room[| i].y]));
-        }*/
-        /*var _count = 0;
-        with obj_stage_article_solid _count++;
-        with obj_stage_article_platform _count++;
-        with obj_stage_article _count++;
-        draw_debug_text(2,96,"A ACTIVE ARTICLES:"+string(_count));*/
-        //draw_debug_text(2,112,"VERT, HORIZ:"+string([scroll_vert,scroll_horiz]));
+        //debug
+        
     }
     //draw_circle_color(view_get_wview()/2,view_get_hview()/2,4,c_red,c_red,false);
     draw_circle_color(follow_player.x-view_get_xview(),follow_player.y-view_get_yview(),4,c_red,c_red,false);
+    with action_manager draw_debug_text(100,96,string(suspened_actions));
 }
 //Room Swap effects
 with room_manager {
@@ -452,11 +438,14 @@ with room_manager return real_to_grid(cell_to_real(_pos,_cell_pos));
 #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
 with room_manager {
 	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
-
-    return [[(abs(_pos[0]) % ((cell_dim[0]-grid_offset)*cell_size)),
-		    (abs(_pos[1]) % ((cell_dim[1]-grid_offset)*cell_size))],
-		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
-			floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
+	var _sub_pos_x = [(_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size))];
+	var _sub_pos_y = [(_pos[1] % ((cell_dim[1]-grid_offset)*cell_size)),floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
+	if sign(_sub_pos_x[0]) == -1 _sub_pos_x[0] += ((cell_dim[0]-grid_offset)*cell_size); 
+	if sign(_sub_pos_y[0]) == -1 _sub_pos_y[0] += ((cell_dim[1]-grid_offset)*cell_size);
+    return [[_sub_pos_x[0], //Subcell
+		    _sub_pos_y[0]],
+		   [_sub_pos_x[1], //Cell
+			_sub_pos_y[1]]];
 }
 #define array_clone_seriously_why_isnt_this_how_it_works(_shit)
 var _fuck = [];

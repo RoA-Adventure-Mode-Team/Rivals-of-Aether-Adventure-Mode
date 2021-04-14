@@ -23,4 +23,5 @@ cam_lock_y = spawn_variables[5];
 active_scene = spawn_variables[6];
 
 collis_obj = noone;
+cam_smooth = 10;
 

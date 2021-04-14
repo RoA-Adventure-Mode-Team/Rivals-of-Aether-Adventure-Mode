@@ -42,11 +42,11 @@ enum GUI {
 if win_call == 0 {
 	if mouse_x_i != mouse_x || mouse_y_i != mouse_y cursor_visible = true;
 	with obj_stage_main {
-		if cursor_visible && debug do_cursor();
+		if cursor_visible do_cursor();
 		draw_windows(); //Draw Objects
-		if cursor_visible && debug draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
+		if cursor_visible draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
 	}
-	if debug with obj_stage_main logic_cursor();
+	if cursor_visible with obj_stage_main logic_cursor();
 	exit;
 }
 
@@ -317,9 +317,13 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			break;
 		case WIN.QUESTLIST:
 			win_alpha = _element[1][1];
-			draw_sprite_ext(sprite_get("gui_test"),0,_x,_y,2,2,0,c_white,win_alpha);
+			// draw_sprite_ext(sprite_get("gui_test"),0,_x,_y,2,2,0,c_white,win_alpha);
+			draw_sprite_ext(asset_get("empty_sprite"),0,_x,_y,2,2,0,c_white,win_alpha);
+			draw_set_alpha(.6);
+			draw_rectangle_color(_x,_y,_x+320,_y+96,c_black,c_black,c_black,c_black,false);
+			draw_set_alpha(1);
 			for (var _a = 0; _a < array_length_1d(_quests); _a++) {
-				draw_sprite_ext(_quests[_a][_quests[_a][0]][2],0,_x,_y,2,2,0,c_white,win_alpha); //Get Logo Working
+				draw_sprite_ext(_quests[_a][_quests[_a][0]][2],0,_x,_y+_a*_element[1][4],2,2,0,c_white,win_alpha); //Get Logo Working
 				draw_text_drop(_x+42,_y+_a*_element[1][4]+4,_quests[_a][_quests[_a][0]][0],_element[1][2],_element[1][3],1,1,0,win_alpha);
 				draw_text_drop(_x+42+16,_y+_a*_element[1][4]+4+16,_quests[_a][_quests[_a][0]][1],_element[1][2],_element[1][3],1,1,0,win_alpha);
 			}
@@ -389,7 +393,7 @@ cursor_y = mouse_y - view_get_yview();
 var _cursor_grid = grid_to_cell([mouse_x+64,mouse_y+64]);
 if debug {
 	//draw_debug_text(cursor_x,cursor_y,string(_cursor_grid[1])+":"+string([floor((_cursor_grid[0][0])/16),floor((_cursor_grid[0][1])/16)])+":"+string([(_cursor_grid[0][0]) % 16, (_cursor_grid[0][1]) % 16]));
-	draw_debug_text(cursor_x,cursor_y,"["+string(_cursor_grid[1][0])+","+string(_cursor_grid[1][0])+"]:["+string(floor((_cursor_grid[0][0])/16))+","+string(floor((_cursor_grid[0][1])/16))+"]:["+string((_cursor_grid[0][0]) % 16)+","+string((_cursor_grid[0][1]) % 16)+"]");
+	draw_debug_text(cursor_x,cursor_y,"["+string(_cursor_grid[1][0])+","+string(_cursor_grid[1][1])+"]:["+string(floor((_cursor_grid[0][0])/16))+","+string(floor((_cursor_grid[0][1])/16))+"]:["+string((_cursor_grid[0][0]) % 16)+","+string((_cursor_grid[0][1]) % 16)+"]");
 	draw_debug_text(cursor_x,cursor_y+16,string([cursor_x,cursor_y]));
 	draw_debug_text(cursor_x,cursor_y+32,string([mouse_x,mouse_y]));
 }
@@ -535,6 +539,7 @@ for (var _i = 0;_i < array_length_1d(_str_a);_i++) { //Convert to values
 	else if string_count("r:",_str_a[_i]) > 0 _str_a[@_i] = resource_get(string_replace(string_replace(_str_a[_i],"r:'",""),"'",""));
 	else if string_count("v:",_str_a[_i]) > 0 _str_a[@_i] = variable_instance_get(self,string_replace(string_replace(_str_a[_i],"v:'",""),"'",""));
 }
+// print(_str_a);
 with obj_stage_main {
 	switch _str_a[0] {
 		case "attack": //Cause Enemies to attack
@@ -562,6 +567,12 @@ with obj_stage_main {
 		case "freeze": //Enemy does not do inputs
 			with obj_stage_article if num == 6 freeze = !freeze;
 			cmd_print(_str_raw,"Controlers have been toggled");
+			break;
+		case "destroy":
+		case "d":
+			for (var _i = 0; _i < array_length_1d(debug_selected);_i++) {
+				instance_destroy(debug_selected[_i]);
+			}
 			break;
 		case "clear":
 			cmd_output = "";
@@ -592,7 +603,7 @@ with obj_stage_main {
 			var _art_sv = "[";
 			for (var _i = 0; _i < array_length(_art.spawn_variables);_i++) _art_sv += string(_art.spawn_variables[_i])+",";
 			_art_sv += "]";
-			var _art_pos = grid_to_cell([_art.x,_art.y]);
+			var _art_pos = grid_to_cell([_art.x+64,_art.y+64]);
 			get_string("Copy the below into the room ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script...",
 			"["+string(_art.num)+","+string(floor(_art_pos[0][0]/16))+","+string(_art_pos[0][1]/16)+","+string(_article_type)+","+string(_art.og_depth)+","+_art_sv+",[0,0]"+"],");
 			cmd_print(_str_raw,"Exporting Article into ROOM Format...");
@@ -721,6 +732,7 @@ with obj_stage_main {
 		case "help":
 			cmd_print(_str_raw,"Valid commands:
 			<selected> debug_output
+			<selected> destroy
 			<selected> export
 			god
 			help
@@ -851,11 +863,14 @@ return _f_str;
 #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
 with room_manager {
 	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
-
-    return [[(abs(_pos[0]) % ((cell_dim[0]-grid_offset)*cell_size)),
-		    (abs(_pos[1]) % ((cell_dim[1]-grid_offset)*cell_size))],
-		   [floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size)),
-			floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))]];
+	var _sub_pos_x = [(_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size))];
+	var _sub_pos_y = [(_pos[1] % ((cell_dim[1]-grid_offset)*cell_size)),floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
+	if sign(_sub_pos_x[0]) == -1 _sub_pos_x[0] += ((cell_dim[0]-grid_offset)*cell_size); 
+	if sign(_sub_pos_y[0]) == -1 _sub_pos_y[0] += ((cell_dim[1]-grid_offset)*cell_size);
+    return [[_sub_pos_x[0], //Subcell
+		    _sub_pos_y[0]],
+		   [_sub_pos_x[1], //Cell
+			_sub_pos_y[1]]];
 }
 
 #define draw_text_drop(_x,_y,_str,_sep,_w,_x1,_y1,_ang,_alp)

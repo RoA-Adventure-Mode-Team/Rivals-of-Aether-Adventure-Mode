@@ -44,6 +44,9 @@ quest_init = false;
 quest_array = [];
 quest_active = [];
 
+//Suspend Actions
+suspened_actions = [[]];
+
 
 // quest_add(3,1,"Test Quest","This is a test quest!");
 // quest_add(3,2,"Test Quest","This is a test quest! Part 2!");
