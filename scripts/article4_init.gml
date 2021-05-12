@@ -17,7 +17,7 @@ anim_type = 0;
 action_id = spawn_variables[0];
 active_scene = spawn_variables[1];
 trigger_obj_type = spawn_variables[2];
-item_needed = spawn_variables[3];
+//trigger_cooldown_max = spawn_variables[3]; 
 trigger_shape = spawn_variables[4];
 trigger_w = spawn_variables[5];
 trigger_h = spawn_variables[6];
@@ -25,7 +25,7 @@ trigger_negative = spawn_variables[7];
 cur_scene = 0;
 
 trigger_cooldown = 0;
-trigger_cooldown_max = 600;
+trigger_cooldown_max = 360;
 
 trigger_var = noone;
 //trigger_objects = [pHitBox];

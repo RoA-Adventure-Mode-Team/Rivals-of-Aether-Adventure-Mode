@@ -1,0 +1,70 @@
+
+RoAAM Todo List:
+Fix water shading, look @ Aether High & Ranno Stage for water ref +
+Finish fountain 
+Do Indoor Area +
+Make Merchant 
+Make Item Icons 
+
+Logo +
+
+Make Statue out of blazing hideout statue? - 
+
+Direct Gags:
+ArchyBirb with a bowtie and a boom mic standing on the coffee table inside your generic direct room
+(with the same camera angle for someone sitting in the chair next to/couch behind)
+
+Script:
+(Down here!)
+Hello Everyone! I'm Archytas, the Project Lead on the Rivals of Aether Adventure Mode Team. 
+We're excited to show off what we have gotten done so far. 
+The Adventure Mode API is what is on the tin - an API to transform a custom stage into a level
+reminiscent of Melee's Adventure Mode or Brawl's Subspace Emissary.
+We've been able to work around most of the limitations of regular stage codding and expand the features provided.
+It currently has support for infinitely large areas, as well as hot-swapping between these infinite spaces.
+It has a global event system and trigger actors.
+It has a cutscene manager for handling all custom HUD elements such as dialog.
+Enemies are mostly analogous to characters, with the flexibility of articles.
+And it even has items, which rivals can pick up and can do anything you can code.
+The best part, is that all custom code is done in user_event scripts - 
+You won't have to go through the source code to make levels.
+Thanks to Break the Targets', release,
+most of the core features of Adventure Mode are currently bug-tested and polished. 
+Thank you to everyone who creates levels for Break the Targets and contributes feedback. 
+It helps the development of the Adventure Mode API more than you realize.
+
+This means we're currently in the phase of content creation for our example level.
+It will take place in the Fire Capital a few years after the Abyss Crisis.
+Just because the Abyss has been sealed away, 
+does not mean knowledge of it has magically disappeared.
+Play as any workshop character of your choosing as you work to stop those who are meddling 
+with things they do not fully understand.
+
+If you wish to observe the progress or help contribute to the project, please stop by the discord. 
+With how art-heavy this endeavor is, we need as many pixel artists as possible to make it a reality...
+And programmers to develop new articles for Adventure Mode creators to mess with.
+
+We plan on releasing the API version 1.0 with our example level soon TM. Thank you for stopping by,
+and I hope to share more news with you soon. 
+
+Also: On behalf of the Extended Workshop, thank you everyone for your dedication to the workshop community.
+It rides and dies on the passion of creators and players; it's amazing to have so many dedicated individuals,
+so much good content, and an outstanding audience for it all.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Story Beats:
+SUMMARY: Investigative mystery
+
+Land with a cliff to the left in the afternoon - progress right to a clearing
+Find an abyss enemy of some kind harassing a scout
+After defeating the enemy, scout leads to the gate of the village
+Opens gate, tells them they can stay in their place - they can't be out at night...
+
+Disturbed by a shadow by the window, player sneaks out at night,
+
+FC General Rykenburn tries to supplant the Abyss, gets consumed and need to fight
+
+
+Scout:
+On Meeting @ Start: 
+"AYIIEEEEEE!"
+""

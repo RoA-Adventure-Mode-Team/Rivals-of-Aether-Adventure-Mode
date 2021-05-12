@@ -242,7 +242,6 @@ if _room_id < array_length_1d(array_room_data) {
                         //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;
                         articles_spawned++;
                 }
-                
             }
         /*} else {
             //print_debug(string(_cell_pos)+": "+string(abs(_cell_pos[1] - cell_pos[1])));
@@ -315,17 +314,12 @@ with obj_stage_article_solid instance_destroy(id);
 #define switch_room_position(_pos) //Switches the room position in grid space (Harbige12)
 if (_pos[0] != -1) {
 	follow_point.x = _pos[0];
-	with oPlayer {
-		x = other.follow_point.x;
-		
-	}
+	with oPlayer x = other.follow_point.x;
 	//follow_player.x = follow_point.x;
 }
 if (_pos[1] != -1) {
 	follow_point.y = _pos[1];
-	with oPlayer {
-		y = other.follow_point.y;
-	}
+	with oPlayer y = other.follow_point.y;
 	
 	//follow_player.y = follow_point.y;
 }

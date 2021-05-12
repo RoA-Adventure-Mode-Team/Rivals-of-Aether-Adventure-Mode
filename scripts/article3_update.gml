@@ -28,11 +28,15 @@ enum ACT {
     ON_INPUT, //Do a thing when a player presses a button
     //follow_player?, input_type
     SW_ROOM, //Switch the room
-    //to_room
+    //to_room, to_coords
     QUEST_PROG, //Quest-related actions
     //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
     SUS, //Suspend Action by ID
     //suspend_bool, action_id
+    SPAWN_ART,
+    //[room_format]
+    CHECK, //End action upon the condition being true
+    //article_group, variable, condition
 }
 
 enum P {
@@ -127,6 +131,10 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     		_action[@P.DIE] = true;
     	}
     	break;
+    case ACT.CHECK:
+    	var _param = new_action[P.LOAD][L.PARAM];
+		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] if variable_instance_get(id,_param[1]) == _param[2] _action[@P.DIE] = true;
+    	break;
     case ACT.CONTROL:
     	with oPlayer {
     		if _param[1] == all || _param[1] == id {
@@ -141,9 +149,10 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     	break;
     case ACT.SET:
 	    switch _param[3] { //ease_type
-	    	case 0:
-	    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[1],variable_instance_get(id,_param[1]));
+	    	default:
+	    		
 		    	with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
+		    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[1],variable_instance_get(id,_param[1]));
 					variable_instance_set(id,_param[1],ease_linear(variable_instance_get(id,"action_old_"+_param[1]),_param[2],_action[P.ALIVE_TIME],_param[4]));
 					if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 				}
@@ -258,12 +267,13 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 								//[[pos_x,pos_y,action_id,alive_time], [meta]]
 		}
 		break;
+	case ACT.CHECK:
+    	var _param = new_action[P.LOAD][L.PARAM];
+		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] if variable_instance_get(id,_param[1]) == _param[2] _action[@P.DIE] = true;
+    	break;
 	case ACT.SET:
 		var _param = new_action[P.LOAD][L.PARAM];
-		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
-			variable_instance_set(id,_param[1],_param[2]);
-			
-		}
+		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] variable_instance_set(id,_param[1],_param[2]);
 		if array_length_1d(_param) < 4 {
 			if debug print_debug("[AM] SETTING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 			for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
@@ -292,12 +302,10 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 			case 4: //pitch
 				//sound_pitch(_param[1]);
 				break;
-    		default:
-    			break;
     	}
     	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
 		return true; //Never enters the queue
-	case ACT.SUS:
+	case ACT.SUS: //:oO.Oo:
 		var _param = new_action[P.LOAD][L.PARAM];
 		if _param[0] { // Suspend Action
 			while array_length_1d(suspened_actions)-1 < room_id array_push(suspened_actions,[]);
@@ -321,10 +329,40 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 		}
 		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
 		return true; //Never enters the queue
+	case ACT.SPAWN_ART: //Spawn an article. Not counted in room!
+		var _param = new_action[P.LOAD][L.PARAM];
+		var _rel_pos = cell_to_real([_param[1][1],_param[1][2]],_param[0]);
+		var _art;
+		switch _param[1][3] {
+            case 2:
+                //obj_type = "obj_stage_article_solid";
+                _art = instance_create(floor(_rel_pos[0]),floor(_rel_pos[1]),"obj_stage_article_solid",_param[1][0]);
+                break;
+            case 1:
+                //obj_type = "obj_stage_article_platform";
+                _art = instance_create(floor(_rel_pos[0]),floor(_rel_pos[1]),"obj_stage_article_platform",_param[1][0]);
+                break;
+            case 0:
+                //obj_type = "obj_stage_article";
+                _art = instance_create(floor(_rel_pos[0]),floor(_rel_pos[1]),"obj_stage_article",_param[1][0]);
+            break;
+        }
+        _art.spawn_variables = _param[1][5];
+        _art.depth = _param[1][4];
+        _art.og_depth = _param[1][4];
+        _art.cell_size = room_manager.cell_size;
+        _art.init_pos = [_param[1][1],_param[1][2]];
+        _art.cell_pos = room_manager._cell_pos;
+        _art.action_article_index = _param[1][6][1]; //array_room_data[_room_id][i][1][j][6][1] 6D Array!
+        _art.room_manager = room_manager;
+        _art.debug = obj_stage_main.debug;
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+		return true; //Never enters the queue
 	case ACT.SW_ROOM:
 		var _param = new_action[P.LOAD][L.PARAM];
     	with room_manager {
-    		switch_to_room_pos = [-1,-1];
+    		if array_length_1d(_param) < 2 switch_to_room_pos = [-1,-1];
+    		else switch_to_room_pos = _param[1];
     		room_switch_type = 2;
     		switch_to_room = _param[0];
     	}
@@ -418,3 +456,9 @@ for(var _i = 0;_i < array_length_1d(_shit);_i++) {
 	else array_push(_fuck,_shit[_i]);
 }
 return _fuck;
+#define cell_to_real(_pos,_cell_pos) //Translate cell coordinates to real
+//_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+with room_manager {
+	return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0]))*cell_size + render_offset[0], 
+			(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1]))*cell_size + render_offset[1]];
+}

@@ -46,6 +46,10 @@ enum ACT {
     //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
     SUS, //Suspend Action by ID
     //suspend_bool, action_id
+    SPAWN_ART, //Spawn an article
+    //cell, [room_format]
+    CHECK, //End action upon the condition being true
+    //article_group, variable, condition
 }
 
 enum P {
@@ -88,10 +92,13 @@ action_add(1, 1, 4, ACT.CAMERA,
 scene_add(1, 1, [1]);
 action_add(1, 1, 1, ACT.WAIT,   //room_id, scene_id, action_id, action_type
 [120],                          //Action arguments
-[2]);                           //Actions to start on exit
-action_add(1, 1, 2, ACT.WINDOW, 
-[0, 500, 20, []], //window_type, x, y, [contentoverride]
+[200]);                           //Actions to start on exit
+action_add(1, 1, 2, ACT.SPAWN_ART,
+[[0,0],[6, 84, 44, 0, -5, [4, 0, 0, 0, 0, 0, 0, 0], [0,0]]], //cell, [room_format]
 []); //Actions to start on exit
+// action_add(1, 1, 2, ACT.WINDOW, 
+// [0, 500, 20, []], //window_type, x, y, [contentoverride]
+// []); //Actions to start on exit
 // action_add(1, 1, 3, ACT.CONTROL, //ACT.CONTROL has Issues
 // [30, all, PS_SPAWN], //life_time, player, state_override
 // []); //Actions to start on exit
@@ -111,8 +118,8 @@ action_add(1, 1, 7, ACT.SW_ROOM,
 [4], //to_room
 []); //Actions to start on exit
 
-action_add(1, 1, 200, ACT.WINDOW, //Debug Window
-[0, 200, 100, []], //window_type, x, y, [contentoverride]
+action_add(1, 1, 200, ACT.WINDOW, //Dialog Window Example
+[6, 200, 100, []], //window_type, x, y, [contentoverride]
 []); //Actions to start on exit
 
 action_add(1, 1, 201, ACT.WINDOW, //Quest Window
@@ -156,7 +163,7 @@ action_add(3, 1, 1, ACT.WINDOW,
 
 //Room 4: Sewer
 action_add(4, 1, 1, ACT.SET, 
-[69, "bg_color", $999999], //player_id, life_time, state_override, ease_type, ease_value
+[69, "bg_color", $999999, 0, 60], //article_id, variable, value, ease_type, ease_length
 [2]); //Actions to start on exit
 action_add(4, 1, 2, ACT.WINDOW,
 [2, 200, 100, [[],["UNDERGROUND AQUEDUCT"],[],["UNDERGROUND AQUEDUCT"]]], //window_type, x, y, [contentoverride]
@@ -187,6 +194,7 @@ action_add(4, 1, 9, ACT.WINDOW,
 []); //Actions to start on exit
 
 
+
 /*action_add(1, 1, 1, ACT.DIALOG, 
 [LWO.TXT_HUD, 100, 200, 300, 50, -1, 0, "Dynamic Lighting Test", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
 [2,2]); //Actions to start on exit
@@ -215,7 +223,12 @@ quest_add(3,3,"Different Title!1.3","Completely different text!",sprite_get("bor
 
 
 
+//Dialog Init
 
+//1: Quick Test
+dialog_add(1,1,["Hello! These are the default sprites...."]);
+dialog_add(1,2,["...And Here's some Override!",sprite_get("face_default2")]);
+dialog_add(1,3,["Wonder what happens here??"]);
 
 //Functions DO NOT EDIT BELLOW
 /*if debug {
@@ -242,7 +255,7 @@ return true;
 #define quest_add(_id,_progress,_title,_description,_spr)
 if quest_init return false;
 if _progress == 0 {
-    print("[AM] ERROR: Do not override progress 0!");
+    print("[AM:Q] ERROR: Do not override progress 0!");
     return false;
 }
 while _id >= array_length_1d(quest_array) array_push(quest_array,[]);
@@ -250,6 +263,18 @@ while _progress >= array_length_1d(quest_array[_id]) array_push(quest_array[_id]
 quest_array[@_id][@0] = noone;//Save quest progress here
 quest_array[@_id][@_progress] = [_title,_description,_spr];
 if debug print_debug("[AM] Quest Edited: "+string(_id)+" : "+string(_progress));
+return true;
+
+#define dialog_add(_id,_progress,_data) //Dialog Data: [string,_text_sprite_face_override,_sprite_bg_override]
+//Response Map: [[_text,_to_prog,_dialog_override]...]
+if _progress == 0 {
+    print("[AM:D] ERROR: Do not override progress 0!");
+    return false;
+}
+while _id >= array_length_1d(dialog_array) array_push(dialog_array,[]);
+while _progress >= array_length_1d(dialog_array[_id]) array_push(dialog_array[_id],[]);
+dialog_array[@_id][@0] = noone; //Save dialog progress
+dialog_array[@_id][@_progress] = _data; //Save dialog progress
 return true;
 
 // #define control(_dir,_but)

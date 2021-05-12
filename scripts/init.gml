@@ -3,10 +3,11 @@
 //print_debug("Init Time setting is "+string(get_match_setting(SET_TIMER)));
 updated = 0;
 _init = 0;
+am_vers = "v0.6";
 
 //Debug Vars
 debug = true;
-debug_info = false;
+debug_info = true;
 down_down = 0;
 up_down = 0;
 last_ID = 0;
@@ -123,22 +124,10 @@ mouse_x_i = mouse_x;
 mouse_y_i = mouse_y;
 
 //Window Variables
-//Textboxes
-tb_title_offset_x = 4;
-tb_title_offset_y = 3;
-tb_str_offset_x = 4;
-tb_str_offset_y = 19;
-tb_bar_x = 128*2;
-tb_bar_y = 56*2;
-
 //Title
 title_x_stop = 100;
 title_time = 360;
 //
-
-//Command Entering
-eb_bar_x = 128*2;
-eb_bar_y = 56*2;
 
 mouse_buffer = 16;
 cursor_x_p = 0;
@@ -162,17 +151,29 @@ cmd_w = 280;
 cmd_h = 416;
 
 cmd_char = '>';
-cmd_output = "Hello Aether Studios!
-Here is a very early build of Adventure Mode, and a showcase of some the dev tools I have been working on for it.
-You can select objects with left click and move them with right.
-Most other things through the console.
-Can also reference resources with r:'res_name' as an arg.
-Type 'help' for command list.
+cmd_output = "Type 'help' for command list.
 "; //Parsed string for storing command log
 cmd_save_output = false; // If the output is saved, or overwritten with every command (VERY LAGGY)
 cmd_title = "LUCID DREAM v0.4";
 cmd_freecam = false;
 //
-
 win_call = 1;
 user_event(2);
+/*Good Sounds
+sfx_holy_tablet - Dialog Up
+sfx_propeller_dagger_loop - Dialog Flap?
+sfx_coin_collect - Quest Progress
+sfx_chester_appear - Quest Complete?
+sfx_shop_move - Menu Move
+sfx_shop_invalid - Menu Invalid
+sfx_ori_sein_fstrong_hit_final - SMACK!!
+sfx_eli_utilt_retract - Typewriter
+sfx_eli_drill_loop - Mechanical 
+sfx_clairen_tip_loop - Bzzzzt
+sfx_frog_jab - Dialog Flap?
+sfx_frog_croak - Ribbit
+sfx_ice_wake - Monstorous Sigh
+sfx_ice_wake - Monstorous Sigh Long
+sfx_ice_chain - Typewriter
+sfx_may_arc_talk - Arcade Talk!
+*/

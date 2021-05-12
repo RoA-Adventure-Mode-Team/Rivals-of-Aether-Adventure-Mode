@@ -26,6 +26,8 @@ respawn_point = [5500,5300,1]; //x,y, Room #
 
 has_walljump_actual = true;
 
+speedrun_timer = 0;
+
 item_id = noone;
 
 rel_pos = [x-view_get_xview(),y-view_get_yview()];

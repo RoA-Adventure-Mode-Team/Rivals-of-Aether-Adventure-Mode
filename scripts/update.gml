@@ -16,7 +16,7 @@ if !_init {
 	with obj_stage_article debug = false;
 	with obj_stage_article_solid debug = false;
 	with obj_stage_article_platform debug = false;*/
-	debug = false;
+	// debug = false;
 	with obj_stage_article {
 		// if num == 3 other.action_manager = id;
 		// if num == 5 other.room_manager = id;
@@ -96,16 +96,15 @@ if !_init {
 			invincible = true;
 			invince_time = 2;
 		}
-		if attack_down && taunt_down end_match();
+		// if attack_down && taunt_down end_match();
 		//Land Spam Fix
 		if state == PS_LAND && free set_state(PS_IDLE_AIR);
 		//Wall Jumps
 		if state == PS_WALL_JUMP has_walljump_actual = false;
 		if !free has_walljump_actual = true;
-		wall_here = (right_down && place_meeting(x+22,y,obj_stage_article_solid) ) || (left_down && place_meeting(x-22,y,obj_stage_article_solid)) ;
+		wall_here = (right_down && place_meeting(x+22,y,obj_stage_article_solid) ) || (left_down && place_meeting(x-22,y,obj_stage_article_solid));
 		has_walljump = wall_here && has_walljump_actual;
-		if (place_meeting(x+22,y,obj_stage_article_solid) || place_meeting(x-22,y,obj_stage_article_solid)) && state == PS_HITSTUN && get_player_damage(player) > 150 {
-			
+		if (place_meeting(x+22,y,obj_stage_article_solid) || place_meeting(x-22,y,obj_stage_article_solid)) && state == PS_HITSTUN && get_player_damage(player) > 150 { //Alpha splat death?
 			dead_pos = [x,y];
 			create_deathbox(x,y-32,10,10,player,true,0,2,2);
 		}
@@ -133,6 +132,7 @@ if !_init {
 		// }
 		rel_pos = [x-view_get_xview(),y-view_get_yview()];
 		prev_free = free;
+		if state != PS_SPAWN speedrun_timer++; //Track each player's time when not in spawn state (unmovable)
 		// if state != PS_AIR_DODGE old_pos = [x,y];
 	}
 	
@@ -147,7 +147,7 @@ if !_init {
 	//Window Update Call
 	win_call = 2;
 	user_event(2);
-
+	
 	/*with oPlayer {
 		other.down_down = down_down;
 		other.up_down = up_down;

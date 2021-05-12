@@ -4,7 +4,8 @@ if !_init {
     action_id = spawn_variables[0];
     active_scene = spawn_variables[1];
     trigger_obj_type = spawn_variables[2];
-    item_needed = spawn_variables[3];
+    if spawn_variables[3] != 0 trigger_cooldown_max  = spawn_variables[3];
+    if spawn_variables[3] == -1 destroy_on_trigger = true;
     //trigger_obj_type = oPlayer;
     trigger_shape = spawn_variables[4];
     trigger_w = spawn_variables[5];
@@ -17,6 +18,7 @@ if !_init {
     //trigger_player = [all];
     //collis_obj = noone;
     //destroy_on_trigger = true;
+    
     switch trigger_obj_type {
         case 0: //Player
             trigger_obj_type = oPlayer;
@@ -43,8 +45,7 @@ switch trigger_shape {
         collis_obj  = instance_place(x,y,trigger_obj_type);
         break;
 }
-if collis_obj != noone && (trigger_negative == 0 || ("num" in collis_obj && num == trigger_negative)) &&
-(item_needed == 0 || item_needed == collis_obj.item_id) && (active_scene == 0 || cur_scene == active_scene) {
+if collis_obj != noone && (trigger_negative == 0 || ("num" in collis_obj && num == trigger_negative)) && (active_scene == 0 || cur_scene == active_scene) {
     if trigger_cooldown == 0 {
         if debug print_debug("[TZ] TRIGGERED "+string(action_id));
         with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);

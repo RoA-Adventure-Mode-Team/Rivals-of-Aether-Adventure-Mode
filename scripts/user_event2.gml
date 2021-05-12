@@ -27,6 +27,7 @@ enum WIN {
 	ARCHY_DIALOG,
 	POINTOUT,
 	QUESTLIST,
+	
 }
 
 enum GUI {
@@ -36,6 +37,8 @@ enum GUI {
 	BUTTON,
 	VARCONT,
 	SCROLLBOX,
+	DIALOGBOX_TRIM,
+	LISTBOX,
 	EXIT
 }
 
@@ -68,7 +71,7 @@ if win_call == 1 with obj_stage_main { //Load Data
 	var _h = cmd_h;
 	var _sep = 16;
 	var _cmd_char = cmd_char;
-	win_add(i++,[WIN.DEBUG,
+	win_add(i++,[WIN.DEBUG, //0
 		new_varcont(["",_string,_w,_h,_sep,_cmd_char]),
 		new_sprite(sprite_get("gui_lucid"),0,-1),
 		new_scrollbox(_string,8,18,_w,_h,_sep,c_white,asset_get("fName")),
@@ -76,12 +79,12 @@ if win_call == 1 with obj_stage_main { //Load Data
 		new_textbox(cmd_title,8,2,200,16,c_white,asset_get("fName")),
 	]);
 	
-	win_add(i++,[WIN.AREATITLE,
+	win_add(i++,[WIN.AREATITLE, //1
 		new_sprite(sprite_get("area_title"),0,0),
 		new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont"))
 	]);
 	
-	win_add(i++,[WIN.AREAFADE,
+	win_add(i++,[WIN.AREAFADE, //2
 		new_sprite(sprite_get("area_title"),4,12),
 		new_textbox("TITLE_NAME",2,2,700,32,c_black,asset_get("roaLBLFont")),
 		new_varcont([0,0,0,0,0]),
@@ -91,7 +94,7 @@ if win_call == 1 with obj_stage_main { //Load Data
 	var _string ="Test";
 	var _sound = asset_get("sfx_may_arc_talk");
 	var _w = 176;
-	win_add(i++,[WIN.ARCHY_DIALOG,
+	win_add(i++,[WIN.ARCHY_DIALOG, //3
 		new_varcont([_string,120,0,0,0,0]),
 		new_sprite(sprite_get("archy_dialog"),0,16),
 		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("fName")),
@@ -103,26 +106,32 @@ if win_call == 1 with obj_stage_main { //Load Data
 		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,$d252ff,asset_get("fName")) //$ff00ff $ea00ea $d252ff
 	]);
 	var _string ="Test";
-	var _sound = noone;
 	//var _sound = asset_get("sfx_propeller_dagger_loop");
 	var _sound = asset_get("sfx_shop_move");
 	var _w = 400;
-	win_add(i++,[WIN.POINTOUT,
+	win_add(i++,[WIN.POINTOUT, //4
 		new_varcont([_string,120,0,0,0,0]),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("roaLBLFont")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("roaLBLFont")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1],_w,16,c_black,asset_get("roaLBLFont")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1],_w,16,c_black,asset_get("roaLBLFont")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1]+2,_w,16,c_black,asset_get("roaLBLFont")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1]-2,_w,16,c_black,asset_get("roaLBLFont")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,c_white,asset_get("roaLBLFont")) //$ff00ff $ea00ea $d252ff
+		new_trim_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,c_white,asset_get("roaLBLFont")) //$ff00ff $ea00ea $d252ff
 	]);
 	
-	win_add(i++,[WIN.QUESTLIST, //Expansive Custom Window, Shows Quest List
+	win_add(i++,[WIN.QUESTLIST, //5 //Expansive Custom Window, Shows Quest List
 		new_varcont([1,16,300,42,sprite_get("Quest Logo")]), //alpha, sep, w, sep_things
 		//new_sprite(sprite_get("gui_test"),0,0),
 		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
 		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
+	]);
+	var _pos = [144,8];
+	var _string ="Init";
+	var _sound = noone;
+	// var _sound = asset_get("empty_sprite");
+	var _w = 500;
+	win_add(i++,[WIN.DIALOG_DEFAULT, //6
+		new_varcont([1,1]), //ID, Progress
+		new_sprite(sprite_get("talk_gui"),0,0), //Dialog Background Sprite
+		new_sprite(sprite_get("face_default"),0,0), //Dialog Picture
+		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,18,c_white,asset_get("medFont")), //Main Text
+		// new_sprite(sprite_get("response_gui"),0,0), //Response Sprite
+		// new_listbox(["Response 1","Response 2"],asset_get("empty_sprite"),_sound,_pos[0],_pos[1]+2,_w,18,c_white,asset_get("medFont")), //Listbox new_listbox(_choices,_select_sprite,_sound,_x,_y,_w,_sep,_color,_font)
 	]);
 	exit;
 }
@@ -148,15 +157,6 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	
 	win_alpha = 1;
 	switch _element[0] {
-		// case WIN.DEBUG:
-		// 	if win_active == _i {
-		// 		//print_debug("DB Active: "+string(_i));
-		// 		if keyboard_string != "" {
-		// 			_element[@5][@1] += keyboard_string;
-		// 			keyboard_string = "";
-		// 		}
-		// 	}
-		// 	break;
 		case WIN.DEBUG:
 			if string_count("`",keyboard_string) {
 				cmd_x = _x;
@@ -220,7 +220,6 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			//
 			if _element[3][11] > string_length(_element[3][1])-1 {
 				_element[@1][@3] += 1;
-				//print_debug(string(_element[1][3]));
 				if _element[1][3] > _element[1][2] {
 					end_window(_i);
 					_i--;
@@ -229,14 +228,7 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			break;
 		case WIN.POINTOUT:
 			if alive_time == 1 {
-				//print_debug(string(_element[1][1]));
 				active_win[@_i][1][@2][@1] = _element[1][1];
-				active_win[@_i][1][@3][@1] = _element[1][1];
-				active_win[@_i][1][@4][@1] = _element[1][1];
-				active_win[@_i][1][@5][@1] = _element[1][1];
-				active_win[@_i][1][@6][@1] = _element[1][1];
-				active_win[@_i][1][@7][@1] = _element[1][1];
-				active_win[@_i][1][@8][@1] = _element[1][1];
 				_element[@1][@4] = _x;
 				_element[@1][@5] = _y;
 			}
@@ -244,9 +236,8 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			active_win[@_i][@0][@0] = _element[1][4]-view_get_xview();
 			active_win[@_i][@0][@1] = _element[1][5]-view_get_yview();
 			//
-			if _element[3][11] > string_length(_element[3][1])-1 {
+			if _element[2][11] > string_length(_element[2][1])-1 {
 				_element[@1][@3] += 1;
-				//print_debug(string(_element[1][3]));
 				if _element[1][3] > _element[1][2] {
 					end_window(_i);
 					_i--;
@@ -257,23 +248,44 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			_quests = action_manager.quest_active;
 			// print(_quests[0][_quests[0][0][0]][0]);
 			break;
+		case WIN.DIALOG_DEFAULT:
+			//Element List: 1 - varcont[], 2 - Bg, 3 - Face, 4- Dialog
+			if alive_time == 1 {
+				//_element[@1][@1]
+				_element[@4][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][0]; //Set to initial dialog: [id][progress][string,face,bg]
+				if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]]) > 1 {
+					_element[@3][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][0][1]; //Set to initial dialog: [id][progress][string,face,bg]
+					if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]][0]) > 2 _element[@2][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][2]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
+				}
+					
+				}
+			with oPlayer {
+				if attack_held == 1 || taunt_held == 1 {
+					print("Upping text...");
+					_element[@1][@2]++;
+					if _element[1][2] > array_length_1d(action_manager.dialog_array[_element[1][1]])-1 { //The end of the conversation!
+						with other end_window(_i);
+					}
+					_element[@4][@11] = 0;
+					_element[@4][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][0];
+					if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]]) > 1 {
+					_element[@3][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][1]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
+					if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]]) > 2 _element[@2][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][2]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
+					}
+				}
+			}
+			break;
 	}
 	for (var _j = 1; _j < array_length_1d(_element);_j++) {
 		_param = _element[_j];
 		switch _param[0] {
+			case GUI.DIALOGBOX_TRIM:
 			case GUI.DIALOGBOX:
 				_param[11] += _param[4];
-				if _param[11] < string_length(_element[3][1])-1 && !((floor(_param[11])) % 2) sound_play(_param[2],false,0,0.05,.9);//floor(_param[11] + _param[4]) > floor(_param[11]) sound_play(_param[2]);
+				// print(_param[1]);
+				if _param[11] < string_length(_param[1])-1 && !((floor(_param[11])) % 2) sound_play(_param[2],false,0,0.05,.9);//floor(_param[11] + _param[4]) > floor(_param[11]) sound_play(_param[2]);
 				break;
 			case GUI.SCROLLBOX: //[GUI.SCROLLBOX,_str,_x,_y,_w,_h,_sep,_color,_font,_line,_parsed_string];
-				// if alive_time == 1 _param[10] = break_string(_param[1],_param[4],_param[5],_param[9]);
-				// if win_active == _i with oPlayer {
-				// 	if up_held == 1 || down_held == 1 {
-				// 		_param[9] -= (up_held == 1)-(down_held == 1);
-				// 		_param[9] = clamp(_param[9],0,100);
-				// 		_param[10] = break_string(_param[1],_param[4],_param[5],_param[9]);
-				// 	}
-				// }
 				if alive_time == 1 _param[10] = parse_lines(_param[1],_param[4],_param[5],_param[6],_param[9]);
 				if win_active == _i with oPlayer {
 					if up_held == 1 || down_held == 1 || attack_held == 1 {
@@ -282,7 +294,6 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 						_param[10] = parse_lines(_param[1],_param[4],_param[5],_param[6],_param[9]);
 					}
 				}
-				// _param[10] = _param[1];
 				break;
 		}
 	}
@@ -342,13 +353,40 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			case GUI.DIALOGBOX:
 				//_param[11] += _param[4];
 				draw_set_font(_param[10]);
-				if floor(_param[11]/4) % 2 {
-					draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
-					break;
-				}
+				// if floor(_param[11]/4) % 2 {
+				// 	draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
+				// 	break;
+				// }
 				draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
 				break;
-			case GUI.SCROLLBOX: //Good lord help me
+			case GUI.DIALOGBOX_TRIM:
+				//_param[11] += _param[4];
+				draw_set_font(_param[10]);
+				var _offset =  2;
+				// if floor(_param[11]/4) % 2 {
+					
+				// 	draw_text_ext_transformed_color(_x+_param[5],_y+_param[6]+_offset,string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5],_y+_param[6]-_offset,string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5]+_offset,_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5]-_offset,_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5]+_offset,_y+_param[6]+_offset,string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5]-_offset,_y+_param[6]+_offset,string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5]+_offset,_y+_param[6]-_offset,string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5]-_offset,_y+_param[6]-_offset,string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				// 	draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
+				// 	break;
+				// }
+				draw_text_ext_transformed_color(_x+_param[5],_y+_param[6]+_offset,string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+					draw_text_ext_transformed_color(_x+_param[5],_y+_param[6]-_offset,string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+					draw_text_ext_transformed_color(_x+_param[5]+_offset,_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+					draw_text_ext_transformed_color(_x+_param[5]-_offset,_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+					draw_text_ext_transformed_color(_x+_param[5]+_offset,_y+_param[6]+_offset,string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+					draw_text_ext_transformed_color(_x+_param[5]-_offset,_y+_param[6]+_offset,string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+					draw_text_ext_transformed_color(_x+_param[5]+_offset,_y+_param[6]-_offset,string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+					draw_text_ext_transformed_color(_x+_param[5]-_offset,_y+_param[6]-_offset,string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,c_black,c_black,c_black,c_black,win_alpha);
+				draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
+				break;
+			case GUI.SCROLLBOX: //Good lord help me - not actually that bad :)
 				draw_set_font(_param[8]);
 				draw_text_ext_transformed_color(_x+_param[2],_y+_param[3],_param[10],_param[6],_param[4],1,1,0,_param[7],_param[7],_param[7],_param[7],win_alpha);
 				break;
@@ -367,10 +405,16 @@ return [GUI.SPRITE,_sprite,_x,_y];
 #define new_dialogbox(_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font)
 var _char_vis = 0;
 return [GUI.DIALOGBOX,_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font,_char_vis];
+#define new_trim_dialogbox(_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font)
+var _char_vis = 0;
+return [GUI.DIALOGBOX_TRIM,_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font,_char_vis];
 #define new_scrollbox(_str,_x,_y,_w,_h,_sep,_color,_font)
 var _line = 0;
 var _parsed_string = "";
 return [GUI.SCROLLBOX,_str,_x,_y,_w,_h,_sep,_color,_font,_line,_parsed_string];
+#define new_listbox(_choices,_select_sprite,_sound,_x,_y,_w,_sep,_color,_font)
+
+return [GUI.LISTBOX,_choices,_select_sprite,_sound,_x,_y,_w,_sep,_color,_font];
 #define new_varcont(_var)
 var _s = [GUI.VARCONT];
 for (var _i = 0;_i < array_length_1d(_var);_i++) array_push(_s,_var[_i]);
@@ -516,19 +560,6 @@ switch mouse_button {
 }
 return true;
 
-// #define draw_debug_info() //Done in the scope of an article; Here so there's no performance impact
-
-// switch num {
-// 	case 1:
-// 		debug_pos = grid_to_cell([x+64,y+64]);
-// 		draw_debug_text(floor(x),floor(y),"["+string(debug_pos[1][0])+","+string(debug_pos[1][0])+"]:["+string(floor((debug_pos[0][0])/16))+","+string(floor((debug_pos[0][1])/16))+"]:["+string((debug_pos[0][0]) % 16)+","+string((debug_pos[0][1]) % 16)+"]");
-//     	draw_rectangle_color(x-sprite_get_xoffset(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2,
-//                 			 x-sprite_get_xoffset(sprite_index)*2+sprite_get_width(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2+sprite_get_height(sprite_index)*2,
-//                         	 c_fuchsia,c_fuchsia,c_fuchsia,c_fuchsia,true);
-// 		break;
-// }
-// return true;
-
 #define cmd_command(_str_a,_str_raw)
 _str_a[@0] = string_replace(_str_a[0],cmd_char,"");
 for (var _i = 0;_i < array_length_1d(_str_a);_i++) { //Convert to values
@@ -542,6 +573,12 @@ for (var _i = 0;_i < array_length_1d(_str_a);_i++) { //Convert to values
 // print(_str_a);
 with obj_stage_main {
 	switch _str_a[0] {
+		// case "action_import":
+		// 	var _action = get_string("Insert the code for the action you want to import!","");
+		// 	break;
+		case "action_play":
+			with action_manager array_push(action_queue, [room_id, scene_id, real(_str_a[1])]);
+			break;
 		case "attack": //Cause Enemies to attack
 			for (var _i = 0; _i < array_length_1d(debug_selected);_i++) {
 				if debug_selected[_i].num == 6 { //only if enemy
@@ -828,6 +865,24 @@ for (var _i = string_length(_str);_i > 0;_i--) {
 	_char = string_char_at(_str,_i);
 }
 return true;
+
+#define string_split(s,d) //Ty YAL for the great blog post!
+// var s = argument[0], d = argument[1];
+// var rl = global.string_split_list;
+var rl = [];
+var p = string_pos(d, s);
+var dl = string_length(d);
+
+if (dl) while (p) {
+    p -= 1;
+    // ds_list_add(rl, string_copy(s, 1, p));
+    array_push(rl, string_copy(s, 1, p));
+    s = string_delete(s, 1, p + dl);
+    p = string_pos(d, s);
+}
+// ds_list_add(rl, s);
+
+return rl;
 
 #define parse_lines(_str, _w, _h, _sep, _s_line) //Parse existing string
 var _f_str = _str;
