@@ -77,6 +77,9 @@ if array_length_1d(end_action_queue) > 0 process_end_queue();
 if array_length_1d(end_action_index) > 0 process_end_index();
 if array_length_1d(action_queue) > 0 process_action_queue();
 
+
+if get_gameplay_time() % tick_rate != 0 exit;
+
 action_tick();
 scene_tick();
 
@@ -462,3 +465,43 @@ with room_manager {
 	return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0]))*cell_size + render_offset[0], 
 			(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1]))*cell_size + render_offset[1]];
 }
+
+//Returns an array of two angle points from opposite radial directions in a fixed step count. Should be ~> 3 to minimize errors in finding sharper collisions.
+#define circle_search(_steps,_x,_y,_d) //The max steps, the x value of the center of the circle, the y value of the center of the circle, and the distance from the center
+
+return [angle_query(180,0,collision_point(_x-_d*dcos(0),_y+_d*dsin(0),obj_stage_article_solid,false,true),_steps,_x,_y,_d,0),
+        angle_query(180,360,collision_point(_x-_d*dcos(360),_y+_d*dsin(360),obj_stage_article_solid,false,true),_steps,_x,_y,_d,0)];
+    
+#define angle_query(_ang_new,_ang_old,_ang_old_r,_steps,_x,_y,_d,_rec) //provide with starting angles angle1, angle2, the result at angle2, the max steps, the x value of the center of the circle, the y value of the center of the circle, and the distance from the center. _rec is zero. Will return an angle if it finds one, -1 if it doesn't.
+if (_steps == 0) { //reached the end of the resolution - prevent recursing past the step limit
+    if (_rec == 0) return _ang_old; //return the old step as the approximate angle
+    else return -1; //return an unexpected value for an angle in this schema, did not find an angle difference.
+}
+
+var _ang_new_r = collision_point(_x-_d*dcos(_ang_new),_y+_d*dsin(_ang_new),obj_stage_article_solid,false,true); //check collision value at the new angle
+var _diff = angle_difference(_ang_old,_ang_new); //The difference of the angles
+
+if (_ang_new_r != _ang_old_r) { //If a difference is found
+
+    _ang_old = _ang_new;
+    _ang_new -= _diff/2; //Take half the angle difference and add onto the direction of the difference
+    _rec = 0; //Successfuly found a difference, no need to recurse
+    
+} else { //Difference not found, checking other places
+
+    _rec += 1; //Add to _rec so the function knows its recursing step
+    if !(_rec & 1) _ang_new += 2*_diff; //If it's odd & same, check the other side
+    else { //if it's even & same, aka if a difference was not found across both angles, recurse down for the remaining steps. (Edge case for if no difference is found and all branches need searching, like a very sharp corner)
+        var _branch_result_m = angle_query(_ang_new-_diff/2,_ang_new,_ang_new_r,_steps-1,_x,_y,_d,_rec); //Recruse across the negative line
+        var _branch_result_p = angle_query(_ang_new+_diff/2,_ang_new,_ang_new_r,_steps-1,_x,_y,_d,_rec); //Recruse across the positive line
+        if (_branch_result_m != -1) return _branch_result_m; //Found an angle across this recursive negative line
+        if (_branch_result_p != -1) return _branch_result_p; //Found an angle across this recursive positive line
+        //If it gets past this, did not find an angle at all with the given step resolution! Move on to the next one.
+        _ang_new += 2*_diff;
+        _rec -= 1;
+    }
+    
+}
+
+_steps -= 1; //Pass on the return until the steps run out, infinite prevention
+return angle_query(_ang_new,_ang_old,_ang_new_r,_steps,_x,_y,_d,_rec); //Recurse across the difference line

@@ -5,9 +5,17 @@ if _init == 0 {
     else sprite_index = spawn_variables[0];
     spr_name = sprite_get_name(sprite_index);
     spr_ = sprite_index;
-    //if spawn_variables[3] != 0 sprite_change_collision_mask(sprite_get_name(sprite_index),true, 2, 0, 0, sprite_get_width(spr_), sprite_get_height(spr_), 0 );
-    if spawn_variables[3] != 0 sprite_change_collision_mask(sprite_get_name(sprite_index),true, 0, 0, 0, 0, 0, 0);
-    //mask_index = sprite_index;
+    //NEED TO SET COLLISION IN LOAD!!!
+    // if spawn_variables[3] != 0 {
+    //     mask_index = sprite_index;
+    //     print("SET TO SPRITE COLLISION");
+    //     // sprite_change_collision_mask(sprite_get_name(sprite_index),true, 0, 0, 0, 0, 0, 0);
+    //     sprite_change_collision_mask("[-3,0]ground",false, 1, 0, 0, 0, 0, 0);
+    //     // sprite_change_collision_mask(sprite_get_name(sprite_index),true, 2, 0, 0, sprite_get_width(spr_), sprite_get_height(spr_), 0 );
+    // }
+    // if spawn_variables[3] != 0 sprite_change_collision_mask(sprite_get_name(sprite_index),true, 0, 0, 0, 0, 0, 0);
+    // sprite_change_collision_mask(sprite_get_name(sprite_index),true, 0, 0, 0, 0, 0, 0);
+   
     anim_speed = spawn_variables[1]*.01;
     group = spawn_variables[2];
     static  = spawn_variables[4];

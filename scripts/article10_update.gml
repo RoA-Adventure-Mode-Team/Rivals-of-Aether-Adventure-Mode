@@ -5,6 +5,7 @@ if !_init {
     sprite_index = spawn_variables[1];
     grav_radius = spawn_variables[2];
     grav_accel = spawn_variables[3];
+    // use_type = spawn_variables[4];
     use_type = spawn_variables[4];
     item_name = spawn_variables[5];
     name_width = string_width(item_name);
@@ -36,9 +37,9 @@ if state == EVT.GRAB { //Normal Operations
             }
             collis_obj.item_id = id;
             sound_play(asset_get("mfx_coin"));
-            if use_type == 1 {
-                set_state(EVT.USE);
-            }
+            // if use_type == 1 {
+            //     set_state(EVT.USE);
+            // }
             follow_player = collis_obj.id;
             event_flag = EVT.GRAB;
             user_event(10);//Item Custom Behavior
@@ -59,23 +60,23 @@ if state == EVT.IDLE { //Following a Player
     hsp = floor(-(x-follow_pos[0])/2);
     spr_dir = follow_player.spr_dir;
     event_flag = EVT.IDLE;
-    user_event(10);//Item Custom Behavior
+    user_event(10); //Item Custom Behavior
 }
 
 if state == EVT.USE { //Used
     event_flag = EVT.USE;
-    user_event(10);//Item Custom Behavior
+    user_event(10); //Item Custom Behavior
     
 }
 
 if state == EVT.ALTUSE { //Rejection & Cooldown
     event_flag = EVT.ALTUSE;
-    user_event(10);//Item Custom Behavior
+    user_event(10); //Item Custom Behavior
 }
 
 if state == EVT.DESTROY {
     event_flag = EVT.DESTROY;
-    user_event(10);//Item Custom Behavior
+    user_event(10); //Item Custom Behavior
     instance_destroy();
     exit;
 }

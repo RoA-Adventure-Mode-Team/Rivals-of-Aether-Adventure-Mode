@@ -41,7 +41,7 @@ enum ACT {
     ON_INPUT, //Do a thing when a player presses a button
     //follow_player?, input_type
     SW_ROOM, //Switch the room
-    //to_room
+    //to_room, to_pos
     QUEST_PROG, //Quest-related actions
     //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
     SUS, //Suspend Action by ID
@@ -92,7 +92,7 @@ action_add(1, 1, 4, ACT.CAMERA,
 scene_add(1, 1, [1]);
 action_add(1, 1, 1, ACT.WAIT,   //room_id, scene_id, action_id, action_type
 [120],                          //Action arguments
-[200]);                           //Actions to start on exit
+[1]);                           //Actions to start on exit
 action_add(1, 1, 2, ACT.SPAWN_ART,
 [[0,0],[6, 84, 44, 0, -5, [4, 0, 0, 0, 0, 0, 0, 0], [0,0]]], //cell, [room_format]
 []); //Actions to start on exit

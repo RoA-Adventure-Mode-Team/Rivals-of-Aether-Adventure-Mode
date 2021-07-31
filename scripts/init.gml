@@ -17,6 +17,9 @@ cam_x_right = view_get_wview()+view_get_xview();
 cam_y_right = view_get_hview()+view_get_yview();
 cam_x_left = view_get_xview();
 cam_y_left = view_get_yview();
+cam_x_center = view_get_wview()/2;
+cam_x_l3 = view_get_wview()/3;
+cam_x_r3 = 2*view_get_wview()/3;
 
 cam_state = 0;
 cam_smooth = 5;
@@ -108,8 +111,17 @@ death_down = 100;
 
 //Room Transitions (article8)
 
-room_width = 10000;
-room_height = 10000;
+//UNSAFE Room size - crash often ;)
+// room_width = 40000;
+// room_height = 40000;
+
+//Semi-safe room size - crash rarely
+room_width = 20000;
+room_height = 20000;
+
+//Safe room size - rarely crash
+// room_width = 10000;
+// room_height = 10000;
 
 //Window API Init
 win_data = [];
@@ -177,3 +189,7 @@ sfx_ice_wake - Monstorous Sigh Long
 sfx_ice_chain - Typewriter
 sfx_may_arc_talk - Arcade Talk!
 */
+
+#define add_cred()
+
+return true;

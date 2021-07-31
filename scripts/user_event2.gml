@@ -42,14 +42,23 @@ enum GUI {
 	EXIT
 }
 
+enum SM {
+	PROP,
+	ADD,
+	DEL,
+	EXPORT,
+	SAVE,
+	LOAD,
+}
+
 if win_call == 0 {
 	if mouse_x_i != mouse_x || mouse_y_i != mouse_y cursor_visible = true;
-	with obj_stage_main {
-		if cursor_visible do_cursor();
-		draw_windows(); //Draw Objects
-		if cursor_visible draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
+	if cursor_visible do_cursor();
+	draw_windows(); //Draw Objects
+	if cursor_visible {
+		draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
+		logic_cursor();
 	}
-	if cursor_visible with obj_stage_main logic_cursor();
 	exit;
 }
 
@@ -166,24 +175,38 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				_i--;
 			}
 			if win_active == _i {
+				if string_count("/",keyboard_string) {
+					console_parse = string_parse(_element[4][1]," ");
+					if console_parse != [] {
+						cmd_command(console_parse,_element[4][1],false);
+						// if !cmd_save_output cmd_output = parse_lines(cmd_output,_element[3][4],_element[3][5],16,-1);
+						_element[@4][@1] = cmd_char;
+					}
+					keyboard_string = "";
+				}
+				if string_count("\",keyboard_string) {
+					_element[@4][@1] = string_delete(_element[4][1],string_length(_element[4][1]),2);
+					keyboard_string = "";
+				}
 				if keyboard_string != "" {
 					_element[@4][@1] += keyboard_string;
 					keyboard_string = "";
 				}
-				with oPlayer {
-					if attack_held == 1 {
-						other.console_parse = string_parse(_element[4][1]," ");
-						if other.console_parse != [] with other {
-							cmd_command(console_parse,_element[4][1]);
-							if !cmd_save_output cmd_output = parse_lines(cmd_output,_element[3][4],_element[3][5],16,-1);
-							_element[@3][@1] = cmd_output;
-							_element[@4][@1] = cmd_char;
-						}
-						// down_held = 1;
-					}
-					if special_held == 1 _element[@4][@1] = string_delete(_element[4][1],string_length(_element[4][1]),1);
-				}
+				// with oPlayer {
+				// 	if attack_held == 1 {
+				// 		other.console_parse = string_parse(_element[4][1]," ");
+				// 		if other.console_parse != [] with other {
+				// 			cmd_command(console_parse,_element[4][1]);
+				// 			if !cmd_save_output cmd_output = parse_lines(cmd_output,_element[3][4],_element[3][5],16,-1);
+				// 			_element[@3][@1] = cmd_output;
+				// 			_element[@4][@1] = cmd_char;
+				// 		}
+				// 		// down_held = 1;
+				// 	}
+				// 	if special_held == 1 _element[@4][@1] = string_delete(_element[4][1],string_length(_element[4][1]),1);
+				// }
 			}
+			_element[@3][@1] = cmd_output;
 			break;
 		case WIN.AREATITLE:
 			active_win[@_i][@0][@0] = lerp(active_win[_i][0][0],title_x_stop*(alive_time < 360)-title_x_stop*(alive_time > 360),0.1);
@@ -288,12 +311,74 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			case GUI.SCROLLBOX: //[GUI.SCROLLBOX,_str,_x,_y,_w,_h,_sep,_color,_font,_line,_parsed_string];
 				if alive_time == 1 _param[10] = parse_lines(_param[1],_param[4],_param[5],_param[6],_param[9]);
 				if win_active == _i with oPlayer {
-					if up_held == 1 || down_held == 1 || attack_held == 1 {
+						if up_held == 1 || down_held == 1 {
 						_param[9] += (up_held == 1) - (down_held == 1);
-						_param[9] = clamp(_param[9],0,100);
-						_param[10] = parse_lines(_param[1],_param[4],_param[5],_param[6],_param[9]);
 					}
 				}
+				_param[9] = clamp(_param[9],0,100);
+				_param[10] = parse_lines(_param[1],_param[4],_param[5],_param[6],_param[9]);
+				// 	if up_held == 1 || down_held == 1 || attack_held == 1 {
+				// 		_param[9] += (up_held == 1) - (down_held == 1);
+				// 		_param[9] = clamp(_param[9],0,100);
+				// 		_param[10] = parse_lines(_param[1],_param[4],_param[5],_param[6],_param[9]);
+				// 	}
+				// }
+				break;
+			case GUI.BUTTON: //[GUI.BUTTON,_type,_button_strip,_x,_y,_state];
+				if mb_l_click && _param[5] { //On Left Click do something
+					// print("AAAA");
+					switch _param[1] {
+						case SM.PROP:
+							array_push(active_win,[[mouse_x-view_get_xview(),mouse_y-view_get_yview(),noone,0],array_clone_deep(win_data[3])]); //Properties box
+							break;
+						case SM.DEL:
+							if array_length_1d(debug_selected) > 0 {
+								with debug_selected[0] {
+									visible = false;
+									destroyed = true;
+									instance_destroy(self);
+								}
+								array_cut(debug_selected,0);
+							}
+							break;
+						case SM.EXPORT:
+							cmd_command(["export"],"",false);
+							break;
+						case SM.ADD:
+							cmd_command(["new"],"",true);
+							// var _hitbox_index = 1;
+							// var _hit;
+							// with debug_selected[0] {
+							// 	while get_hitbox_value(attack,_hitbox_index,HG_LIFETIME) != 0 && get_hitbox_value(attack,_hitbox_index,HG_HITBOX_X) != 0 _hitbox_index++;
+							// 	_hit = create_hitbox(attack,1,_x,_y);
+							// 	_hit.hbox_num = _hitbox_index;
+							// }
+							// debug_selected[0] = _hit;
+							// cmd_command(["set","hbox_num",string(_hitbox_index)],"",true);
+							// cmd_print("","Added Hitbox "+string(_hitbox_index)+"...");
+							break;
+						case SM.SAVE:
+							// print("save");
+							cmd_command(["s_state","0"],"",false);
+							break;
+						case SM.LOAD:
+							// print("load");
+							cmd_command(["l_state","0"],"",false);
+							break;
+					}
+					update_select = true;
+					end_window(_i);
+				}
+				// print(in_rect(mouse_x,mouse_y,_x+_param[3],_y+_param[4],_x+_param[3]+sprite_get_width(_param[2])*2,_y+_param[4]+sprite_get_height(_param[2])*2));
+				// if mb_l_click && _param[5] { //On Left Click do something
+				// 	// print("AAAA");
+				// 	switch _param[1] {
+				// 		case SM.PROP:
+				// 			print("AAAAA");
+				// 			array_push(active_win,[[mouse_x-view_get_xview(),mouse_y-view_get_yview(),noone,0],array_clone_deep(win_data[3])]); //Properties box
+				// 			break;
+				// 	}
+				// }
 				break;
 		}
 	}
@@ -390,6 +475,13 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				draw_set_font(_param[8]);
 				draw_text_ext_transformed_color(_x+_param[2],_y+_param[3],_param[10],_param[6],_param[4],1,1,0,_param[7],_param[7],_param[7],_param[7],win_alpha);
 				break;
+			case GUI.BUTTON: //[GUI.BUTTON,_type,_button_strip,_x,_y,_state,_name];
+				draw_set_font(asset_get("fName"));
+				if in_rect(mouse_x,mouse_y,_x+_param[3],_y+_param[4],_x+_param[3]+sprite_get_width(_param[2])*2,_y+_param[4]+sprite_get_height(_param[2])*2) _param[5] = 1;
+				else _param[5] = 0;
+				draw_sprite_ext(_param[2],_param[5],_x+_param[3],_y+_param[4],2,2,0,c_white,1);
+				draw_text_drop(_x+_param[3]+32,_y+_param[4]+8,_param[6],16,100,1,1,0,1);
+				break;
 		}
 	}
 }
@@ -398,8 +490,6 @@ return true;
 
 #define new_textbox(_default_string,_x,_y,_w,_sep,_color,_font)
 return [GUI.TEXTBOX,_default_string,_x,_y,_w,_sep,_color,_font];
-#define new_button(_sprite,_x,_y)
-return [GUI.BUTTON,_sprite,_x,_y];
 #define new_sprite(_sprite,_x,_y)
 return [GUI.SPRITE,_sprite,_x,_y];
 #define new_dialogbox(_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font)
@@ -415,6 +505,9 @@ return [GUI.SCROLLBOX,_str,_x,_y,_w,_h,_sep,_color,_font,_line,_parsed_string];
 #define new_listbox(_choices,_select_sprite,_sound,_x,_y,_w,_sep,_color,_font)
 
 return [GUI.LISTBOX,_choices,_select_sprite,_sound,_x,_y,_w,_sep,_color,_font];
+#define new_button(_type,_button_strip,_x,_y,_name)
+var _state = 0;
+return [GUI.BUTTON,_type,_button_strip,_x,_y,_state,_name];
 #define new_varcont(_var)
 var _s = [GUI.VARCONT];
 for (var _i = 0;_i < array_length_1d(_var);_i++) array_push(_s,_var[_i]);
@@ -448,6 +541,9 @@ switch mouse_button {
 	case 1: //Left-Click
 		//keyboard_string = "";
 		if !mb_l_click { //on click
+			mb_l_click = true;
+			click_x = mouse_x;
+			click_y = mouse_x;
 			// print_debug("MB1 CLICK!");
 			//Windows
 			var _x = 0;
@@ -530,7 +626,6 @@ switch mouse_button {
 			active_win[@win_drag][@0][@0] += cursor_x - cursor_x_p;
 			active_win[@win_drag][@0][@1] += cursor_y - cursor_y_p;
 		}
-		mb_l_click = true;
 		break;
 	case 2:
 		if !mb_r_click { //on click
@@ -560,7 +655,9 @@ switch mouse_button {
 }
 return true;
 
-#define cmd_command(_str_a,_str_raw)
+#define cmd_command(_str_a,_str_raw,_sup)
+sup_out = _sup;
+var _with_obj = self;
 _str_a[@0] = string_replace(_str_a[0],cmd_char,"");
 for (var _i = 0;_i < array_length_1d(_str_a);_i++) { //Convert to values
 	if string(_str_a[_i]) != _str_a[_i] blank = 0;
@@ -571,7 +668,7 @@ for (var _i = 0;_i < array_length_1d(_str_a);_i++) { //Convert to values
 	else if string_count("v:",_str_a[_i]) > 0 _str_a[@_i] = variable_instance_get(self,string_replace(string_replace(_str_a[_i],"v:'",""),"'",""));
 }
 // print(_str_a);
-with obj_stage_main {
+with _with_obj {
 	switch _str_a[0] {
 		// case "action_import":
 		// 	var _action = get_string("Insert the code for the action you want to import!","");
@@ -638,12 +735,45 @@ with obj_stage_main {
 								(_art.object_index == obj_stage_article_platform)*1+
 								(_art.object_index == obj_stage_article_solid)*2;
 			var _art_sv = "[";
-			for (var _i = 0; _i < array_length(_art.spawn_variables);_i++) _art_sv += string(_art.spawn_variables[_i])+",";
+			//Doesn't convert to a usable name, gotta manually replace it :(
+			// if real(_art.spawn_variables[0]) > 1000 { //Propbably a sprite
+			// 	_art_sv += "sprite_get("+sprite_get_name(real(_art.spawn_variables[0]))+"),";
+			// } else 	_art_sv += string(_art.spawn_variables[0])+",";
+			for (var _i = 0; _i < array_length(_art.spawn_variables);_i++) {
+				_art_sv += string(_art.spawn_variables[_i])+",";
+			}
 			_art_sv += "]";
 			var _art_pos = grid_to_cell([_art.x+64,_art.y+64]);
-			get_string("Copy the below into the room ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script...",
+			get_string("Copy the below into the room ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script (user_event1)...",
 			"["+string(_art.num)+","+string(floor(_art_pos[0][0]/16))+","+string(_art_pos[0][1]/16)+","+string(_article_type)+","+string(_art.og_depth)+","+_art_sv+",[0,0]"+"],");
 			cmd_print(_str_raw,"Exporting Article into ROOM Format...");
+			break;
+		case "get":
+			if array_length_1d(_str_a) < 2 {
+				cmd_print(_str_raw,"Error: 1 Arg Req.");
+				break;
+			}
+			if array_length_1d(debug_selected) == 0 {
+				cmd_print(_str_raw, _str_a[1]+": "+string(variable_instance_get(self,_str_a[1])));
+				break;
+			}
+			for (var _i = 0; _i < array_length_1d(debug_selected);_i++) if (_str_a[1] in debug_selected[_i]) {
+				var _obj_name = debug_selected[_i].object_index;
+				switch debug_selected[_i].object_index {
+					case 3:
+						_obj_name = "oPlayer";
+						break;
+					case 6:
+						_obj_name = "pHitBox";
+						break;
+				}
+				if _str_a[1] == "sprite_index" {
+					cmd_print(_str_raw, _str_a[1]+": "+sprite_get_name(variable_instance_get(debug_selected[_i],_str_a[1])));
+					break;
+				}
+				cmd_print(_str_raw,string(_obj_name)+"<"+string(debug_selected[_i])+">."+_str_a[1]+" = "+string(variable_instance_get(debug_selected[_i],_str_a[1])));
+				break;
+			}
 			break;
 		case "god":
 			with oPlayer god = !god;
@@ -684,9 +814,144 @@ with obj_stage_main {
 			}
 			cmd_print(_str_raw,_art_list);
 			break;
+		case "new": //The cooler spawn
+			var _hitbox_index = 1;
+			var _hit;
+			with debug_selected[0] {
+				while get_hitbox_value(attack,_hitbox_index,HG_LIFETIME) != 0 && get_hitbox_value(attack,_hitbox_index,HG_HITBOX_X) != 0 _hitbox_index++;
+				_hit = create_hitbox(attack,1,_x,_y);
+				_hit.hbox_num = _hitbox_index;
+			}
+			debug_selected[0] = _hit;
+			cmd_command(["set","hbox_num",string(_hitbox_index)],"",true);
+			cmd_print("","Added Hitbox "+string(_hitbox_index)+"...");
+			break;
 		case "peace": //Make enemies not attack
 			with obj_stage_article if num == 6 peace = !peace;
 			cmd_print(_str_raw,"Aethers' rivalry toggled");
+			break;
+		case "s_state": //Save Player States
+			var _variable_names;
+			var _state_num = state_cur;
+			if array_length_1d(_str_a) > 1 _state_num = real(_str_a[1]);
+			with oPlayer {
+				while array_length_1d(state_array) < _state_num+1 state_array = array_push(state_array, []);
+				state_array[_state_num] = [];
+				state_array[_state_num] = array_push(state_array[_state_num], ["x",x]);
+				state_array[_state_num] = array_push(state_array[_state_num], ["y",y]);
+				_variable_names = variable_instance_get_names(id);
+				for (var _i = 0; _i < array_length_1d(_variable_names);_i++) {
+					if !(_in(_variable_names[_i],other.excluded_vars)) state_array[_state_num] = array_push(state_array[_state_num],[_variable_names[_i],variable_instance_get(id,_variable_names[_i])]);
+					// if !(phrase_in(_variable_names[_i],other.keyword_ban)) state_array[_state_num] = array_push(state_array[_state_num],[_variable_names[_i],variable_instance_get(id,_variable_names[_i])]);
+				}
+				while array_length_1d(hurtbox_array) < _state_num+1 hurtbox_array = array_push(hurtbox_array, []);
+				with pHurtBox {
+					if playerID == other.id with other {
+						hurtbox_array[_state_num] = [];
+						// hurtbox_array[_state_num] = array_push(hurtbox_array[_state_num], ["sprite_index",sprite_index]);
+						// hurtbox_array[_state_num] = array_push(hurtbox_array[_state_num], ["mask_index",mask_index]);
+						_variable_names = variable_instance_get_names(other);
+						// print(_variable_names);f 
+						for (var _i = 0; _i < array_length_1d(_variable_names);_i++) {
+							hurtbox_array[_state_num] = array_push(hurtbox_array[_state_num],[_variable_names[_i],variable_instance_get(other,_variable_names[_i])]);
+						}
+					}
+				}
+				while array_length_1d(hitbox_array) < _state_num+1 hitbox_array = array_push(hitbox_array, []); //Expand
+				hitbox_array[@_state_num] = []; //Reset
+				with pHitBox {
+					if player_id == other.id with other {
+						hitbox_array[@_state_num] = array_push(hitbox_array[_state_num], []); //New Hitbox
+						var _end = array_length_1d(hitbox_array[_state_num])-1;
+						hitbox_array[@_state_num][@_end] = [];
+						hitbox_array[@_state_num][@_end] = array_push(hitbox_array[_state_num][_end],["attack",other.attack]);
+						hitbox_array[@_state_num][@_end] = array_push(hitbox_array[_state_num][_end],["hbox_num",other.hbox_num]);
+						_variable_names = variable_instance_get_names(other);
+						for (var _i = 0; _i < array_length_1d(_variable_names);_i++) {
+							hitbox_array[@_state_num][@_end] = array_push(hitbox_array[_state_num][_end],[_variable_names[_i],variable_instance_get(other,_variable_names[_i])]);
+						}
+					}
+				}
+				art_array_save(obj_article1, article1_array,_state_num);
+				art_array_save(obj_article2, article2_array,_state_num);
+				art_array_save(obj_article3, article3_array,_state_num);
+				art_array_save(obj_article_platform, articlep_array,_state_num);
+				art_array_save(obj_article_solid, articles_array,_state_num);
+				// while array_length_1d(article1_array) < _state_num+1 article1_array = array_push(article1_array, []); //Expand
+				// article1_array[@_state_num] = []; //Reset
+				// with obj_article1 {
+				// 	if player_id == other.id {
+				// 		other.article1_array[@_state_num] = array_push(other.article1_array[_state_num], []); //New Article
+				// 		var _end = array_length_1d(other.article1_array[_state_num])-1;
+				// 		other.article1_array[@_state_num][@_end] = [];
+				// 		other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],["num",num]);
+				// 		other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],["x",x]);
+				// 		other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],["y",y]);
+				// 		_variable_names = variable_instance_get_names(self);
+				// 		for (var _i = 0; _i < array_length_1d(_variable_names);_i++) {
+				// 			other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],[_variable_names[_i],variable_instance_get(self,_variable_names[_i])]);
+				// 		}
+				// 	}
+				// }
+				
+				// print(article1_array);
+			}
+			with obj_article2 {
+				
+			}
+			with obj_article3 {
+				
+			}
+			cmd_print(_str_raw,"Saved State "+string(_state_num));
+			break;
+		case "l_state": //Load Player States
+			var _state_num = 0;
+			var _i = 0;
+			if array_length_1d(_str_a) > 1 _state_num = real(_str_a[1]);
+			with pHitBox instance_destroy(self);
+			with obj_article1 instance_destroy(self);
+			with obj_article2 instance_destroy(self);
+			with obj_article3 instance_destroy(self);
+			with obj_article_platform instance_destroy(self);
+			with obj_article_solid instance_destroy(self);
+			with oPlayer {
+				with pHurtBox {
+					if player == other.player with other {
+						_i = 0;
+						repeat array_length_1d(hurtbox_array[_state_num]) variable_instance_set(other,hurtbox_array[_state_num][_i][0],hurtbox_array[_state_num][_i++][1]);
+					}
+				}
+				if array_length_1d(state_array) == 0 break;
+				_i = 0;
+				var _j = 0;
+				
+				repeat array_length_1d(hitbox_array[_state_num]) {
+					_j = 0;
+					// var _end = array_length_1d(hitbox_array[_state_num])-1;
+					// if array_length_1d(hitbox_array[_state_num][_end]) > 0 {
+					var _id = create_hitbox(hitbox_array[_state_num][_i][0][1],hitbox_array[_state_num][_i][1][1],0,0);
+					repeat array_length_1d(hitbox_array[_state_num][_i]) variable_instance_set(_id,hitbox_array[_state_num][_i][_j][0],hitbox_array[_state_num][_i][_j++][1]);
+					_i++;
+					// }
+				}
+				_i = 0;
+				repeat array_length_1d(state_array[_state_num]) variable_instance_set(self,state_array[_state_num][_i][0],state_array[_state_num][_i++][1]);
+				art_array_load("obj_article1",article1_array,_state_num);
+				art_array_load("obj_article2",article2_array,_state_num);
+				art_array_load("obj_article3",article3_array,_state_num);
+				art_array_load("obj_article_platform",articlep_array,_state_num);
+				art_array_load("obj_article_solid",articles_array,_state_num);
+				// _i = 0;
+				// repeat array_length_1d(article1_array[_state_num]) {
+				// 	_j = 0;
+				// 	var _id = instance_create(floor(article1_array[_state_num][_i][1][1]),floor(article1_array[_state_num][_i][2][1]),"obj_article1",article1_array[_state_num][_i][0][1]);
+				// 	repeat array_length_1d(article1_array[_state_num][_i]) variable_instance_set(_id,article1_array[_state_num][_i][_j][0],article1_array[_state_num][_i][_j++][1]);
+				// 	_i++;
+				// }
+				
+			}
+			
+			cmd_print(_str_raw,"Loaded State "+string(_state_num));
 			break;
 		case "save_output":
 			cmd_save_output = !cmd_save_output;
@@ -709,6 +974,7 @@ with obj_stage_main {
 			array_push(debug_selected,string_digits(_str_a[1]));
 			cmd_print(_str_raw,"Added "+_str_a[1]+" to selection.");
 			break;
+		case "s":
 		case "set": //Set a varable for selected objects
 			if !debug {
 				cmd_print(_str_raw,"Error: Need to be LUCID");
@@ -790,12 +1056,22 @@ with obj_stage_main {
 			break;
 	}
 }
+sup_out = false;
 return true;
 
 #define cmd_print(_cmd_str,_str)
-cmd_output += break_string(_cmd_str,cmd_w,10000,0) + "
-" + break_string(_str,cmd_w,10000,0) +"
+if sup_out return true;
+var _str1 = "";
+if _cmd_str == "" _str1 = "";
+else _str1 = break_string(_cmd_str,cmd_w,10000,0) + "
 ";
+var _str2 = "";
+if _str == "" _str2 = "
+";
+else _str2 = break_string(_str,cmd_w,10000,0) + "
+";
+cmd_output += _str1 + _str2;
+if !cmd_save_output cmd_output = parse_lines(cmd_output,cmd_w,cmd_h,16,-1);
 return true;
 #define string_parse(_str,_delim) // BECAUSE THIS ISN'T DEFAULT FOR SOME REASON
 _str = string_lower(_str); //Not case-sensitive
@@ -820,6 +1096,10 @@ return _collis_array;
 var _collis_array = [];
 with _obj if abs(x-_x) < _l && abs(y-_y) < _h array_push(_collis_array,id);
 return _collis_array;
+#define in_rect(_x,_y,_x1,_y1,_x2,_y2)
+// if abs(_x-_xp) < abs(_x-_x2) && abs(_y-_yp) < abs(_y-_y2) return true;
+if _x < _x2 && _x > _x1 && _y < _y2 && _y > _y1 return true;
+return false;
 #define array_cut(_array, _index)
 var _array_cut = array_create(array_length_1d(_array)-1);
 var j = 0;
@@ -915,6 +1195,61 @@ return _f_str;
 //     _final_str += _char;
 // }
 // return _final_str;
+#define _in(_val,_array) //If a value is in an array
+// for (var _i = 0; _i < array_length_1d(_array);_i++) if _val == _array[_i] return true;
+var _i = 0;
+repeat array_length_1d(_array) if _val == _array[_i++] return true;
+
+return false;
+
+#define a_vector(_l,_a)
+var _xa = _l*dcos(_a);
+var _ya = -_l*dsin(_a);
+return [_xa,_ya];
+#define keyboard_has(_ch)
+if string_count(_ch,keyboard_string) {
+	keyboard_string = "";
+	return true;
+}
+return false;
+#define array_clone_deep(_array)
+var _array_d_clone = [];
+for(var _i = 0;_i < array_length_1d(_array);_i++) {
+	if array_length_1d(_array[_i]) > 0 array_push(_array_d_clone,array_clone_deep(_array[_i]));
+	else array_push(_array_d_clone,_array[_i]);
+}
+return _array_d_clone;
+
+#define art_array_save(article_obj, article1_array,_state_num)
+while array_length_1d(article1_array) < _state_num+1 article1_array = array_push(article1_array, []); //Expand
+article1_array[@_state_num] = []; //Reset
+with article_obj {
+	if player_id == other.id {
+		other.article1_array[@_state_num] = array_push(other.article1_array[_state_num], []); //New Article
+		var _end = array_length_1d(other.article1_array[_state_num])-1;
+		other.article1_array[@_state_num][@_end] = [];
+		other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],["num",num]);
+		other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],["x",x]);
+		other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],["y",y]);
+		_variable_names = variable_instance_get_names(self);
+		for (var _i = 0; _i < array_length_1d(_variable_names);_i++) {
+			other.article1_array[@_state_num][@_end] = array_push(other.article1_array[_state_num][_end],[_variable_names[_i],variable_instance_get(self,_variable_names[_i])]);
+		}
+	}
+}
+return article1_array;
+
+#define art_array_load(article_obj,article1_array,_state_num)
+var _i = 0;
+var _j = 0;
+
+repeat array_length_1d(article1_array[_state_num]) {
+	_j = 0;
+	var _id = instance_create(floor(article1_array[_state_num][_i][1][1]),floor(article1_array[_state_num][_i][2][1]),article_obj,article1_array[_state_num][_i][0][1]);
+	repeat array_length_1d(article1_array[_state_num][_i]) variable_instance_set(_id,article1_array[_state_num][_i][_j][0],article1_array[_state_num][_i][_j++][1]);
+	_i++;
+}
+return;
 #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
 with room_manager {
 	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];

@@ -38,6 +38,9 @@ action_index = 0;
 with obj_stage_main other.stage_main = id;
 with obj_stage_article if num == 5 other.room_manager = id;
 
+//Tick actions every game frame
+tick_rate = 1;
+
 
 //Quests
 quest_init = false;

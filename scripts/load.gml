@@ -17,7 +17,19 @@ sprite_change_offset("marble_ground",-32, 0);
 sprite_change_offset("ground_top",-32, 0);
 sprite_change_offset("black",-32, 0);
 
+//Need to set sprite collisions here!
 sprite_change_collision_mask("ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("[-3,-1]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("[-3,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("[-2,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("[-1,0]ground",true,0,0,0,0,0,0);
+
+//Town
+sprite_change_collision_mask("2[-2,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("2[-1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("2[0,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("2[1,0]ground",true,0,0,0,0,0,0);
+
 sprite_change_collision_mask("marble_ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("sewer_ground_left",true,0,0,0,0,0,0);
 sprite_change_collision_mask("sewer_water1",true,0,0,0,0,0,0);

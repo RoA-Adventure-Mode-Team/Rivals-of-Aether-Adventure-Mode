@@ -34,6 +34,8 @@ enum EN {
     FLEYE, //2
     ROCKO, //3
     LSBIRD, //4
+    ESTALK, //5
+    HOP, //6
 };
 
 switch (enem_id) {
@@ -1652,10 +1654,10 @@ switch (enem_id) {
                         var sound_mod = floor(14 / walk_anim_speed);
                         
                         if (state_timer % sound_mod == sound_time1 || state_timer % sound_mod == sound_time2)
-                            sound_play(asset_get("sfx_kragg_rock_shatter"))
+                            sound_play(asset_get("sfx_kragg_rock_shatter"));
                         
                         if (image_index >= 2 && image_index < 7) || (image_index >= 9 && image_index < 14) {
-                            hsp = 0
+                            hsp = 0;
                         }
                         else {
                             hsp = clamp(hsp + walk_accel*spr_dir, -walk_speed, walk_speed);
@@ -2268,6 +2270,203 @@ switch (enem_id) {
         	break;
     	}
     break;
+    case EN.ESTALK:
+    	switch(art_event) {
+    		case EN_EVENT.INIT:
+    			//Initializations Here
+                
+                sprite_name = "estalk";
+                //player_controller = 1;
+                hitpoints_max = 35;
+                
+                collision_box = asset_get("ex_guy_hurt_box");
+                mask_index =  collision_box; // Collision Mask
+                colis_width = bbox_right - bbox_left;
+                colis_height = bbox_bottom - bbox_top;
+                
+                //AI Behavior
+                ai_attack_timer = 0;
+                ai_move_timer = 0;
+                ai_jump_timer = 0;
+                ai_moving_right = false;
+                ai_moving_left = false;
+                ai_decision_time = 10;
+                
+                //AI Behavior Variables
+                //Movement
+                ai_range_low = 32; //The preferred minimum range
+                ai_range_far = 200; //The preferred maximum range
+                ai_move_frequency = 0;
+                
+                //Jumping
+                ai_jump_back_frequency = 0; //How often the AI should jump back randomly.
+                ai_jump_up_frequency = 0; //How often the AI should jump up randomly.
+                ai_jump_fwd_frequency = 0; //How often the AI should jump forwards randomly.
+                ai_jump_range_low = 0; //The preferred minimum range to jump.
+                
+                //Attacking
+                attacks = [AT_NTHROW];
+                
+                ai_attack_frequency = 20; //How often to attack.
+                ai_attack_cooldown = 0;
+                ai_attack_counter = 0;
+                
+                able_to_crouch = false;
+                able_to_shield = false;
+                able_to_jump = false;
+                able_to_dash = false;
+                
+                //Enemy Specific
+                ai_hit_absorption = 0;
+                ai_hit_percent = 0;
+                        
+                //Animation Actions
+                char_height = 40;
+                char_arrow = sprite_get("char_arrow");
+                anim_speed = .02;
+                idle_anim_speed = .15;
+                crouch_anim_speed = .1;
+                walk_anim_speed = .25;
+                dash_anim_speed = .2;
+                pratfall_anim_speed = .25;
+                full_time = 20;
+                anim_type = 0; //0 is cycle; 1 is once per state
+                
+                //Movement Variables
+                walk_speed = 4.25;
+                walk_accel = 1;
+                walk_turn_time = 6;
+                initial_dash_time = 10;
+                initial_dash_speed = 6.5;
+                dash_speed = 6;
+                dash_turn_time = 10;
+                dash_turn_accel = 2;
+                dash_stop_time = 4;
+                dash_stop_percent = .35; //the value to multiply your hsp by when going into idle from dash or dashstop
+                ground_friction = .5;
+                moonwalk_accel = 1.4;
+                
+                jump_start_time = 5;
+                jump_speed = 12;
+                short_hop_speed = 8;
+                djump_speed = 10;
+                leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
+                max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
+                air_max_speed = 6; //the maximum hsp you can accelerate to when in a normal aerial state
+                jump_change = 3; //maximum hsp when double jumping. If already going faster, it will not slow you down
+                air_accel = 1;
+                prat_fall_accel = 1; //multiplier of air_accel while in pratfall
+                air_friction = .03;
+                max_djumps = 1;
+                double_jump_time = 32; //the number of frames to play the djump animation. Can't be less than 31.
+                
+                max_fall = 9; //maximum fall speed without fastfalling
+                fast_fall = 11; //fast fall speed
+                gravity_speed = .5;
+                hitstun_grav = .5;
+                knockback_adj = 1; //the multiplier to KB dealt to you. 1 = default, >1 = lighter, <1 = heavier
+                
+                land_time = 4; //normal landing frames
+                prat_land_time = 20;
+                wave_land_time = 15;
+                wave_land_adj = 1.5; //the multiplier to your initial hsp when wavelanding. Usually greater than 1
+                wave_friction = .04; //grounded deceleration when wavelanding
+                
+                //parry animation frames
+                dodge_startup_frames = 1;
+                dodge_active_frames = 1;
+                dodge_recovery_frames = 4;
+                
+                //tech animation frames
+                tech_active_frames = 3;
+                tech_recovery_frames = 1;
+                
+                //tech roll animation frames
+                techroll_startup_frames = 2;
+                techroll_active_frames = 2;
+                techroll_recovery_frames = 2;
+                techroll_speed = 10;
+                
+                //airdodge animation frames
+                air_dodge_startup_frames = 1;
+                air_dodge_active_frames = 3;
+                air_dodge_recovery_frames = 3;
+                air_dodge_speed = 7.5;
+                
+                
+                //roll animation frames
+                roll_forward_startup_frames = 2;
+                roll_forward_active_frames = 2;
+                roll_forward_recovery_frames = 2;
+                roll_back_startup_frames = 2;
+                roll_back_active_frames = 2;
+                roll_back_recovery_frames = 2;
+                roll_forward_max = 9; //roll speed
+                roll_backward_max = 9;
+                
+                
+                land_sound = asset_get("sfx_land_heavy");
+                landing_lag_sound = asset_get("sfx_land_heavy");
+                waveland_sound = asset_get("sfx_waveland_syl");
+                jump_sound = asset_get("sfx_jumpground");
+                djump_sound = asset_get("sfx_jumpair");
+                air_dodge_sound = asset_get("sfx_quick_dodge");
+                death_sound = asset_get("sfx_death2");
+                fx_enemy_abyssdeath = hit_fx_create(sprite_get("fx_enemy_abyssdeath"), 16);
+                fx_enemy_abyssdeath2 = hit_fx_create(sprite_get("fx_enemy_abyssdeath2"), 16);
+    		break;
+    		case EN_EVENT.ANIMATION:
+    		break;
+    		case EN_EVENT.PRE_DRAW:
+    		break;
+    		case EN_EVENT.POST_DRAW:
+    		break;
+    		case EN_EVENT.UPDATE:
+    		break;
+    		case EN_EVENT.DEATH:
+    		break;
+    		case EN_EVENT.SET_ATTACK:
+    		break;
+    		case EN_EVENT.ATTACK_UPDATE:
+    		break;
+    		case EN_EVENT.GOT_HIT:
+    		break;
+    		case EN_EVENT.GOT_PARRIED:
+    		break;
+    		case EN_EVENT.HIT_PLAYER:
+    		break;
+    		case EN_EVENT.PARRY:
+    		break;
+    	}
+    break;
+    case EN.HOP:
+    	switch(art_event) {
+    		case EN_EVENT.INIT:
+    		break;
+    		case EN_EVENT.ANIMATION:
+    		break;
+    		case EN_EVENT.PRE_DRAW:
+    		break;
+    		case EN_EVENT.POST_DRAW:
+    		break;
+    		case EN_EVENT.UPDATE:
+    		break;
+    		case EN_EVENT.DEATH:
+    		break;
+    		case EN_EVENT.SET_ATTACK:
+    		break;
+    		case EN_EVENT.ATTACK_UPDATE:
+    		break;
+    		case EN_EVENT.GOT_HIT:
+    		break;
+    		case EN_EVENT.GOT_PARRIED:
+    		break;
+    		case EN_EVENT.HIT_PLAYER:
+    		break;
+    		case EN_EVENT.PARRY:
+    		break;
+    	}
+    break;
 }
 
 //Extra functions
@@ -2284,35 +2483,22 @@ return dX / t;
 #define enemy_sprite_get(_name,_sprite) //Get the sprite of this article
 return sprite_get("enemy_"+string(_name)+"_"+string(_sprite));
 #define place_meet(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (place_meeting(__x,__y,asset_get("solid_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_solid) || 
         place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_platform));
 #define position_meet(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (position_meeting(__x,__y,asset_get("solid_32_obj")) || 
         position_meeting(__x,__y,obj_stage_article_solid) || 
         position_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         position_meeting(__x,__y,obj_stage_article_platform));
 #define place_meet_solid(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("solid_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_solid,true,true));*/
 return (place_meeting(__x,__y,asset_get("solid_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_solid));
 #define place_meet_plat(__x,__y) //get place_meeting for the usual suspects
-/*return (collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,asset_get("jumpthrough_32_obj"),true,true) ||
-       collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true));*/
 return (place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) || 
         place_meeting(__x,__y,obj_stage_article_platform));
 #define get_plat(__x,__y)
-//var _plat = collision_rectangle(__x-colis_width/2,__y-colis_height,__x+colis_width/2,__y,obj_stage_article_platform,true,true);
 var _plat = instance_place(__x,__y,obj_stage_article_platform);
 if instance_exists(_plat) return _plat;
 else return instance_place(__x,__y,asset_get("jumpthrough_32_obj"));

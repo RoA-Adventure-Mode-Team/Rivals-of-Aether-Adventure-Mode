@@ -1,4 +1,4 @@
-//
+//article5_init, Room Manager
 if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
     //with obj_stage_article if num == 3 other.action_manager = id;
     /*cam_pos_left = [view_get_xview(),view_get_yview()];
@@ -32,6 +32,9 @@ with oPlayer { //Respawn Code
 			y = respawn_point[1];
 		}
 		
+		//Refund Stonks
+		set_player_stocks(id,get_player_stocks(id)+1);
+		
 		// x = (respawn_point[0][0]+respawn_point[1][0]*cell_dim[0])*cell_size;
 		// y = (respawn_point[0][1]+respawn_point[1][1]*cell_dim[1])*cell_size;	
 		// with other other.x = cell_to_grid(other.respawn_point[0],other.respawn_point[1])[0];
@@ -55,7 +58,7 @@ with oPlayer { //Respawn Code
 		// 	}
 		// }
 	}
-	if state == PS_SPAWN respawn_point = [x,y,other.cur_room]; //Spawn state sets checkpoint?
+	if state == PS_SPAWN respawn_point = [x,y,other.cur_room]; //Spawn state sets checkpoint
 }
 if switch_to_room != cur_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
@@ -76,25 +79,28 @@ if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
 
 cur_room_time++;
 #define set_follow_point(_obj_array) //Set the point the world cam will follow to
-var _x_avg = 0;
-var _y_avg = 0;
-var _count = 0;
-var cam_vel_influence = obj_stage_main.cam_vel_influence;
-for (var i = 0; i < array_length_1d(_obj_array);i++) {
-    with _obj_array[i] {
-    	avg_vel = [(cam_vel_influence*avg_vel[0]+hsp)/(cam_vel_influence+1),(cam_vel_influence*avg_vel[1]+vsp)/(cam_vel_influence+1)];
-    	//else avg_vel = [hsp, vsp];
-        _x_avg += x+avg_vel[0]*15;
-        _y_avg += y+avg_vel[1]*10;
-        //_x_avg += _obj_array[i].x+_obj_array[i].hsp*10;
-        //_y_avg += _obj_array[i].y+_obj_array[i].vsp*5;
-        _count++;
-    }
-}
-_x_avg /= _count;
-_y_avg /= _count;
-follow_point.x = _x_avg + obj_stage_main.cam_offset[0];//+ follow_player.hsp*10;
-follow_point.y = _y_avg + obj_stage_main.cam_offset[1];//+ follow_player.vsp*10; //+(follow_player.down_held > 20)*50-(follow_player.up_held > 20)*50;
+// var _x_avg = 0;
+// var _y_avg = 0;
+// var _count = 0;
+// var cam_vel_influence = obj_stage_main.cam_vel_influence;
+// for (var i = 0; i < array_length_1d(_obj_array);i++) {
+//     with _obj_array[i] {
+//     	avg_vel = [(cam_vel_influence*avg_vel[0]+hsp)/(cam_vel_influence+1),(cam_vel_influence*avg_vel[1]+vsp)/(cam_vel_influence+1)];
+//     	//else avg_vel = [hsp, vsp];
+//         _x_avg += x+avg_vel[0]*15;
+//         _y_avg += y+avg_vel[1]*10;
+//         //_x_avg += _obj_array[i].x+_obj_array[i].hsp*10;
+//         //_y_avg += _obj_array[i].y+_obj_array[i].vsp*5;
+//         _count++;
+//     }
+// }
+// _x_avg /= _count;
+// _y_avg /= _count;
+// follow_point.x = _x_avg + obj_stage_main.cam_offset[0];//+ follow_player.hsp*10;
+// follow_point.y = _y_avg + obj_stage_main.cam_offset[1];//+ follow_player.vsp*10; //+(follow_player.down_held > 20)*50-(follow_player.up_held > 20)*50;
+
+follow_point.x = _obj_array[0].x + obj_stage_main.cam_offset[0];
+follow_point.y = _obj_array[0].y + obj_stage_main.cam_offset[1];
 
 #define reload_rooms() //Reload room data, runs on start
 cur_room = 0;
@@ -109,7 +115,7 @@ user_event(1); //Room Load Event Script
 #define room_add(_room_id,room_data) //Adds a new room to the scene
 var _room_id_ind = array_find_index(array_room_ID,_room_id);
 if _room_id_ind == - 1 {
-    if debug print_debug("[RM] Adding... "+string(_room_id));
+    // if debug print_debug("[RM] Adding... "+string(_room_id));
     array_push(array_room_data,room_data);
     array_push(array_room_ID,_room_id);
 } else {
@@ -148,10 +154,10 @@ with oPlayer {
 switch_to_room = cur_room;
 return;
 #define room_switch_update() //Runs when a room transition is in effect
-with oPlayer {
+//with oPlayer {
 	//if other.room_switch_timer == 1 set_state(PS_SPAWN);
 	//if other.room_switch_timer == other.room_switch_time set_state(PS_IDLE);
-}
+//}
 //cam_state = -1;
 switch room_switch_type {
 	case 1: //Rectangle Slide

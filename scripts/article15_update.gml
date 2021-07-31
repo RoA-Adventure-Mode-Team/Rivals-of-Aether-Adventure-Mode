@@ -43,7 +43,7 @@ if !_init {
                 old_hsp = hsp;
                 old_vsp = vsp;
                 
-                if attack != AT_FSPECIAL has_hit = true;
+                has_hit = true;
                 hitstop = other.hitpause+other.damage*other.hitpause_growth*.05-2;
                 hitpause = true;
             }
