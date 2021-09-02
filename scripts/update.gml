@@ -104,11 +104,19 @@ if !_init {
 		if !free has_walljump_actual = true;
 		wall_here = (right_down && place_meeting(x+22,y,obj_stage_article_solid) ) || (left_down && place_meeting(x-22,y,obj_stage_article_solid));
 		has_walljump = wall_here && has_walljump_actual;
-		if (place_meeting(x+22,y,obj_stage_article_solid) || place_meeting(x-22,y,obj_stage_article_solid)) && state == PS_HITSTUN && get_player_damage(player) > 150 { //Alpha splat death?
-			dead_pos = [x,y];
-			create_deathbox(x,y-32,10,10,player,true,0,2,2);
-		}
+		// if (place_meeting(x+22,y,obj_stage_article_solid) || place_meeting(x-22,y,obj_stage_article_solid)) && state == PS_HITSTUN && get_player_damage(player) > 150 { //Alpha splat death?
+		// if get_player_damage(player) > other.max_percent || //Die on too much percent taken
+		// 	player.x > view_get_wview()+view_get_xview() || player.x < view_get_xview() ||
+		// 	player.y > view_get_hview()+view_get_yview() || player.x < view_get_yview() { //Die on getting outside of the camera range
+		// 	dead_pos = [x,y];
+		// 	create_deathbox(x,y-32,10,10,player,true,0,2,2);
+		// }
 		
+		if start_down {
+			other.is_paused = !other.is_paused;
+			if is_paused set_player_damage(player, other.paused_percent[player]);
+			else other.paused_percent[player] = get_player_damage(player);
+		}
 		//Keep dash upon landing
 		if !prev_free && free && (prev_state == PS_DASH || prev_state == PS_DASH_START) keep_dash = true;
 		if keep_dash {

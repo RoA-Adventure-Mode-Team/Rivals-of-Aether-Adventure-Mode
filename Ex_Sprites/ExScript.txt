@@ -3,9 +3,9 @@ RoA Adventure Mode: "Hallowflame"/"Seed of Discord" SCRIPT
 CAST LIST:
 PLAYER - Whoever the player character decides to be. Will designate alternates to dialog depending on lore.
 
-KIWI - [TODO: Name] a Kiwi fire elemental. Camp Prefect and advisor to RYKENBURN. Keeps morale up, loyal only to a fault.
+KIWI - [TODO: Kei] a Kiwi fire elemental. Camp Prefect and advisor to RYKENBURN. Keeps morale up, loyal only to a fault.
 
-WITCH - [TODO: Name] a Squirrel fire elemental with a witch hat. Mischievous, showy, encourages bad ideas for a good time. An Aktouarios (Physician) by trade. 
+WITCH - [TODO: Name] a Squirrel fire elemental with a witch hat. Mischievous, showy, encourages bad ideas for a good time. A Physician by trade. 
 A local of the town, she knows secrets and information - but doesn't just want to spell it out for our guest.
 
 DR. LACUNA - [TODO: Name] - missing foreign collaborator, provides notes and diagrams in the sewer level. Never visually seen, but implied and explicit work in capturing residents to form abyss creatures.
@@ -24,7 +24,7 @@ ENEMIES:
 
 A. RAVAGER - Punchy Fisty - beam and combo
 
-A. BAT - Winged Nuisance 
+A. FLEYE - Winged Nuisance 
 
 A. BIRD - Shorthop Laser
 
@@ -111,9 +111,9 @@ CHECKPOINT
 PLAYER heads right, finding a food CRATE with an abyss creature nearby.
 *Fight - 1 wave - 1 A. RAVAGER*
 Upon picking up the CRATE, more abyss creatures spawn
-*Fight - 1 wave - 2 A. BATS* (The crate is thrown with attack - players can use it to hit zoning enemies from afar with a non-commital move)
+*Fight - 1 wave - 2 A. FLEYES* (The crate is thrown with attack - players can use it to hit zoning enemies from afar with a non-commital move)
 Further right, two more Crates with:
-- *Fight - 1 wave - 1 A. BAT, A. BIRD*
+- *Fight - 1 wave - 1 A. FLEYE, A. BIRD*
 - *Fight - 1 wave - 1 A. RAVAGER, A. BIRD*
 Upon returning a crate:
 - QUEST UPDATE, FOOD FOR THOUGHT - +1 Crates
@@ -160,7 +160,7 @@ PLAYER must explore HALLOWFLAME, the door marked with glowing blue markings.
 
 #LACUNA'S HOUSE
 INT. DESTROYED HOUSE - House marked with scratch marks, scattered books and plundered supplies. Hints of abyss and soldier activity.
-*Commence fight - 1 wave - 1 A. BAT*
+*Commence fight - 1 wave - 1 A. FLEYE*
 - A Scroll Item is on the ground
 SCROLL: "Experiment 79: Control is still minimal. Subject conscious for 5 minutes before consumption."
 "There is no discernible reversible process - This is something we need to get 100% reliable."

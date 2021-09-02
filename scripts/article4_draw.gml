@@ -22,6 +22,12 @@ if debug {
     draw_debug_text(x,y, string(active_scene));
 }
 
+if hold_up with collis_obj {
+    //draw_debug_text(x,y,"TESTING PROMPT");
+    draw_sprite(asset_get("lead_arrow_spr"),0,x,y+10);
+}
+
+
 if !debug_info exit; //Debug info; check user_event2 draw_debug_info
 debug_pos = grid_to_cell([x+64,y+64]);
 draw_debug_text(floor(x),floor(y),string(id)+"

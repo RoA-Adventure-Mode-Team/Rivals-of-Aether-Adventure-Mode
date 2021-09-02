@@ -46,6 +46,17 @@ switch item_id {
                 break;
         }
         break;
+    case 1: //Small Crate
+        switch event_flag {
+            case EVT.GRAB:
+                break;
+            case EVT.IDLE:
+                break;
+            case EVT.USE:
+                set_state(EVT.IDLE); //Keep the item
+                break;
+        }
+        break;
 }
 
 

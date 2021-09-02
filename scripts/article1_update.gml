@@ -5,6 +5,7 @@ if _init == 0 {
     else sprite_index = spawn_variables[0];
     spr_name = sprite_get_name(sprite_index);
     spr_ = sprite_index;
+    anim_speed = spawn_variables[1]*.01;
     //NEED TO SET COLLISION IN LOAD!!!
     // if spawn_variables[3] != 0 {
     //     mask_index = sprite_index;

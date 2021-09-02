@@ -68,7 +68,8 @@ if in_render {
     
     
     //Contributed by Harbige
-    if (!is_boss) {
+    if (!is_boss && show_healthbar) {
+        // print_debug("[6:EN:D] Healthbar shown");
         if (hitpoints_max > 0) {
             if (char_healthbar != noone) {
                 var hbar_fill = lerp(1, 0, percent / hitpoints_max);

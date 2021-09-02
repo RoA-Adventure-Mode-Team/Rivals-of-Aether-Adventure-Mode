@@ -7,7 +7,8 @@ enum TR {
     FAR,
     RANDOM,
     LOW,
-    HIGH
+    HIGH,
+    WAYPOINT
 }
 //
 
@@ -36,13 +37,17 @@ enum EN {
     LSBIRD, //4
     ESTALK, //5
     HOP, //6
+    KEI, // 7
+    GUARD, //8
+    SUPPLIER, //9
+    NGUARD, //10
 };
 
 switch (enem_id) {
     case EN.OU:
         switch (art_event) {
             case EN_EVENT.INIT:
-                sprite_name = "0";
+                sprite_name = "Ou";
                 
                 //Animation Actions
                 char_height = 25;
@@ -173,6 +178,12 @@ switch (enem_id) {
                 ai_moving_left = false;
                 ai_decision_time = 10;
                 
+                //NPC Varaibles
+	            char_name = "Brawler";
+	            show_healthbar = true;
+	            team = 0;
+	            patrol_type = 0;
+                
                 //AI Behavior Variables
                 //Movement
                 ai_range_low = 32; //The preferred minimum range
@@ -180,9 +191,9 @@ switch (enem_id) {
                 ai_move_frequency = 15;
                 
                 //Jumping
-                ai_jump_back_frequency = 30; //How often the AI should jump back randomly.
-                ai_jump_up_frequency = 25; //How often the AI should jump up randomly.
-                ai_jump_fwd_frequency = 25; //How often the AI should jump forwards randomly.
+                ai_jump_back_frequency = 15; //How often the AI should jump back randomly.
+                ai_jump_up_frequency = 10; //How often the AI should jump up randomly.
+                ai_jump_fwd_frequency = 10; //How often the AI should jump forwards randomly.
                 ai_jump_range_low = 64; //The preferred minimum range to jump.
                 
                 //Attacking
@@ -385,7 +396,8 @@ switch (enem_id) {
                             } 
                         }
                         if (decision_random == 0 && !committed) {
-                            if (ai_target.y + 24 <= y) {
+                            // if (ai_target.y + 24 <= y) {
+                            if (abs(ai_target.y - y) >= 24) {
                                 var jump_random = random_func(id % 50, 100, true);
                                 if (jump_random <= 25) {
                                     var jump_random2 = random_func(id % 50, 100, true);
@@ -931,6 +943,12 @@ switch (enem_id) {
                 able_to_shield = false;
                 able_to_jump = false;
                 able_to_dash = true;
+                
+                //NPC Varaibles
+	            char_name = "Fleye";
+	            show_healthbar = true;
+	            team = 0;
+	            patrol_type = 0;
                 
                 //Enemy Specific
                 ai_fly_timer = 0;
@@ -2059,6 +2077,12 @@ switch (enem_id) {
                 ai_attack_cooldown = 0;
                 ai_attack_timer = 0;
                 
+                //NPC Varaibles
+	            char_name = "Laser Bird";
+	            show_healthbar = true;
+	            team = 0;
+	            patrol_type = 0;
+                
                 //Animation Actions
                 char_height = 30;
                 char_arrow = sprite_get("char_arrow");
@@ -2266,7 +2290,38 @@ switch (enem_id) {
         		}
     		break;
             case EN_EVENT.DEATH:
-            	destroyed = true;
+	            invincible = 100;
+	                sprite_index = enemy_sprite_get(enem_id,"spinhurt");
+	                if hitpause > 1 {
+	                    state_timer = 0;
+	                } else {
+	                    image_index += 0.35;
+	                    if (state_timer == 2) {
+	                        kb_power *= 1.25;
+	                        if !is_free && kb_angle > 3.14159 && kb_angle < 3.14159*2 vsp = kb_power*sin(kb_angle);
+	                        else if !is_free vsp = -abs(kb_power*dsin(kb_angle));
+	                        else vsp = -kb_power*dsin(kb_angle);
+	                        hsp = kb_power*dcos(kb_angle);
+	                        if hsp != 0 spr_dir = -sign(hsp);
+	                    }
+	                    if hit_wall && !ingores_walls hsp = -hsp*.7;
+	                    if (state_timer % 8 == 0) {
+	                        var test = spawn_hit_fx(round(x), round(y - char_height/2),  fx_enemy_abyssdeath);
+	                        test.depth = depth + 1;
+	                    }
+	                    old_hsp = hsp;
+	                    old_vsp = vsp;
+	                    //hitstun--;
+	                    if !is_free vsp = -8 * knockback_adj;
+	                    if (place_meet_solid(x + (hsp), y)) hsp = -hsp;
+	                    if state_timer >= 45 {
+	                        sound_play(sound_get("sfx_enemy_hit"));
+	                        spawn_hit_fx(round(x), round(y - char_height/2), fx_enemy_abyssdeath2);
+	                        
+	                        destroyed = true;
+	                    }
+	                }
+            	// destroyed = true;
         	break;
     	}
     break;
@@ -2291,6 +2346,12 @@ switch (enem_id) {
                 ai_moving_right = false;
                 ai_moving_left = false;
                 ai_decision_time = 10;
+                
+                //NPC Varaibles
+	            char_name = "Abyssal Stalk";
+	            show_healthbar = true;
+	            team = 0;
+	            patrol_type = 0;
                 
                 //AI Behavior Variables
                 //Movement
@@ -2442,6 +2503,153 @@ switch (enem_id) {
     case EN.HOP:
     	switch(art_event) {
     		case EN_EVENT.INIT:
+    		//Initializations Here
+                
+            sprite_name = "estalk";
+            //player_controller = 1;
+            hitpoints_max = 35;
+            
+            collision_box = asset_get("ex_guy_hurt_box");
+            mask_index =  collision_box; // Collision Mask
+            colis_width = bbox_right - bbox_left;
+            colis_height = bbox_bottom - bbox_top;
+            
+            //AI Behavior
+            ai_attack_timer = 0;
+            ai_move_timer = 0;
+            ai_jump_timer = 0;
+            ai_moving_right = false;
+            ai_moving_left = false;
+            ai_decision_time = 10;
+            
+            //NPC Varaibles
+            char_name = "Hopper";
+            show_healthbar = true;
+            team = 0;
+            patrol_type = 0;
+            
+            //AI Behavior Variables
+            //Movement
+            ai_range_low = 32; //The preferred minimum range
+            ai_range_far = 200; //The preferred maximum range
+            ai_move_frequency = 0;
+            
+            //Jumping
+            ai_jump_back_frequency = 0; //How often the AI should jump back randomly.
+            ai_jump_up_frequency = 0; //How often the AI should jump up randomly.
+            ai_jump_fwd_frequency = 0; //How often the AI should jump forwards randomly.
+            ai_jump_range_low = 0; //The preferred minimum range to jump.
+            
+            //Attacking
+            attacks = [AT_NSPECIAL_AIR];
+            
+            ai_attack_frequency = 20; //How often to attack.
+            ai_attack_cooldown = 0;
+            ai_attack_counter = 0;
+            
+            able_to_crouch = false;
+            able_to_shield = false;
+            able_to_jump = false;
+            able_to_dash = false;
+            
+            //Enemy Specific
+            ai_hit_absorption = 0;
+            ai_hit_percent = 0;
+                    
+            //Animation Actions
+            char_height = 40;
+            char_arrow = sprite_get("char_arrow");
+            anim_speed = .02;
+            idle_anim_speed = .15;
+            crouch_anim_speed = .1;
+            walk_anim_speed = .25;
+            dash_anim_speed = .2;
+            pratfall_anim_speed = .25;
+            full_time = 20;
+            anim_type = 0; //0 is cycle; 1 is once per state
+            
+            //Movement Variables
+            walk_speed = 4.25;
+            walk_accel = 1;
+            walk_turn_time = 6;
+            initial_dash_time = 10;
+            initial_dash_speed = 6.5;
+            dash_speed = 6;
+            dash_turn_time = 10;
+            dash_turn_accel = 2;
+            dash_stop_time = 4;
+            dash_stop_percent = .35; //the value to multiply your hsp by when going into idle from dash or dashstop
+            ground_friction = .5;
+            moonwalk_accel = 1.4;
+            
+            jump_start_time = 5;
+            jump_speed = 12;
+            short_hop_speed = 8;
+            djump_speed = 10;
+            leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
+            max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
+            air_max_speed = 6; //the maximum hsp you can accelerate to when in a normal aerial state
+            jump_change = 3; //maximum hsp when double jumping. If already going faster, it will not slow you down
+            air_accel = 1;
+            prat_fall_accel = 1; //multiplier of air_accel while in pratfall
+            air_friction = .03;
+            max_djumps = 1;
+            double_jump_time = 32; //the number of frames to play the djump animation. Can't be less than 31.
+            
+            max_fall = 9; //maximum fall speed without fastfalling
+            fast_fall = 11; //fast fall speed
+            gravity_speed = .5;
+            hitstun_grav = .5;
+            knockback_adj = 1; //the multiplier to KB dealt to you. 1 = default, >1 = lighter, <1 = heavier
+            
+            land_time = 4; //normal landing frames
+            prat_land_time = 20;
+            wave_land_time = 15;
+            wave_land_adj = 1.5; //the multiplier to your initial hsp when wavelanding. Usually greater than 1
+            wave_friction = .04; //grounded deceleration when wavelanding
+            
+            //parry animation frames
+            dodge_startup_frames = 1;
+            dodge_active_frames = 1;
+            dodge_recovery_frames = 4;
+            
+            //tech animation frames
+            tech_active_frames = 3;
+            tech_recovery_frames = 1;
+            
+            //tech roll animation frames
+            techroll_startup_frames = 2;
+            techroll_active_frames = 2;
+            techroll_recovery_frames = 2;
+            techroll_speed = 10;
+            
+            //airdodge animation frames
+            air_dodge_startup_frames = 1;
+            air_dodge_active_frames = 3;
+            air_dodge_recovery_frames = 3;
+            air_dodge_speed = 7.5;
+            
+            
+            //roll animation frames
+            roll_forward_startup_frames = 2;
+            roll_forward_active_frames = 2;
+            roll_forward_recovery_frames = 2;
+            roll_back_startup_frames = 2;
+            roll_back_active_frames = 2;
+            roll_back_recovery_frames = 2;
+            roll_forward_max = 9; //roll speed
+            roll_backward_max = 9;
+            
+            
+            land_sound = asset_get("sfx_land_heavy");
+            landing_lag_sound = asset_get("sfx_land_heavy");
+            waveland_sound = asset_get("sfx_waveland_syl");
+            jump_sound = asset_get("sfx_jumpground");
+            djump_sound = asset_get("sfx_jumpair");
+            air_dodge_sound = asset_get("sfx_quick_dodge");
+            death_sound = asset_get("sfx_death2");
+            fx_enemy_abyssdeath = hit_fx_create(sprite_get("fx_enemy_abyssdeath"), 16);
+            fx_enemy_abyssdeath2 = hit_fx_create(sprite_get("fx_enemy_abyssdeath2"), 16);
     		break;
     		case EN_EVENT.ANIMATION:
     		break;
@@ -2452,6 +2660,971 @@ switch (enem_id) {
     		case EN_EVENT.UPDATE:
     		break;
     		case EN_EVENT.DEATH:
+    		break;
+    		case EN_EVENT.SET_ATTACK:
+    		break;
+    		case EN_EVENT.ATTACK_UPDATE:
+    		break;
+    		case EN_EVENT.GOT_HIT:
+    		break;
+    		case EN_EVENT.GOT_PARRIED:
+    		break;
+    		case EN_EVENT.HIT_PLAYER:
+    		break;
+    		case EN_EVENT.PARRY:
+    		break;
+    	}
+    break;
+    case EN.KEI:
+    	switch(art_event) {
+    		case EN_EVENT.INIT:
+    		//Initializations Here
+            
+            sprite_name = "Kei";
+            //player_controller = 1;
+            hitpoints_max = 35;
+            
+            
+            collision_box = asset_get("ex_guy_hurt_box");
+            mask_index =  collision_box; // Collision Mask
+            colis_width = bbox_right - bbox_left;
+            colis_height = bbox_bottom - bbox_top;
+           
+            //AI Behavior
+            ai_attack_timer = 0;
+            ai_move_timer = 0;
+            ai_jump_timer = 0;
+            ai_moving_right = false;
+            ai_moving_left = false;
+            ai_decision_time = 10;
+            
+            invincible = -1;
+            
+            //NPC Varaibles
+            char_name = "Kei";
+            show_healthbar = false;
+            team = 1;
+            patrol_type = 0;
+            waypoint_index = -1;
+            // waypoints = [{x: 0, y: 0}];
+            
+            //AI Behavior Variables
+            //Movement
+            ai_range_low = 32; //The preferred minimum range
+            ai_range_far = 200; //The preferred maximum range
+            ai_move_frequency = 20;
+            
+            //Jumping
+            ai_jump_back_frequency = 0; //How often the AI should jump back randomly.
+            ai_jump_up_frequency = 0; //How often the AI should jump up randomly.
+            ai_jump_fwd_frequency = 0; //How often the AI should jump forwards randomly.
+            ai_jump_range_low = 0; //The preferred minimum range to jump.
+            
+            //Attacking
+            attacks = [];
+            
+            ai_attack_frequency = 20; //How often to attack.
+            ai_attack_cooldown = 0;
+            ai_attack_counter = 0;
+            
+            able_to_crouch = false;
+            able_to_shield = false;
+            able_to_jump = false;
+            able_to_dash = false;
+            
+            //Enemy Specific
+            ai_hit_absorption = 0;
+            ai_hit_percent = 0;
+                    
+            //Animation Actions
+            char_height = 40;
+            char_arrow = sprite_get("char_arrow");
+            anim_speed = .02;
+            idle_anim_speed = .15;
+            crouch_anim_speed = .1;
+            walk_anim_speed = .25;
+            dash_anim_speed = .2;
+            pratfall_anim_speed = .25;
+            full_time = 20;
+            anim_type = 0; //0 is cycle; 1 is once per state
+            
+            //Movement Variables
+            walk_speed = 6.5;
+            walk_accel = 1;
+            walk_turn_time = 6;
+            initial_dash_time = 10;
+            initial_dash_speed = 6.5;
+            dash_speed = 6;
+            dash_turn_time = 10;
+            dash_turn_accel = 2;
+            dash_stop_time = 4;
+            dash_stop_percent = .35; //the value to multiply your hsp by when going into idle from dash or dashstop
+            ground_friction = .5;
+            moonwalk_accel = 1.4;
+            
+            jump_start_time = 5;
+            jump_speed = 12;
+            short_hop_speed = 8;
+            djump_speed = 10;
+            leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
+            max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
+            air_max_speed = 6; //the maximum hsp you can accelerate to when in a normal aerial state
+            jump_change = 3; //maximum hsp when double jumping. If already going faster, it will not slow you down
+            air_accel = 1;
+            prat_fall_accel = 1; //multiplier of air_accel while in pratfall
+            air_friction = .03;
+            max_djumps = 1;
+            double_jump_time = 32; //the number of frames to play the djump animation. Can't be less than 31.
+            
+            max_fall = 9; //maximum fall speed without fastfalling
+            fast_fall = 11; //fast fall speed
+            gravity_speed = .5;
+            hitstun_grav = .5;
+            knockback_adj = 1; //the multiplier to KB dealt to you. 1 = default, >1 = lighter, <1 = heavier
+            
+            land_time = 4; //normal landing frames
+            prat_land_time = 20;
+            wave_land_time = 15;
+            wave_land_adj = 1.5; //the multiplier to your initial hsp when wavelanding. Usually greater than 1
+            wave_friction = .04; //grounded deceleration when wavelanding
+            
+            //parry animation frames
+            dodge_startup_frames = 1;
+            dodge_active_frames = 1;
+            dodge_recovery_frames = 4;
+            
+            //tech animation frames
+            tech_active_frames = 3;
+            tech_recovery_frames = 1;
+            
+            //tech roll animation frames
+            techroll_startup_frames = 2;
+            techroll_active_frames = 2;
+            techroll_recovery_frames = 2;
+            techroll_speed = 10;
+            
+            //airdodge animation frames
+            air_dodge_startup_frames = 1;
+            air_dodge_active_frames = 3;
+            air_dodge_recovery_frames = 3;
+            air_dodge_speed = 7.5;
+            
+            
+            //roll animation frames
+            roll_forward_startup_frames = 2;
+            roll_forward_active_frames = 2;
+            roll_forward_recovery_frames = 2;
+            roll_back_startup_frames = 2;
+            roll_back_active_frames = 2;
+            roll_back_recovery_frames = 2;
+            roll_forward_max = 9; //roll speed
+            roll_backward_max = 9;
+            
+            
+            land_sound = asset_get("sfx_land_heavy");
+            landing_lag_sound = asset_get("sfx_land_heavy");
+            waveland_sound = asset_get("sfx_waveland_syl");
+            jump_sound = asset_get("sfx_jumpground");
+            djump_sound = asset_get("sfx_jumpair");
+            air_dodge_sound = asset_get("sfx_quick_dodge");
+            death_sound = asset_get("sfx_death2");
+            fx_enemy_abyssdeath = hit_fx_create(sprite_get("fx_enemy_abyssdeath"), 16);
+            fx_enemy_abyssdeath2 = hit_fx_create(sprite_get("fx_enemy_abyssdeath2"), 16);
+    		break;
+    		case EN_EVENT.ANIMATION:
+                // switch (art_state) {
+                //     case PS_IDLE:
+                //     case PS_IDLE_AIR:
+                //     case PS_WALK:
+                //     case PS_DASH:
+                //     case PS_DASH_START:
+                //     case PS_DASH_STOP:
+                //         sprite_index = enemy_sprite_get(enem_id,"idle");
+                //         break;
+                //     case PS_WALK_TURN:
+                //     case PS_DASH_TURN:
+                //         sprite_index = enemy_sprite_get(enem_id,"walkturn");
+                //         break;
+                // }
+    		break;
+    		case EN_EVENT.PRE_DRAW:
+    		break;
+    		case EN_EVENT.POST_DRAW:
+    		break;
+    		case EN_EVENT.UPDATE:
+    			if team == 1 target_behavior = TR.WAYPOINT;
+    			else target_behavior = TR.NEAR;
+    			//AI Routine
+	            if (player_controller == 0 && hitstun <= 0) {
+	                right_down = ai_moving_right;
+	                left_down = ai_moving_left;
+	                jump_down = art_state == PS_JUMPSQUAT;
+	                left_hard_pressed = false;
+	                right_hard_pressed = false;
+	                down_hard_pressed = false;
+	                var decision_random = 0;
+	                
+	                //This enemy can't go off ledges
+	                // if (!is_free && hsp != 0) {
+	                //     var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4);
+	                //     var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4);
+	                    
+	                //     if ((off_r && hsp > 0) || (off_l && hsp < 0)) {
+	                //         x -= hsp;
+	                //     }
+	                // }
+	                
+	                //Moving
+	                if ai_target == noone {
+	                	ai_moving_right = false;
+	                	ai_moving_left = false;
+	                	break;
+	                }
+	                if (ai_target.x > x) {
+                        ai_moving_right = true;
+                        ai_moving_left = false;
+                    } 
+                    if (ai_target.x < x) {
+                        ai_moving_right = false;
+                        ai_moving_left = true;
+                    } 
+                    
+	                if x_dist < waypoint_r && y_dist < waypoint_r {
+	                	ai_moving_right = false;
+	                	ai_moving_left = false;
+	                	break;
+	                }
+	            }
+    			break;
+    		case EN_EVENT.DEATH:
+    		break;
+    		case EN_EVENT.SET_ATTACK:
+    		break;
+    		case EN_EVENT.ATTACK_UPDATE:
+    		break;
+    		case EN_EVENT.GOT_HIT:
+    			// waypoint_index += 1;
+    			// waypoint_index = waypoint_index % array_length(waypoints);
+    		break;
+    		case EN_EVENT.GOT_PARRIED:
+    		break;
+    		case EN_EVENT.HIT_PLAYER:
+    		break;
+    		case EN_EVENT.PARRY:
+    		break;
+    	}
+    	break;
+     case EN.GUARD:
+    	switch(art_event) {
+    		case EN_EVENT.INIT:
+    		//Initializations Here
+                
+            sprite_name = "guard";
+            //player_controller = 1;
+            hitpoints_max = 50;
+            
+            collision_box = asset_get("ex_guy_hurt_box");
+            mask_index =  collision_box; // Collision Mask
+            colis_width = bbox_right - bbox_left;
+            colis_height = bbox_bottom - bbox_top;
+            
+            //AI Behavior
+            ai_attack_timer = 0;
+            ai_move_timer = 0;
+            ai_jump_timer = 0;
+            ai_moving_right = false;
+            ai_moving_left = false;
+            ai_decision_time = 10;
+            
+            //NPC Varaibles
+            char_name = "Guard";
+            show_healthbar = false;
+            team = 1;
+            patrol_type = 0;
+            waypoint_index = -1;
+            attached_articles = [
+            	[4,-1,-4,0,0,[2,0,0,120,0,32,64,[0,1,1]],[0,0]]
+            	];
+            //AI Behavior Variables
+            //Movement
+            ai_range_low = 42; //The preferred minimum range
+            ai_range_far = 64; //The preferred maximum range
+            ai_move_frequency = 300;
+            
+            ai_move_timer = random_func(id % 50, ai_move_frequency, true); //Randomize movement
+            
+            init_x = x;
+            //Init AI target random movement
+            if team == 1 {
+            	ai_target = {
+					x: init_x+random_func(id % 50, 600, true)-300,
+					y: y
+				};
+            }
+			
+            
+            //Jumping
+            ai_jump_back_frequency = 70; //How often the AI should jump back randomly.
+            ai_jump_up_frequency = 20; //How often the AI should jump up randomly.
+            ai_jump_fwd_frequency = 10; //How often the AI should jump forwards randomly.
+            ai_jump_range_low = 64; //The preferred minimum range to jump.
+            
+            //Attacking
+            attacks = [AT_FSPECIAL_AIR, AT_FSPECIAL];
+            
+            ai_attack_frequency = 20; //How often to attack.
+            ai_attack_cooldown = 0;
+            ai_attack_counter = 0;
+            
+            able_to_crouch = false;
+            able_to_shield = false;
+            able_to_jump = true;
+            able_to_dash = true;
+            
+            //Enemy Specific
+            ai_hit_absorption = 0;
+            ai_hit_percent = 0;
+                    
+            //Animation Actions
+            char_height = 40;
+            char_arrow = sprite_get("char_arrow");
+            anim_speed = .02;
+            idle_anim_speed = .1;
+            crouch_anim_speed = .1;
+            walk_anim_speed = .25;
+            dash_anim_speed = .2;
+            pratfall_anim_speed = .25;
+            full_time = 20;
+            anim_type = 0; //0 is cycle; 1 is once per state
+            
+            //Movement Variables
+            walk_speed = 3;
+            walk_accel = 1;
+            walk_turn_time = 1;
+            initial_dash_time = 1;
+            initial_dash_speed = 6;
+            dash_speed = 7;
+            dash_turn_time = 1;
+            dash_turn_accel = 2;
+            dash_stop_time = 1;
+            dash_stop_percent = .35; //the value to multiply your hsp by when going into idle from dash or dashstop
+            ground_friction = .5;
+            moonwalk_accel = 1.4;
+            
+            jump_start_time = 5;
+            jump_speed = 10;
+            short_hop_speed = 7;
+            djump_speed = 8;
+            leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
+            max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
+            air_max_speed = 6; //the maximum hsp you can accelerate to when in a normal aerial state
+            jump_change = 3; //maximum hsp when double jumping. If already going faster, it will not slow you down
+            air_accel = 1;
+            prat_fall_accel = 1; //multiplier of air_accel while in pratfall
+            air_friction = .03;
+            max_djumps = 1;
+            double_jump_time = 32; //the number of frames to play the djump animation. Can't be less than 31.
+            
+            max_fall = 9; //maximum fall speed without fastfalling
+            fast_fall = 11; //fast fall speed
+            gravity_speed = .5;
+            hitstun_grav = .5;
+            knockback_adj = 1; //the multiplier to KB dealt to you. 1 = default, >1 = lighter, <1 = heavier
+            
+            land_time = 4; //normal landing frames
+            prat_land_time = 20;
+            wave_land_time = 15;
+            wave_land_adj = 1.5; //the multiplier to your initial hsp when wavelanding. Usually greater than 1
+            wave_friction = .04; //grounded deceleration when wavelanding
+            
+            //parry animation frames
+            dodge_startup_frames = 1;
+            dodge_active_frames = 1;
+            dodge_recovery_frames = 4;
+            
+            //tech animation frames
+            tech_active_frames = 3;
+            tech_recovery_frames = 1;
+            
+            //tech roll animation frames
+            techroll_startup_frames = 2;
+            techroll_active_frames = 2;
+            techroll_recovery_frames = 2;
+            techroll_speed = 10;
+            
+            //airdodge animation frames
+            air_dodge_startup_frames = 1;
+            air_dodge_active_frames = 3;
+            air_dodge_recovery_frames = 3;
+            air_dodge_speed = 7.5;
+            
+            
+            //roll animation frames
+            roll_forward_startup_frames = 2;
+            roll_forward_active_frames = 2;
+            roll_forward_recovery_frames = 2;
+            roll_back_startup_frames = 2;
+            roll_back_active_frames = 2;
+            roll_back_recovery_frames = 2;
+            roll_forward_max = 9; //roll speed
+            roll_backward_max = 9;
+            
+            
+            land_sound = asset_get("sfx_land_heavy");
+            landing_lag_sound = asset_get("sfx_land_heavy");
+            waveland_sound = asset_get("sfx_waveland_syl");
+            jump_sound = asset_get("sfx_jumpground");
+            djump_sound = asset_get("sfx_jumpair");
+            air_dodge_sound = asset_get("sfx_quick_dodge");
+            death_sound = asset_get("sfx_death2");
+            fx_enemy_abyssdeath = hit_fx_create(sprite_get("fx_enemy_abyssdeath"), 16);
+            fx_enemy_abyssdeath2 = hit_fx_create(sprite_get("fx_enemy_abyssdeath2"), 16);
+    		break;
+    		case EN_EVENT.ANIMATION:
+                switch (art_state) {
+                    case PS_DASH_START:
+                    case PS_DASH_STOP:
+                        sprite_index = enemy_sprite_get(enem_id,"dash");
+                        break;
+                    case PS_WALK_TURN:
+                    case PS_DASH_TURN:
+                        sprite_index = enemy_sprite_get(enem_id,"walk");
+                        break;
+                }
+    		break;
+    		case EN_EVENT.PRE_DRAW:
+    		break;
+    		case EN_EVENT.POST_DRAW:
+    		break;
+    		case EN_EVENT.UPDATE:
+    			if team != 1 {
+    				target_behavior = TR.LOW;
+    				ai_move_frequency = 30;
+    			} else {
+    				ai_move_frequency = 300;
+    			}
+    			// if team == 1 {
+    			// 	ai_target = {
+    			// 		x: x+random_func(id % 50, 600, true)-300,
+    			// 		y: y
+    			// 	};
+    			// }
+    			//AI Routine
+                if (player_controller == 0 && hitstun <= 0) {
+                    var t_dist = point_distance(x, y, ai_target.x, ai_target.y);
+                    var t_xd = abs(ai_target.x - x);
+                    var t_yd = abs(ai_target.y - y);
+                    
+                    right_down = ai_moving_right;
+                    left_down = ai_moving_left;
+                    jump_down = art_state == PS_JUMPSQUAT;
+                    left_hard_pressed = false;
+                    right_hard_pressed = false;
+                    down_hard_pressed = false;
+                    var decision_random = 0;
+                    
+                    //Moving
+                    ai_move_timer++;
+                    
+                    if team == 1 {
+                    	var _colis_check = instance_position(x+32*sign(ai_target.x - x),y-2, obj_stage_article_solid);
+                    	if _colis_check != noone {
+                    		// print("TURJN");
+                    		ai_move_timer = ai_move_frequency;
+                    		ai_target.x = 2*x-ai_target.x; //Flip to other size
+                    	}
+                    }
+                    
+                    
+                    
+                    if (ai_move_timer % ai_move_frequency == 0 && !committed) {
+                    	if team == 1 {
+		    				ai_target = {
+		    					x: init_x+random_func(id % 50, 600, true)-300,
+		    					y: y
+		    				};
+		    			}
+                    	ai_move_timer = random_func(id % 50, ai_move_frequency, true); //Randomize movement
+                        if (t_xd >= ai_range_low) {
+                            if (team != 1 && t_xd >= ai_range_far) { //If agro'd
+                                if (ai_target.x > x) right_hard_pressed = true;
+                                if (ai_target.x < x) left_hard_pressed = true;
+                            }
+                            if (ai_target.x > x) {
+                                ai_moving_right = true;
+                                ai_moving_left = false;
+                            } 
+                            if (ai_target.x < x) {
+                                ai_moving_right = false;
+                                ai_moving_left = true;
+                            } 
+                        }
+                        else {
+                            ai_moving_right = false;
+                            ai_moving_left = false;
+                            if (ai_target.x > x && spr_dir == -1) {
+                                right_down = true;
+                                left_down = false; 
+                            }
+                            if (ai_target.x < x && spr_dir == 1) {
+                                right_down = false;
+                                left_down = true; 
+                            }
+                        }
+                        if art_state == PS_DASH {
+                            if (right_down && ai_target.x < x) {
+                                ai_moving_right = false;
+                                ai_moving_left = false;
+                                if (ai_target.x > x && spr_dir == -1) {
+                                    right_down = true;
+                                    left_down = false; 
+                                }
+                                if (ai_target.x < x && spr_dir == 1) {
+                                    right_down = false;
+                                    left_down = true; 
+                                }
+                            }
+                            if (left_down && ai_target.x > x) {
+                                ai_moving_right = false;
+                                ai_moving_left = false;
+                                if (ai_target.x > x && spr_dir == -1) {
+                                    right_down = true;
+                                    left_down = false; 
+                                }
+                                if (ai_target.x < x && spr_dir == 1) {
+                                    right_down = false;
+                                    left_down = true; 
+                                }
+                            }
+                        }
+                    }
+                
+                    //Jumping
+                    ai_jump_timer ++;
+                    decision_random = random_func(id % 50, round(ai_decision_time), true);
+                    
+                    if team != 1 {
+	                    if (!is_free) {
+	                        if (!place_meet(x + 32 * spr_dir, y + 16)) {
+	                            jump_down = true;
+	                            if (spr_dir == 1) {
+	                                ai_moving_right = true;
+	                                ai_moving_left = false;
+	                            } 
+	                            if (spr_dir == -1) {
+	                                ai_moving_right = false;
+	                                ai_moving_left = true;
+	                            } 
+	                        }
+	                        if (decision_random == 0 && !committed) {
+	                            if (ai_target.y + 24 <= y) {
+	                                var jump_random = random_func(id % 50, 100, true);
+	                                if (jump_random <= 25) {
+	                                    var jump_random2 = random_func(id % 50, 100, true);
+	                                    if (ai_jump_timer % (ai_jump_fwd_frequency  + decision_random) == 0 && jump_random2 <= 33) {
+	                                        jump_down = true;
+	                                        if (ai_target.x > x) {
+	                                            ai_moving_right = true;
+	                                            ai_moving_left = false;
+	                                        } 
+	                                        if (ai_target.x < x) {
+	                                            ai_moving_right = false;
+	                                            ai_moving_left = true;
+	                                        } 
+	                                    }
+	                                    
+	                                    if (ai_jump_timer % (ai_jump_up_frequency + decision_random) == 0 && jump_random2 > 33 && jump_random2 <= 66) {
+	                                        jump_down = true;
+	                                        ai_moving_right = false;
+	                                        ai_moving_left = false;
+	                                    }
+	                                    
+	                                    if (ai_jump_timer % (ai_jump_back_frequency + decision_random) == 0 && jump_random2 > 66) {
+	                                        jump_down = true;
+	                                        if (ai_target.x > x) {
+	                                            ai_moving_right = false;
+	                                            ai_moving_left = true;
+	                                        } 
+	                                        if (ai_target.x < x) {
+	                                            ai_moving_right = true;
+	                                            ai_moving_left = false;
+	                                        } 
+	                                    }
+	                                }
+	                                else {
+	                                    if (ai_jump_timer % ai_decision_time == 0) {
+	                                        down_hard_pressed = true;
+	                                    }
+	                                }
+	                            }
+	                        }
+	                    }
+	                    else {
+	                        jump_down = vsp < 0;
+	                        if (able_to_djump) {
+	                             if (ai_jump_timer % (ai_decision_time + decision_random) == 0) {
+	                                 jump_down = true;
+	                                if (ai_target.x > x) {
+	                                    ai_moving_right = true;
+	                                    ai_moving_left = false;
+	                                } 
+	                                if (ai_target.x < x) {
+	                                    ai_moving_right = false;
+	                                    ai_moving_left = true;
+	                                } 
+	                             }
+	                        }
+	                    }
+                    }
+                    
+                    //Attacking
+                    if (team != 1 && ai_attack_cooldown <= 0) {
+                        ai_attack_timer ++;
+                        decision_random = random_func(id % 50, round(ai_attack_frequency), true);
+                        if (decision_random == 0 && !committed) {
+                            if (t_xd <= 136 && t_yd <= 64) {
+                                if !is_free next_attack = AT_FSPECIAL;
+                                else next_attack = AT_FSPECIAL_AIR;
+                                if ((ai_target.x < x && spr_dir == 1) || (ai_target.x > x && spr_dir = -1)) {
+                                    spr_dir = -spr_dir;
+                                }
+                                ai_attack_cooldown = 20;
+                            }
+                        }
+                       
+                        
+                    }
+                    else {
+                        if (art_state != PS_ATTACK_GROUND && art_state != PS_ATTACK_AIR)
+                            ai_attack_cooldown --;
+                    }
+                }
+                
+	            // if (player_controller == 0 && hitstun <= 0) {
+	            //     right_down = ai_moving_right;
+	            //     left_down = ai_moving_left;
+	            // 	if team != 1 {
+	            // 		right_hard_pressed = ai_moving_right;
+	            // 		left_hard_pressed = ai_moving_left;
+	            // 	}
+	            //     jump_down = art_state == PS_JUMPSQUAT;
+	                
+	            //     down_hard_pressed = false;
+	            //     var decision_random = 0;
+	                
+	            //     //This enemy can't go off ledges
+	            //     // if (!is_free && hsp != 0) {
+	            //     //     var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4);
+	            //     //     var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4);
+	                    
+	            //     //     if ((off_r && hsp > 0) || (off_l && hsp < 0)) {
+	            //     //         x -= hsp;
+	            //     //     }
+	            //     // }
+	                
+	            //     //Moving
+	            //     if ai_target == noone {
+	            //     	jump_down = true;
+	            //     	break;
+	            //     }
+	            //     if (ai_target.x > x) {
+             //           ai_moving_right = true;
+             //           ai_moving_left = false;
+             //       } 
+             //       if (ai_target.x < x) {
+             //           ai_moving_right = false;
+             //           ai_moving_left = true;
+             //       } 
+                    
+	            //     if x_dist < 32 && y_dist < 32 {
+	            //     	ai_moving_right = false;
+	            //     	ai_moving_left = false;
+	            //     	break;
+	            //     }
+	            // }
+    		break;
+    		case EN_EVENT.DEATH:
+    		break;
+    		case EN_EVENT.SET_ATTACK:
+    		 with (obj_stage_main) {
+                    switch (other.attack) {
+                        case AT_FSPECIAL:
+                            set_attack_value(AT_FSPECIAL, AG_CATEGORY, 0);
+                            set_attack_value(AT_FSPECIAL, AG_SPRITE, sprite_get("enemy_8_fspecial"));
+                            set_attack_value(AT_FSPECIAL, AG_NUM_WINDOWS, 3);
+                            set_attack_value(AT_FSPECIAL, AG_HAS_LANDING_LAG, 1);
+                            set_attack_value(AT_FSPECIAL, AG_LANDING_LAG, 4);
+                            set_attack_value(AT_FSPECIAL, AG_HURTBOX_SPRITE, sprite_get("enemy_8_fspecial_hurt"));
+                            
+                            set_window_value(AT_FSPECIAL, 1, AG_WINDOW_LENGTH, 10);
+                            set_window_value(AT_FSPECIAL, 1, AG_WINDOW_ANIM_FRAMES, 2);
+                            set_window_value(AT_FSPECIAL, 1, AG_WINDOW_HAS_SFX, 1);
+                            set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX, asset_get("sfx_swipe_medium1"));
+                            set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX_FRAME, 9);
+                            
+                            set_window_value(AT_FSPECIAL, 2, AG_WINDOW_LENGTH, 4);
+                            set_window_value(AT_FSPECIAL, 2, AG_WINDOW_ANIM_FRAMES, 1);
+                            set_window_value(AT_FSPECIAL, 2, AG_WINDOW_ANIM_FRAME_START, 2);
+                            
+                            set_window_value(AT_FSPECIAL, 3, AG_WINDOW_LENGTH, 15);
+                            set_window_value(AT_FSPECIAL, 3, AG_WINDOW_ANIM_FRAMES, 3);
+                            set_window_value(AT_FSPECIAL, 3, AG_WINDOW_ANIM_FRAME_START, 3);
+                            set_window_value(AT_FSPECIAL, 3, AG_WINDOW_HAS_WHIFFLAG, 1);
+                            
+                            set_num_hitboxes(AT_FSPECIAL, 1);
+                            
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HITBOX_TYPE, 1);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_WINDOW, 2);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_LIFETIME, 4);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_SHAPE, 0);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HITBOX_X, 0);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HITBOX_Y, -32);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_WIDTH, 180);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HEIGHT, 120);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_PRIORITY, 1);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_DAMAGE, 10);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_ANGLE, 70);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_ANGLE_FLIPPER, 6);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_BASE_KNOCKBACK, 8);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_KNOCKBACK_SCALING, .5);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_BASE_HITPAUSE, 9);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HITPAUSE_SCALING, .7);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HIT_LOCKOUT, 17);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HITBOX_GROUP, -1);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_VISUAL_EFFECT, 0);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_HIT_SFX, asset_get("sfx_blow_medium2"));
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_IGNORES_PROJECTILES, 0);
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_PROJECTILE_SPRITE, asset_get("empty_sprite"));
+                            set_hitbox_value(AT_FSPECIAL, 1, HG_PROJECTILE_MASK, -1);
+                        	break;
+                        case AT_FSPECIAL_AIR:
+                            set_attack_value(AT_FSPECIAL_AIR, AG_CATEGORY, 0);
+                            set_attack_value(AT_FSPECIAL_AIR, AG_SPRITE, sprite_get("enemy_8_fspecial_air"));
+                            set_attack_value(AT_FSPECIAL_AIR, AG_NUM_WINDOWS, 3);
+                            set_attack_value(AT_FSPECIAL_AIR, AG_HAS_LANDING_LAG, 1);
+                            set_attack_value(AT_FSPECIAL_AIR, AG_LANDING_LAG, 4);
+                            set_attack_value(AT_FSPECIAL_AIR, AG_HURTBOX_SPRITE, sprite_get("enemy_8_fspecial_hurt"));
+                            
+                            set_window_value(AT_FSPECIAL_AIR, 1, AG_WINDOW_LENGTH, 6);
+                            set_window_value(AT_FSPECIAL_AIR, 1, AG_WINDOW_ANIM_FRAMES, 2);
+                            set_window_value(AT_FSPECIAL_AIR, 1, AG_WINDOW_HAS_SFX, 1);
+                            set_window_value(AT_FSPECIAL_AIR, 1, AG_WINDOW_SFX, asset_get("sfx_swipe_weak1"));
+                            set_window_value(AT_FSPECIAL_AIR, 1, AG_WINDOW_SFX_FRAME, 5);
+                            
+                            set_window_value(AT_FSPECIAL_AIR, 2, AG_WINDOW_LENGTH, 4);
+                            set_window_value(AT_FSPECIAL_AIR, 2, AG_WINDOW_ANIM_FRAMES, 1);
+                            set_window_value(AT_FSPECIAL_AIR, 2, AG_WINDOW_ANIM_FRAME_START, 2);
+                            
+                            set_window_value(AT_FSPECIAL_AIR, 3, AG_WINDOW_LENGTH, 10);
+                            set_window_value(AT_FSPECIAL_AIR, 3, AG_WINDOW_ANIM_FRAMES, 2);
+                            set_window_value(AT_FSPECIAL_AIR, 3, AG_WINDOW_ANIM_FRAME_START, 3);
+                            set_window_value(AT_FSPECIAL_AIR, 3, AG_WINDOW_HAS_WHIFFLAG, 1);
+                            
+                            set_num_hitboxes(AT_FSPECIAL_AIR, 1);
+                            
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HITBOX_TYPE, 1);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_WINDOW, 2);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_LIFETIME, 4);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_SHAPE, 0);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HITBOX_X, 32);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HITBOX_Y, -32);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_WIDTH, 180);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HEIGHT, 64);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_PRIORITY, 1);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_DAMAGE, 6);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_ANGLE, 40);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_BASE_KNOCKBACK, 5);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_KNOCKBACK_SCALING, .5);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_BASE_HITPAUSE, 6);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HITPAUSE_SCALING, .4);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HIT_LOCKOUT, 8);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HITBOX_GROUP, -1);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_VISUAL_EFFECT, 0);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_HIT_SFX, asset_get("sfx_blow_weak2"));
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_IGNORES_PROJECTILES, 0);
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_PROJECTILE_SPRITE, asset_get("empty_sprite"));
+                            set_hitbox_value(AT_FSPECIAL_AIR, 1, HG_PROJECTILE_MASK, -1);
+                            break;
+                    }
+    		 }
+    		break;
+    		case EN_EVENT.ATTACK_UPDATE:
+    		break;
+    		case EN_EVENT.GOT_HIT:
+    		break;
+    		case EN_EVENT.GOT_PARRIED:
+    		break;
+    		case EN_EVENT.HIT_PLAYER:
+    		break;
+    		case EN_EVENT.PARRY:
+    		break;
+    	}
+    	break;
+    	case EN.SUPPLIER:
+    	switch(art_event) {
+    		case EN_EVENT.INIT:
+    		//Initializations Here
+                
+            sprite_name = "supplier";
+            //player_controller = 1;
+            hitpoints_max = 120;
+            
+            collision_box = asset_get("ex_guy_hurt_box");
+            mask_index =  collision_box; // Collision Mask
+            colis_width = bbox_right - bbox_left;
+            colis_height = bbox_bottom - bbox_top;
+            
+            //AI Behavior
+            ai_attack_timer = 0;
+            ai_move_timer = 0;
+            ai_jump_timer = 0;
+            ai_moving_right = false;
+            ai_moving_left = false;
+            ai_decision_time = 10;
+            
+            //NPC Varaibles
+            char_name = "Supplier";
+            show_healthbar = false;
+            team = 1;
+            patrol_type = 0;
+            
+            attached_articles = [
+            	[4,0,0,0,0,[2,0,0,120,0,32,64,[0,1,1]],[0,0]]
+            	];
+            
+            //AI Behavior Variables
+            //Movement
+            ai_range_low = 32; //The preferred minimum range
+            ai_range_far = 200; //The preferred maximum range
+            ai_move_frequency = 0;
+            
+            //Jumping
+            ai_jump_back_frequency = 0; //How often the AI should jump back randomly.
+            ai_jump_up_frequency = 0; //How often the AI should jump up randomly.
+            ai_jump_fwd_frequency = 0; //How often the AI should jump forwards randomly.
+            ai_jump_range_low = 0; //The preferred minimum range to jump.
+            
+            //Attacking
+            attacks = [];
+            
+            ai_attack_frequency = 0; //How often to attack.
+            ai_attack_cooldown = 0;
+            ai_attack_counter = 0;
+            
+            able_to_crouch = false;
+            able_to_shield = false;
+            able_to_jump = false;
+            able_to_dash = false;
+            
+            //Enemy Specific
+            ai_hit_absorption = 0;
+            ai_hit_percent = 0;
+                    
+            //Animation Actions
+            char_height = 40;
+            char_arrow = sprite_get("char_arrow");
+            anim_speed = .02;
+            idle_anim_speed = .1;
+            crouch_anim_speed = .1;
+            walk_anim_speed = .25;
+            dash_anim_speed = .2;
+            pratfall_anim_speed = .25;
+            full_time = 20;
+            anim_type = 0; //0 is cycle; 1 is once per state
+            
+            //Movement Variables
+            walk_speed = 4.25;
+            walk_accel = 1;
+            walk_turn_time = 6;
+            initial_dash_time = 10;
+            initial_dash_speed = 6.5;
+            dash_speed = 6;
+            dash_turn_time = 10;
+            dash_turn_accel = 2;
+            dash_stop_time = 4;
+            dash_stop_percent = .35; //the value to multiply your hsp by when going into idle from dash or dashstop
+            ground_friction = .5;
+            moonwalk_accel = 1.4;
+            
+            jump_start_time = 5;
+            jump_speed = 12;
+            short_hop_speed = 8;
+            djump_speed = 10;
+            leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
+            max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
+            air_max_speed = 6; //the maximum hsp you can accelerate to when in a normal aerial state
+            jump_change = 3; //maximum hsp when double jumping. If already going faster, it will not slow you down
+            air_accel = 1;
+            prat_fall_accel = 1; //multiplier of air_accel while in pratfall
+            air_friction = .03;
+            max_djumps = 1;
+            double_jump_time = 32; //the number of frames to play the djump animation. Can't be less than 31.
+            
+            max_fall = 9; //maximum fall speed without fastfalling
+            fast_fall = 11; //fast fall speed
+            gravity_speed = .5;
+            hitstun_grav = .5;
+            knockback_adj = 1; //the multiplier to KB dealt to you. 1 = default, >1 = lighter, <1 = heavier
+            
+            land_time = 4; //normal landing frames
+            prat_land_time = 20;
+            wave_land_time = 15;
+            wave_land_adj = 1.5; //the multiplier to your initial hsp when wavelanding. Usually greater than 1
+            wave_friction = .04; //grounded deceleration when wavelanding
+            
+            //parry animation frames
+            dodge_startup_frames = 1;
+            dodge_active_frames = 1;
+            dodge_recovery_frames = 4;
+            
+            //tech animation frames
+            tech_active_frames = 3;
+            tech_recovery_frames = 1;
+            
+            //tech roll animation frames
+            techroll_startup_frames = 2;
+            techroll_active_frames = 2;
+            techroll_recovery_frames = 2;
+            techroll_speed = 10;
+            
+            //airdodge animation frames
+            air_dodge_startup_frames = 1;
+            air_dodge_active_frames = 3;
+            air_dodge_recovery_frames = 3;
+            air_dodge_speed = 7.5;
+            
+            
+            //roll animation frames
+            roll_forward_startup_frames = 2;
+            roll_forward_active_frames = 2;
+            roll_forward_recovery_frames = 2;
+            roll_back_startup_frames = 2;
+            roll_back_active_frames = 2;
+            roll_back_recovery_frames = 2;
+            roll_forward_max = 9; //roll speed
+            roll_backward_max = 9;
+            
+            land_sound = asset_get("sfx_land_heavy");
+            landing_lag_sound = asset_get("sfx_land_heavy");
+            waveland_sound = asset_get("sfx_waveland_syl");
+            jump_sound = asset_get("sfx_jumpground");
+            djump_sound = asset_get("sfx_jumpair");
+            air_dodge_sound = asset_get("sfx_quick_dodge");
+            death_sound = asset_get("sfx_death2");
+            fx_enemy_abyssdeath = hit_fx_create(sprite_get("fx_enemy_abyssdeath"), 16);
+            fx_enemy_abyssdeath2 = hit_fx_create(sprite_get("fx_enemy_abyssdeath2"), 16);
+    		break;
+    		case EN_EVENT.ANIMATION:
+    		break;
+    		case EN_EVENT.PRE_DRAW:
+    		break;
+    		case EN_EVENT.POST_DRAW:
+    		break;
+    		case EN_EVENT.UPDATE:
+    		break;
+    		case EN_EVENT.DEATH:
+    			instance_destroy();
+    			exit;
     		break;
     		case EN_EVENT.SET_ATTACK:
     		break;

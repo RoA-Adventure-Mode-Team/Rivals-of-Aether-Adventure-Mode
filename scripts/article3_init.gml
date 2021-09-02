@@ -1,6 +1,9 @@
 //article3_init, action manager
+action_article_index = -1; //Put nessessary functioning articles here
 sprite_index = asset_get("empty_sprite");
+depth = -120;
 disable_movement = true;
+visible = false;
 debug = false;
 debug_info = false;
 init_pos = [0,0];
@@ -32,7 +35,7 @@ action_ended = false;
 cam_pos = [0,0];
 cam_smooth = 0;
 room_id = 1;
-scene_id = 0;
+scene_id = 1;
 scene_time = 0;
 action_index = 0;
 with obj_stage_main other.stage_main = id;
@@ -52,6 +55,13 @@ suspened_actions = [[]];
 
 //Dialog
 dialog_array = [];
+
+//Dialog Window Variables
+dialog_x = 176;
+dialog_y = 360;
+
+// hdialog_x = 144;
+hdialog_y = 32;
 
 // quest_add(3,1,"Test Quest","This is a test quest!");
 // quest_add(3,2,"Test Quest","This is a test quest! Part 2!");

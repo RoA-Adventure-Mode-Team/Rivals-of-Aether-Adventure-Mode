@@ -8,7 +8,9 @@ sprite_index = sprite_get("ou_idle");
 mask_index =  collision_box; // Collision Mask
 hurtbox_spr = collision_box; //Hurtbox Sprite
 
-debug = false;
+small_sprites = 1;
+
+debug = true;
 debug_info = false;
 init_pos = [0,0];
 can_be_grounded = true;
@@ -19,7 +21,7 @@ custom_args = array_create(0);
 stage_main = asset_get("obj_stage_main");
 
 //Physics Delta
-physics_range = 600; //Range that physics live-updates
+physics_range = 800; //Range that physics live-updates
 in_render = false;
 
 //State Actions
@@ -53,7 +55,7 @@ destroyed = 0;
 //Boss variables
 is_boss = 0; //If this enemy's a boss, it will show the healthbar on the hud.
 boss_intro_mode = 0; //0 = no intro; 1 = has intro. Requires done_intro to be set to true to start the fight.
-show_healthbar = false; //Shows the healthbar;
+show_healthbar = true; //Shows the healthbar;
 done_intro = false; //Set this to true to start the fight.
 battle_state = 0; //0 = intro; 1 = fight; 2 = death
 boss_healthbar_timer = 0;
@@ -72,11 +74,26 @@ target_dir = 0;
 is_ai = (player_controller == 0);
 target_behavior = 0;
 pos_behavior = 0;
+team = 0;
 attacks = [AT_JAB];
 attack_time = 30;
 
 range_low = 32;
 range_far = 200;
+
+//NPC Variables
+patrol_type = 0; //0 is none, 1 is sequential
+waypoint_index = -1;
+waypoints = [[]];
+waypoint_r = 64; //When this close, has reached waypoint
+var target_waypoint = { //Similar enough to ai_target to work with the framework
+    x: 0,
+    y: 0
+};
+
+//Article Attachments - these articles spawn with the enemy and move with them.
+attached_articles = [];
+loaded_articles = [];
 
 //Contributed by Harbige
 able_to_crouch = true;

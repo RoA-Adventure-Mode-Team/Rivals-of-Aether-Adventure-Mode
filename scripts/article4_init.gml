@@ -21,7 +21,13 @@ trigger_obj_type = spawn_variables[2];
 trigger_shape = spawn_variables[4];
 trigger_w = spawn_variables[5];
 trigger_h = spawn_variables[6];
-trigger_negative = spawn_variables[7];
+// trigger_negative = spawn_variables[7];
+req_item_id = 0; //spawn_variables[7][0]
+hold_up = 0; //spawn_variables[7][1]
+trigger_relative = 0; //spawn_variables[7][2]
+
+has_triggered = false;
+
 cur_scene = 0;
 
 trigger_cooldown = 0;

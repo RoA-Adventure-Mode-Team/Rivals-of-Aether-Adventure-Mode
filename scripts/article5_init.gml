@@ -1,5 +1,5 @@
 //article5_init, Room Manager
-
+action_article_index = -1; //Put nessessary functioning articles here
 sprite_index = asset_get("empty_sprite");
 depth = -120;
 disable_movement = true;
@@ -11,8 +11,8 @@ debug = false;
 debug_info = false;
 cell_size = 16;
 cell_dim = [163,85];
+// this is [2608,1360], or [1272,680] pixels
 cur_scene = [1];
-// this is [2608,1360], or [1304,680] pixels
 grid_offset = 4;
 list_room = ds_list_create();
 ds_list_clear(list_room);
@@ -20,6 +20,7 @@ ds_list_clear(list_room);
 cur_room = 0;
 init_cam_pos = [0,0];
 
+switch_room = false;
 switch_to_room = cur_room;
 room_switch_type = 0;
 room_switch_on = false;

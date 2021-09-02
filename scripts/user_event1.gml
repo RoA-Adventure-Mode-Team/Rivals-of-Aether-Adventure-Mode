@@ -23,22 +23,52 @@ enum A {
 room_add(0,[]); //Empty Room
 //room_data_temp = [article script, x, y, article type, depth, [args0-7], [custom]];
 room_add(1, [ //Outside Left
+    [ //Each Cell - has [cell coordinates, cell data]
+        [-4,0], //Cell Coordinates
+        [
+            [1, 0, 0, 2, 1, [sprite_get("1[-4,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            
+            //Light/Shade
+            [12, 0, 0, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            ]
+        ],
     [ //Each Cell - has [cell position, cell data]
         [-3,0], //Cell Coordinates
         [
-            //Solid collision
-            [1, 0, 0, 2, 1, [sprite_get("[-3,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            //Debug Articles
+            
+            //Note Test
+            [4, 0, 0, 0, -6, [0, 0, 0, 0, 0, 0, 0, 0], [0,2]],
+            
+            //Guard Test Spawn
+            //[6, 140, 36, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            
+            //Room Transition To Sewer
+            [8, 40, 34, 0, 0, [0, 0, 64, 64, 7, [2,10828,8988], 1, 0, 0], [0,0]],
+            
+            //Room Transition to Hallowflame
+            [8, 40, 40, 0, 0, [0, 0, 64, 64, 2, [2,7328,10551], 1, 0, 0], [0,0]],
+            
+            //Debug Articles
+            
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("1[-3,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("1[-3,0]fg"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 1, [sprite_get("1[-3,0]bg"), 0, 0, 1, false, 0, 0, 0], [0,0]],
             
             //Only 1 Background init per Room
             [1, 0, 0, 0, 30, [sprite_get("bg2"), 0, 0, 0, true, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 29, [sprite_get("bg3"), 0, 0, 0, true, 0, 0, 0], [0,0]],
             
-            //Player Shadow, Only 1 init as well
-            [13, 0, 0, 0, -6, [0, 0, 0, 0, 0, 0, 0, 0], [0,0]],
+            //Player Shadow
+            [13, 0, 0, 0, -6, [0, 0, 0, 0, 0, 0, 0, 0], [0,2]],
             [13, 0, 0, 0, -15, [1, make_color_rgb(24, 32, 64), 0, 0, 0, 0, 0, 0], [0,0]],
             
-            //Room Transition
-            [8, 20, 40, 0, 0, [0, 0, 64, 64, 2, 2, 1, 0, 0], [0,0]],
+            
+
+            // //Room Transition To Temple Inside
+            // [8, 20, 40, 0, 0, [0, 0, 156, 156, 3, [2,9851,10185], 1, 0, 0], [0,0]],
+            
             ]
         ],
     [ //Each Cell - has [cell coordinates, cell data]
@@ -50,14 +80,10 @@ room_add(1, [ //Outside Left
     [ //Each Cell - has [cell coordinates, cell data]
         [-2,0], //Cell Coordinates
         [
-            //Solid collision
-            [1, 0, 0, 2, 1, [sprite_get("[-2,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
-            
-            //Fluff behind the player
-            [1, 0, 0, 0, 1, [sprite_get("[-2,0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
-            
-            //Fluff in front of the player
-            [1, 0, 0, 0, -8, [sprite_get("[-2,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("g_ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("1[-2,0]fg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 1, [sprite_get("1[-2,0]bg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             
             //Platforms (exported from Lucid Dream)
             [1,57,35.25,1,1,[sprite_get("short_fc_plat"),0,0,0,0,0,0,0,],[0,0]],
@@ -65,13 +91,34 @@ room_add(1, [ //Outside Left
             //Platforms (exported from Lucid Dream)
             [1,106,35.25,1,1,[sprite_get("short_fc_plat"),0,0,0,0,0,0,0,],[0,0]],
             [1,75,38,1,1,[sprite_get("fc_box_plat"),0,0,0,0,0,0,0,],[0,0]],
+            
+            //Kei Spawn, Outside Left
+            [6, 86, 43, 0, -5, [7, 0, 0, [{x: 7358, y: 10545}, {x: 9666, y: 10545}], 0, 0, 0, 0], [0,11]],
+            
+            //Dialog/Cutscene Start - Kei Rescue
+            [4, 33, 16, 0, 0, [10, 1, 0, -1, 0, 32, 600, []], [0,0]],
             ]
         ],
     [ //Each Cell - has [cell coordinates, cell data]
         [-1,0], //Cell Coordinates
         [
-            [1, 0, 0, 2, 1, [sprite_get("[-1,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
-            [8, 20, 40, 0, 0, [0, 0, 64, 64, 2, 2, 1, 0, 0], [0,0]],
+            [1, 0, 0, 2, 1, [sprite_get("g_ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("1[-1,0]fg"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 1, [sprite_get("1[-1,0]bg"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            
+            //Dialog Start - Kei Extra Details
+            [4, 11, 16, 0, 0, [23, 1, 0, -1, 0, 32, 600, []], [0,0]],
+            
+            //Room Transition to Hallowflame
+            // [8, 20, 40, 0, 0, [0, 0, 64, 64, 2, [2,7328,10551], 1, 0, 0], [0,0]],
+            [8,155,39.88,0,0,[0,0,64,64,2,[2,7328,10551],1,0,0,],[0,0]], // Exported from Lucid Dream
+            ]
+        ],
+        
+    [ //Each Cell - has [cell coordinates, cell data]
+        [0,0], //Cell Coordinates
+        [
+            [1, 0, 0, 2, 1, [sprite_get("1[0,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
             ]
         ],
         
@@ -92,14 +139,80 @@ room_add(2, [ //Town
             //Player Shadow, Only 1 init as well
             [13, 0, 0, 0, -6, [0, 0, 0, 0, 0, 0, 0, 0], [0,0]],
             [13, 0, 0, 0, -15, [1, make_color_rgb(24, 32, 64), 0, 0, 0, 0, 0, 0], [0,0]],
+            
+            //Light/Shade
+            [12, 0, 0, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            
+            //End Quest - To Town
+            // [4,157.88,31.75,0,0,[2,1,0,-1,0,300,200,0,],[0,0]], // Exported from Lucid Dream
+            //PopupDialog
+            // [4,157.88,31.75,0,0,[2,0,0,120,0,200,332,[0,1,1]],[0,0]],
             ]
         ],
     [ //Each Cell - has [cell coordinates, cell data]
         [-1,0], //Cell Coordinates
         [
+            //Debug Articles
+            
+            //Room Transition To Other Side of Town
+            // [8, 9, 37, 0, 0, [0, 0, 156, 156, 2, [2,12248,10185], 1, 0, 0], [0,0]],
+            
+            //Debug Articles
+            
+            //Static Sprites
             [1, 0, 0, 2, 1, [sprite_get("2[-1,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 1, [sprite_get("2[-1,0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, -8, [sprite_get("2[-1,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            //Platforms
+            //Perfect House
+            [1,49,36,1,9,[sprite_get("m_p_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,50.50,29.375,1,9,[sprite_get("m_p_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,68,28,1,9,[sprite_get("m_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,68,36,1,9,[sprite_get("m_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,80.88,35.13,1,9,[sprite_get("m_plat7"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,81.38,22.25,1,9,[sprite_get("m_plat6"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,98,33.25,1,9,[sprite_get("m_plat4"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,130.38,44,0,9,[sprite_get("bench"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,120.13,36.75,0,-1,[sprite_get("fountain1"),8,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,135.50,20,1,9,[sprite_get("t_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,24,31.88,1,9,[sprite_get("shrine_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,3,36,1,9,[sprite_get("m_plat5"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            
+            //Guard Spawns
+            // [6, 140, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            [6, 110, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            [6, 70, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            [6, 30, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            
+            //End Quest - To Town
+            // [4, 20, 38, 0, 0, [2, 1, 0, -1, 0, 300, 200, 0], [0,0]], //See [-2,0]
+            
+            
+            //Room Transition To Shrine Inside
+            [8,31,36.38,0,0,[0,0,64,120,6, [2,9794,9975],1,0,0,],[0,0]], // Exported from Lucid Dream
+            // [8, 30, 38, 0, 0, [0, 0, 64, 120, 6, [2,9794,9975], 1, 0, 0], [0,0]],
+            
+            //Room Transition To House Inside
+            [8,54.13,36.38,0,0,[0,0,64,120,6, [2,9794,9975], 1,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Room Transition To Temple Inside
+            [8, 154, 34, 0, 0, [0, 0, 156, 156, 3, [2,9851,10185], 1, 0, 0], [0,0]],
+            
+            
+            //Camera Centering
+            [7,135,9,0,0,[0,764,600,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            
             ]
         ],
     [ //Each Cell - has [cell coordinates, cell data]
@@ -108,6 +221,26 @@ room_add(2, [ //Town
             [1, 0, 0, 2, 1, [sprite_get("2[0,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, 1, [sprite_get("2[0,0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, -8, [sprite_get("2[0,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            //Room Transition To Outside Right
+            [8, 156, 37, 0, 0, [0, 0, 64, 120, 5, [2,9847,10343], 1, 0, 0], [0,0]],
+            
+            [1,95.13,24,1,9,[sprite_get("m_f_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,92.13,24.88,1,9,[sprite_get("m_f_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,87.75,34,1,9,[sprite_get("raised_steps_plat"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,116.88,18,1,9,[sprite_get("m_plat3"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,116.88,10,1,9,[sprite_get("m_plat3"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            // //Camera Centering - DEBUG
+            // [7,26,28,0,0,[0,1528,247,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Guard Spawns
+            [6, 140, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            [6, 110, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            [6, 70, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            // [6, 30, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
             ]
         ],
     [ //Each Cell - has [cell coordinates, cell data]
@@ -120,6 +253,273 @@ room_add(2, [ //Town
     
     
     ]);
+
+room_add(3, [ //Temple Inside
+    [ //Each Cell - has [cell position, cell data]
+        [0,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("3[F0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 1, [sprite_get("3[F0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("3[F0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            [1,0,6.25,1,9,[sprite_get("l_wood_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Camera Centering
+            [7, 0, 0, 0, 0, [0, 640, 358, 0, 0, 0, 0, 0], [0,0]],
+            
+            //Room Transition To Town
+            [8, 0, 14, 0, 0, [0, 0, 16, 110, 2, [2,9774,10547], 1, 0, 0], [0,0]],
+            
+            //Kei Spawn, Temple
+            [6,9.38,22.19,0,-5,[7,0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            ]
+        ],
+    ]);
+
+room_add(4, [ //Temple Basement
+    [ //Each Cell - has [cell position, cell data]
+        [0,0], //Cell Coordinates
+        [
+            ]
+        ],
+    ]);
+
+room_add(5, [ //Outside Right
+    [ //Each Cell - has [cell position, cell data]
+        [-1,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("5[-1,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]
+        [-1,-1], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("5[-1,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]
+        [0,0], //Cell Coordinates
+        [
+            //Only 1 Background init per Room
+            [1, 0, 0, 0, 30, [sprite_get("bg2"), 0, 0, 0, true, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 29, [sprite_get("bg3"), 0, 0, 0, true, 0, 0, 0], [0,0]],
+            
+            //Player Shadow
+            [13, 0, 0, 0, -6, [0, 0, 0, 0, 0, 0, 0, 0], [0,0]],
+            [13, 0, 0, 0, -15, [1, make_color_rgb(24, 32, 64), 0, 0, 0, 0, 0, 0], [0,0]],
+            
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("2[0,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],//Default Ground
+            [1, 0, 0, 0, 1, [sprite_get("5[0,0]bg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("5[0,0]fg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            [1,21.88,35,1,9,[sprite_get("arch_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Plats
+            [1,38.75,31.88,1,9,[sprite_get("column_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,94,38.88,1,9,[sprite_get("rock_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,110,39.75,1,9,[sprite_get("rock_plat3"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,115,32.13,1,9,[sprite_get("rock_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,147.13,33.88,1,9,[sprite_get("rock_plat5"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,128.63,31.88,1,9,[sprite_get("rock_plat7"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            //Room Transition To Town
+            [8, 0, 37, 0, 0, [0, 0, 16, 110, 2, [2,12265,10549], 1, 0, 0], [0,0]],
+            
+            
+            //Item - Left Crate
+            [10, 121.63, 30.63, 0, 0, [1, sprite_get("small_crate"), 32, 0.3, 0, "Food Crate", 0, 0], [0,0]],
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]
+        [1,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("5[1,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 1, [sprite_get("5[1,0]bg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("5[1,0]fg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            //Plats
+            [1,102.25,31.88,1,9,[sprite_get("column_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Supplier Spawn
+            [6,22.25,43.94,0,0,[9,0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]    
+        [2,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("5[2,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]    
+        [2,-1], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("5[2,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            ]
+        ],
+    ]);
+
+room_add(6, [ //Shrine Inside
+    [ //Each Cell - has [cell position, cell data]
+        [0,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("6[F0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("6[F0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("6[F0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            [1, 0, 0, 0, 1, [sprite_get("6[F0]webs"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 1, [sprite_get("6[F0]sign"), 0, 0, 0, false, 0, 0, 0], [0,1]],
+            
+            //Camera Centering
+            [7, 0, 0, 0, 0, [0, 260, 180, 0, 0, 0, 0, 0], [0,0]],
+            
+            //Room Transition To Town
+            [8, 0, 6, 0, 0, [0, 0, 32, 72, 2, [2,7765,10529], 1, 0, 0], [0,0]],
+            ]
+        ],
+    ]);
+    
+
+room_add(7, [ //Sewer Start
+    [ //Each Cell - has [cell position, cell data]
+        [0,-1], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("7[0,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("7[0,-1]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            // [1, 0, 0, 0, -8, [sprite_get("7[0,-1]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            
+            
+            
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]
+        [0,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("7[0,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("7[0,0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("7[0,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            //Platforms
+            [1,136.13,14.25,1,9,[sprite_get("sewer_wood_plat3"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,126.63,25.88,1,9,[sprite_get("sewer_plat3"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,146.13,29.50,1,9,[sprite_get("sewer_plat4"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Torches
+            [1,60.38,44.38,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,76,47.25,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,108.88,47.13,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,132.88,34.25,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,144,21.25,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Light/Shade
+            [12, 60.38-0.25,44.38+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            [12, 76-0.25,47.25+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            [12, 108.88-0.25,47.13+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            [12, 132.88-0.25,34.25+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            [12, 144-0.25,21.25+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            [12, 122,54, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            // [12, 0, 0, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]
+        [1,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("7[1,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("7[1,0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            // [1, 0, 0, 0, -8, [sprite_get("7[1,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]
+        [1,-1], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("7[1,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("7[1,-1]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            // [1, 0, 0, 0, -8, [sprite_get("7[1,-1]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            //Platforms
+            [1,58.63,84.38,1,9,[sprite_get("sewer_wood_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,46,82.13,1,9,[sprite_get("sewer_small_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,27.75,84.38,1,9,[sprite_get("sewer_wood_plat3"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,101.13,51.25,1,9,[sprite_get("sewer_wood_plat3"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,91.63,62.75,1,9,[sprite_get("sewer_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,97.13,75.88,1,9,[sprite_get("sewer_wood_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            [1,146.63,46.38,1,9,[sprite_get("sewer_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Torches
+            [1,29.25,75.38,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,68.63,75.38,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,98,56.13,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,119,42.38,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            [1,147.50,40.25,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Lights
+            [12, 29.25-0.25,75.38+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            [12, 68.63-0.25,75.38+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
+            
+            //Triplat Section Init
+            [4,11,70,0,0,[10,0,0,-1,0,200,332,[]],[0,0]],
+            ]
+        ],
+    // [ //Each Cell - has [cell position, cell data]
+    //     [1,-2], //Cell Coordinates
+    //     [
+    //         //Static Sprites
+    //         [1, 0, 0, 2, 1, [sprite_get("7[1,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+    //         [1,0,77,0,2,[sprite_get("7[1,-1]bfluff"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+    //         [1, 0, 0, 0, -8, [sprite_get("7[1,-1]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+    //         ]
+    //     ],
+    [ //Each Cell - has [cell position, cell data]
+        [2,-1], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("7[2,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("7[2,-1]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            // [1, 0, 0, 0, -8, [sprite_get("7[2,-1]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            //Torches
+            [1,67,54.25,0,1,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            ]
+        ],
+    [ //Each Cell - has [cell position, cell data]
+        [2,0], //Cell Coordinates
+        [
+            //Static Sprites
+            [1, 0, 0, 2, 1, [sprite_get("7[2,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, 2, [sprite_get("7[2,0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 0, -8, [sprite_get("7[2,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            ]
+        ],
+    ]);
+
+   
+////EXAMPLE////
+// room_add(3, [ //Room Name
+//     [ //Each Cell - has [cell position, cell data]
+//         [0,0], //Cell Coordinates
+//         [
+//             ]
+//         ],
+//     ]);
+
+
+
     
 // room_add(1,[
 //     [ //Each Cell

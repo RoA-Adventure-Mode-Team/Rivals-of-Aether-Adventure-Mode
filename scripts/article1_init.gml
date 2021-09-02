@@ -1,7 +1,6 @@
 //article1_init, target spawner
 sprite_index = asset_get("empty_sprite");
 disable_movement = true;
-
 custom_args = array_create(0);
 
 _init = 0;

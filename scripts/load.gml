@@ -12,17 +12,18 @@ sprite_change_offset("column_deco",210, 310);
 sprite_change_offset("column_deco_black",210, 310);
 
 sprite_change_offset("stall",27, 48);
-sprite_change_offset("ground",-32, 0);
 sprite_change_offset("marble_ground",-32, 0);
-sprite_change_offset("ground_top",-32, 0);
 sprite_change_offset("black",-32, 0);
 
 //Need to set sprite collisions here!
-sprite_change_collision_mask("ground",true,0,0,0,0,0,0);
+//Ouside 
+sprite_change_collision_mask("g_ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("1[-4,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("[-3,-1]ground",true,0,0,0,0,0,0);
-sprite_change_collision_mask("[-3,0]ground",true,0,0,0,0,0,0);
-sprite_change_collision_mask("[-2,0]ground",true,0,0,0,0,0,0);
-sprite_change_collision_mask("[-1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("1[-3,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("1[-2,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("1[-1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("1[0,0]ground",true,0,0,0,0,0,0);
 
 //Town
 sprite_change_collision_mask("2[-2,0]ground",true,0,0,0,0,0,0);
@@ -30,10 +31,33 @@ sprite_change_collision_mask("2[-1,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("2[0,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("2[1,0]ground",true,0,0,0,0,0,0);
 
+sprite_change_collision_mask("3[F0]ground",true,0,0,0,0,0,0);
+
+
+
+sprite_change_collision_mask("5[-1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("5[-1,-1]ground",true,0,0,0,0,0,0);
+// sprite_change_collision_mask("5[0,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("5[1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("5[2,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("5[2,-1]ground",true,0,0,0,0,0,0);
+
+
+
+sprite_change_collision_mask("7[0,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("7[0,-1]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("7[1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("7[1,-1]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("7[2,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("7[2,-1]ground",true,0,0,0,0,0,0);
+
+sprite_change_collision_mask("6[F0]ground",true,0,0,0,0,0,0);
+
 sprite_change_collision_mask("marble_ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("sewer_ground_left",true,0,0,0,0,0,0);
 sprite_change_collision_mask("sewer_water1",true,0,0,0,0,0,0);
 sprite_change_collision_mask("sewer_ceil1",true,0,0,0,0,0,0);
+
 sprite_change_offset("sewer_top",1, -2);
 sprite_change_offset("sewer_sect1",24, 232);
 sprite_change_offset("stall_empty",27, 48);
@@ -64,6 +88,8 @@ sprite_change_offset("arrow",0, 28);
 sprite_change_offset("torch",7, 11);
 sprite_change_offset("steam_lantern",5, 43);
 sprite_change_offset("steam_vfx",32, 32);
+
+sprite_change_offset("small_crate",25, 22);
 
 //Enemy Declarations - Harbidge
 sprite_change_offset("char_arrow",0,0);
@@ -144,6 +170,23 @@ sprite_change_offset("enemy_4_jump_back",74, 88);
 sprite_change_offset("enemy_4_nspecial",74, 88);
 sprite_change_offset("enemy_4_nspecial_back",74, 88);
 sprite_change_offset("enemy_bird_laser",24, 5);
+
+sprite_change_offset("enemy_7_idle",30, 70);
+sprite_change_offset("enemy_7_walk",36, 62);
+
+sprite_change_offset("enemy_8_idle",104, 144);
+sprite_change_offset("enemy_8_hurt",104, 144);
+sprite_change_offset("enemy_8_walk",104, 144);
+sprite_change_offset("enemy_8_dashstart",104, 144);
+sprite_change_offset("enemy_8_dash",104, 144);
+sprite_change_offset("enemy_8_jumpstart",104, 144);
+sprite_change_offset("enemy_8_jump",104, 144);
+sprite_change_offset("enemy_8_doublejump",104, 144);
+sprite_change_offset("enemy_8_land",104, 144);
+sprite_change_offset("enemy_8_fspecial",104, 144);
+sprite_change_offset("enemy_8_fspecial_air",104, 144);
+
+sprite_change_offset("enemy_9_idle",32, 70);
 
 sprite_change_offset("fx_enemy_abyssdeath",48, 48);
 sprite_change_offset("fx_enemy_abyssdeath2",52, 52);

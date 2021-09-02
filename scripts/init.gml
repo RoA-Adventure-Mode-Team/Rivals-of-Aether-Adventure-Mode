@@ -3,7 +3,7 @@
 //print_debug("Init Time setting is "+string(get_match_setting(SET_TIMER)));
 updated = 0;
 _init = 0;
-am_vers = "v0.6";
+am_vers = "v0.8";
 
 //Debug Vars
 debug = true;
@@ -13,6 +13,9 @@ up_down = 0;
 last_ID = 0;
 game_end = false;
 
+// print(view_get_wview());
+// print(view_get_hview());
+
 cam_x_right = view_get_wview()+view_get_xview();
 cam_y_right = view_get_hview()+view_get_yview();
 cam_x_left = view_get_xview();
@@ -20,6 +23,8 @@ cam_y_left = view_get_yview();
 cam_x_center = view_get_wview()/2;
 cam_x_l3 = view_get_wview()/3;
 cam_x_r3 = 2*view_get_wview()/3;
+cam_width = view_get_wview();
+cam_height = view_get_hview();
 
 cam_state = 0;
 cam_smooth = 5;
@@ -49,6 +54,7 @@ keyboard_string = "";
 key_string_old = "";
 console_parse = "";
 console_output = "";
+console_com_hist = [];
 
 //Article Allocations:
 
@@ -57,13 +63,24 @@ console_output = "";
 
 //Custom Marker (article2)
 
-//Scene Manager (article3) 
+//Action Manager (article3) 
 list_window = ds_list_create();
 scene_manager = noone;
+quest_complete_spr = sprite_get("quest_complete");
+quest_complete_spr_num = sprite_get_number(quest_complete_spr);
+quest_outline_spr = sprite_get("quest_border");
+quest_complete_timer = 0;
+quest_complete_timer_max = 120;
+
 
 follow_player = noone;
+max_percent = 200;
+paused_percent = array_create(4);
+is_paused = false;
 is_online = false;
 player_num = 0;
+
+
 /*with oPlayer {
     if get_player_hud_color(player) == 6612290 {
         other.is_online = true;
@@ -87,13 +104,12 @@ if is_online {
     if get_player_hud_color(player) == 6612290 other.local_player = id;
     other.player_count++;
 }*/
-
 //Camera Variables
 with oPlayer if get_player_hud_color(player) == 6612290 other.follow_player = id;
-if follow_player == noone  with oPlayer if player == 1 other.follow_player = id;
+if follow_player == noone  with oPlayer other.follow_player = id;
 cam_override_obj = noone;
 // if follow_player == noone with oPlayer if other.follow_player == noone && (!variable_instance_exists(self, "is_ai") || !is_ai) && is_player_on(player) other.follow_player = id;
-
+fp =  follow_player; //follow_player short
 
 //Area Triggers (article4)
 
@@ -128,18 +144,22 @@ win_data = [];
 active_win = [];
 
 //cursor_sprite = sprite_get("arrow");
-cursor_sprite_i = sprite_get("arrow");
+cursor_sprite_i = sprite_get("cursor");
 cursor_index = 0;
 cursor_visible = true; //Change to true for debug
 mb_l_click = false;
 mouse_x_i = mouse_x;
 mouse_y_i = mouse_y;
 
+//Debug Points
+debug_point_r = 10;
+debug_point_color = c_fuchsia;
+
 //Window Variables
-//Title
-title_x_stop = 100;
-title_time = 360;
-//
+//Dialog
+dialog_up = asset_get("sfx_holy_tablet");
+//Quest
+quest_complete = asset_get("sfx_chester_appear");
 
 mouse_buffer = 16;
 cursor_x_p = 0;
@@ -166,9 +186,21 @@ cmd_char = '>';
 cmd_output = "Type 'help' for command list.
 "; //Parsed string for storing command log
 cmd_save_output = false; // If the output is saved, or overwritten with every command (VERY LAGGY)
-cmd_title = "LUCID DREAM v0.4";
+cmd_title = "LUCID DREAM v0.6";
 cmd_freecam = false;
-//
+
+
+//Dialog & Quests
+
+dialog_tick_rate = 0.5;
+title_time = 600;
+_quests = [];
+
+//Notes
+note_position = [0,0];
+note_scroll = [10,10];
+
+
 win_call = 1;
 user_event(2);
 /*Good Sounds

@@ -14,7 +14,7 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
     last_pos[0] = follow_player.x;
     last_pos[1] = follow_player.y;
     with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
-    smoothing = 1/5;
+    // smoothing = 1/5;
 }
 
 //if get_gameplay_time() == 3 { //Move the cam to position
@@ -58,9 +58,9 @@ with oPlayer { //Respawn Code
 		// 	}
 		// }
 	}
-	if state == PS_SPAWN respawn_point = [x,y,other.cur_room]; //Spawn state sets checkpoint
+	if state == PS_SPAWN respawn_point = [x,y,other.cur_room]; //Spawn state sets checkpoint?
 }
-if switch_to_room != cur_room room_switch(switch_to_room);
+if switch_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
 
 if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
@@ -123,29 +123,31 @@ if _room_id_ind == - 1 {
     array_room_ID[_room_id_ind] = _room_id;
 }
 #define room_switch(_room_id) //Switches the room
+switch_room = false; //Call once per set per frame
 if debug print_debug("[RM] Switching to... "+string(_room_id));
-if _room_id != cur_room {
-    cur_room_time = 0;
-    var _room_id_ind = array_find_index(array_room_ID,_room_id);
-    if _room_id_ind != - 1 {
-        cur_room = _room_id;
-        room_switch_on = true;
-        room_switch_timer = 0;
-        //despawn_room();
-		//room_render(cur_room);
-    } else {
-        var _room_id_ind = array_find_index(array_room_ID,0);
-        cur_room = 0;
-        print_debug("[RM] Error: Room Index not found.");
-        despawn_room();
-        room_render(cur_room);
-    }
-    
+// if _room_id != cur_room {
+cur_room_time = 0;
+var _room_id_ind = array_find_index(array_room_ID,_room_id);
+if _room_id_ind != - 1 {
+    cur_room = _room_id;
+    room_switch_on = true;
+    room_switch_timer = 0;
+    cam_smooth = 1; //Instant cam adjustments
+    //despawn_room();
+	//room_render(cur_room);
 } else {
-	if debug print_debug("[RM] CURRENT ROOM");
-	despawn_room();
+    var _room_id_ind = array_find_index(array_room_ID,0);
+    cur_room = 0;
+    print_debug("[RM] Error: Room Index not found.");
+    despawn_room();
     room_render(cur_room);
 }
+    
+// } else {
+// 	if debug print_debug("[RM] CURRENT ROOM");
+// 	despawn_room();
+//     room_render(cur_room);
+// }
 free = false;
 with oPlayer {
 	set_state(PS_IDLE);
@@ -162,13 +164,15 @@ return;
 switch room_switch_type {
 	case 1: //Rectangle Slide
 		if room_switch_timer == floor(room_switch_time/2) {
+			// if switch_to_room != cur_room {
 			despawn_room();
 			room_render(cur_room);
+			// }
 			switch_room_position(switch_to_room_pos);
-			with obj_stage_article if num == 3 {
-				event_id = other.room_switch_event;
-				event_triggered = true;
-			}
+			// with obj_stage_article if num == 3 {
+			// 	event_id = other.room_switch_event;
+			// 	event_triggered = true;
+			// }
 		}
 		if room_switch_timer >= room_switch_time {
 			switch_reset();
@@ -176,22 +180,25 @@ switch room_switch_type {
 		break;
 	case 2: //Fade Out/In
 		if room_switch_timer == floor(room_switch_time/2) {
+			// if switch_to_room != cur_room {
 			despawn_room();
 			room_render(cur_room);
+			// }
 			switch_room_position(switch_to_room_pos);
-			with obj_stage_article if num == 3 {
-				event_id = other.room_switch_event;
-				event_triggered = true;
-			}
+			// with obj_stage_article if num == 3 {
+			// 	event_id = other.room_switch_event;
+			// 	event_triggered = true;
+			// }
 		}
 		if room_switch_timer >= room_switch_time {
 			switch_reset();
 		}
 		break;
 	case 0:
-		
+		// if switch_to_room != cur_room {
 		despawn_room();
 		room_render(cur_room);
+		// }
 		switch_room_position(switch_to_room_pos);
 		switch_reset();
 		break;
@@ -202,10 +209,13 @@ room_switch_timer++;
 room_switch_type = 0;
 room_switch_on = false;
 cam_state = 0;
-with action_manager {
-	room_id = other.cur_room;
-	array_push(action_queue, [other.cur_room,1,1]);
-}
+cam_smooth = obj_stage_main.cam_smooth;
+//---Moved Elsewhere
+// with action_manager {
+// 	room_id = other.cur_room;
+// 	if scene_id != 0 array_push(action_queue, [other.cur_room,scene_id,1]); //Start the first action of the room/scene
+// 	array_push(action_queue, [other.cur_room,0,1]); //Start the first action of ALL room/scene
+// }
 return true;
 #define room_render(_room_id) //Renders the current room. Runs on cell change, room transitions, and respawn usually.
 var articles_spawned = 0;
@@ -247,6 +257,7 @@ if _room_id < array_length_1d(array_room_data) {
                         art.debug = obj_stage_main.debug;
                         //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;
                         articles_spawned++;
+                        // if debug print_debug("[RM] Room Article: "+string(art.init_pos));
                 }
             }
         /*} else {
@@ -263,6 +274,12 @@ if _room_id < array_length_1d(array_room_data) {
     }
 } else if debug print_debug("[RM] Unfound Room ID");
 
+//Start new room Action Things
+with action_manager {
+	room_id = other.cur_room;
+	if scene_id != 0 array_push(action_queue, [other.cur_room,scene_id,1]); //Start the first action of the room/scene
+	array_push(action_queue, [other.cur_room,0,1]); //Start the first action of ALL room/scene
+}
 
 #define real_to_grid(_pos) //Translate real coordinates into coordinates on the basegame grid 
 //return [_pos[0] - init_cam_pos[0]+true_pos[0], _pos[1] - init_cam_pos[1]+true_pos[1]]; 
@@ -271,16 +288,18 @@ return _pos;
 #define cell_to_real(_pos,_cell_pos) //Translate cell coordinates to real
 //_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0]))*cell_size + render_offset[0], 
-		(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1]))*cell_size + render_offset[1]];
+		(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1])*cell_size + render_offset[1]];
+// return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0]))*cell_size + render_offset[0], 
+// 		(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1]))*cell_size + render_offset[1]];
 #define cell_to_grid(_pos, _cell_pos) //Translate cell coordinates to the basegame grid system
 with room_manager return cell_to_real(_pos,_cell_pos);
 #define grid_to_cell(_pos) //Translate basegame grid system coordinates to in cell coordinates
 with room_manager {
 	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 	var _sub_pos_x = [(_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size))];
-	var _sub_pos_y = [(_pos[1] % ((cell_dim[1]-grid_offset)*cell_size)),floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
+	var _sub_pos_y = [(_pos[1] % ((cell_dim[1])*cell_size)),floor(_pos[1]/((cell_dim[1])*cell_size))];
 	if sign(_sub_pos_x[0]) == -1 _sub_pos_x[0] += ((cell_dim[0]-grid_offset)*cell_size); 
-	if sign(_sub_pos_y[0]) == -1 _sub_pos_y[0] += ((cell_dim[1]-grid_offset)*cell_size);
+	if sign(_sub_pos_y[0]) == -1 _sub_pos_y[0] += ((cell_dim[1])*cell_size);
     return [[_sub_pos_x[0], //Subcell
 		    _sub_pos_y[0]],
 		   [_sub_pos_x[1], //Cell
@@ -320,39 +339,36 @@ with obj_stage_article_solid instance_destroy(id);
 #define switch_room_position(_pos) //Switches the room position in grid space (Harbige12)
 if (_pos[0] != -1) {
 	follow_point.x = _pos[0];
-	with oPlayer x = other.follow_point.x;
+	with oPlayer x = _pos[0];
 	//follow_player.x = follow_point.x;
 }
 if (_pos[1] != -1) {
 	follow_point.y = _pos[1];
-	with oPlayer y = other.follow_point.y;
-	
+	with oPlayer y = _pos[1];
 	//follow_player.y = follow_point.y;
 }
 with oPlayer visible = true;
 //set_view_position(follow_point.x,follow_point.y);
-with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
-/*#define set_view_position_smooth(_x,_y)
-//var sm_x = (((_x + true_pos[0])/2 + true_pos[0])/2 + true_pos[0])/2;
-//var sm_y = (((_y + true_pos[1])/2 + true_pos[1])/2 + true_pos[1])/2;
-var sm_x = true_pos[0];
-var sm_y = true_pos[1];
-if scroll_horiz sm_x = round(ease_linear(floor(true_pos[0]),floor(_x),1,1/smoothing));
-else sm_x = round(ease_linear(floor(true_pos[0]),floor(cam_override_obj.cam_override_pos[0]),1,1/smoothing));
-if scroll_vert sm_y = round(ease_linear(floor(true_pos[1]),floor(_y),1,1/smoothing));
-else sm_y = round(ease_linear(floor(true_pos[1]),floor(cam_override_obj.cam_override_pos[1]),1,1/smoothing));
-//var dir_x = _x - true_pos[0];
-//var dir_y = _y - true_pos[1];
+with obj_stage_main {
+	g_cam_pos = _pos;
+	set_view_position_smooth(_pos[0], _pos[1], 1);
+}
 
+return true;
+
+#define set_view_position_smooth(_x,_y,_smooth)
+sm_x = ease_linear(floor(true_pos[0]),floor(_x),1,_smooth);
+sm_y = ease_linear(floor(true_pos[1]),floor(_y),1,_smooth);
+set_view_position(round(sm_x), round(sm_y));
+true_pos[0] += sm_x;
+true_pos[1] += sm_y;
 //set_view_position(sm_x, sm_y);
-with obj_stage_main g_cam_pos = [sm_x, sm_y];
-//static_position = [round(sm_x),round(sm_y)];
+//background movements
 with obj_stage_article {
 	if num == 1 && static {
-		x = sm_x;
-		y = sm_y;
+		//x = round(sm_x);
+		//y = round(sm_y);
+		x = other.sm_x;
+		y = other.sm_y;
 	}
 }
-//set_view_position(round(sm_x), round(sm_y));
-//set_view_position(sm_x, sm_y);
-*/

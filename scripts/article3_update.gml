@@ -9,8 +9,6 @@ enum LWO {
     PLR_CTL
 }
 enum ACT {
-    DIALOG, //See draw scripts, depends on sub-objects
-    //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
     CAMERA, //Sets the camera to a specific point
     //action_time, x, y, focus_type, smooth 
     WINDOW, //Makes a hud window
@@ -31,12 +29,23 @@ enum ACT {
     //to_room, to_coords
     QUEST_PROG, //Quest-related actions
     //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
+    ON_QUEST_PROG,
+    //quest_id, progress_proc
     SUS, //Suspend Action by ID
     //suspend_bool, action_id
-    SPAWN_ART,
+    KILL, //Remove the first of the action type given
+    //action_id
+    SPAWN_ART, //Spawn articles with the
     //[room_format]
     CHECK, //End action upon the condition being true
     //article_group, variable, condition
+    ART_COUNT, //When the article count for the following article drops a threshold, continue
+    //article_group, threshold, [lower than or equal:0 greater than or equal:1]
+    SCENE, //Switches the scene
+    //0:set,1:add, scene id
+    RANDOM, //Pick a random exit action to do
+    //seed
+    
 }
 
 enum P {
@@ -65,11 +74,13 @@ enum B {
 
 if !_init {
 	with obj_stage_article if num == 5 other.room_manager = id;
-	debug = false;
+	debug = false; //Test (prevent loading to flood)
     reload_scenes();
+    // debug = true; //Test
     change_scene(1);
     _init = true;
     quest_init = true;
+    
     exit;
 }
 
@@ -84,8 +95,11 @@ action_tick();
 scene_tick();
 
 #define process_action_queue()
+// if debug print_debug("[AM] PROGESSING ACTION QUEUE..."+string(action_queue));
 for (var i = 0; i < array_length_1d(action_queue);i++) {
-	start_action(action_queue[i][0], action_queue[i][1], action_queue[i][2]);
+	if array_length_1d(action_queue[i]) > 3 start_action(action_queue[i][0], action_queue[i][1], action_queue[i][2],action_queue[i][3]);
+	else start_action(action_queue[i][0], action_queue[i][1], action_queue[i][2], id);
+	
 }
 action_queue = []; //clear queue;
 return true;
@@ -104,17 +118,11 @@ for (var i = 0; i < array_length_1d(end_action_index); i++) {
 }
 end_action_index = []; //clear queue;
 return true;
-#define do_action(_action) //Action Per Frame
-if _action[P.ROOM_ID] != 0 && _action[P.ROOM_ID] != room_id return false; //Only process actions effecting the current room, or the All Room
+#define do_action(_action) //Action Per Frame - these are VERY HEAVY!
+if _action[P.ROOM_ID] != 0 && _action[P.ROOM_ID] != room_id return false; //Only process actions effecting the current room, or All Rooms
+if _action[P.SCENE_ID] != 0 && _action[P.SCENE_ID] != scene_id return false; //Only process actions effecting the current scene, or All Scenes
 var _param = _action[P.LOAD][L.PARAM];
 switch _action[P.LOAD][L.ACTION_TYPE] {
-    case ACT.DIALOG: 
-    	//end action if attack pressed & at end of line
-    	if obj_stage_main.follow_player.attack_down && 
-    	_action[P.ALIVE_TIME] * _param[10] > string_length(_param[7]) {
-    		_action[@P.DIE] = true;
-    	}
-    	break;
     case ACT.CAMERA: //action_time, x, y, focus_type, smooth 
     	//obj_stage_main.cam_state = 1;
     	switch _param[3] {
@@ -146,7 +154,7 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
 		    	}
     		}
     	}
-    	if _action[P.ALIVE_TIME] > _param[0] {
+    	if _param[0] > -1 && _action[P.ALIVE_TIME] > _param[0] {
     		_action[@P.DIE] = true;
     	}
     	break;
@@ -157,7 +165,7 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
 		    	with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
 		    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[1],variable_instance_get(id,_param[1]));
 					variable_instance_set(id,_param[1],ease_linear(variable_instance_get(id,"action_old_"+_param[1]),_param[2],_action[P.ALIVE_TIME],_param[4]));
-					if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+					// if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 				}
 				if _action[P.ALIVE_TIME] > _param[4] {
 		    		_action[@P.DIE] = true;
@@ -200,6 +208,40 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     	}
     	if _input_done _action[@P.DIE] = true;
     	break;
+    case ACT.ON_QUEST_PROG:
+    	if _param[2] == 1 && quest_array[_param[0]][1] == _param[1] {
+    		_action[@P.DIE] = true;
+    	}
+    	if _param[2] == 1 && quest_array[_param[0]][1] >= _param[1] {
+    		_action[@P.DIE] = true;
+    	}
+    	break;
+    case ACT.ART_COUNT:
+    	var _found_group = 0;
+    	with obj_stage_article {
+    		if _param[0] == action_article_index {
+    			_found_group += 1;
+    		}
+    	}
+    	if !_found_group with obj_stage_article_platform {
+    		if _param[0] == action_article_index {
+    			_found_group += 1;
+    		}
+    	}
+    	if !_found_group with obj_stage_article_solid {
+    		if _param[0] == action_article_index {
+    			_found_group += 1;
+    		}
+    	}
+    	if _param[2] != 1 && _found_group <= _param[1] { //If there was none of the group
+    		_action[@P.DIE] = true;
+    		break;
+    	}
+    	if _param[2] == 1 && _found_group >= _param[1] { //If there was none of the group
+    		_action[@P.DIE] = true;
+    		break;
+    	}
+    	break;
     case ACT.WAIT: //Does what it says
 	    if _action[P.ALIVE_TIME] > _param[0] {
     		_action[@P.DIE] = true;
@@ -217,11 +259,14 @@ if _action[P.DIE] == true {
 }
 
 #define change_scene(_scene_id)
-if array_length_1d(scene_array[room_id]) < _scene_id return false;
-for (var i = 0; i < array_length_1d(cur_actions); i++) end_action(cur_actions[i][P.ACTION_INDEX]);
+if debug print_debug("[AM] SCENE "+string(_scene_id)+" INITIALIZED");
+while array_length_1d(scene_array) <= room_id array_push(scene_array, []); 
+while array_length_1d(scene_array[room_id]) <= _scene_id array_push(scene_array[room_id], []);
+// for (var i = 0; i < array_length_1d(cur_actions); i++) end_action(cur_actions[i][P.ACTION_INDEX]);
+if array_length(scene_array[room_id][_scene_id]) == 0 array_push(scene_array[room_id][_scene_id],_scene_id);
 cur_scene = scene_array[room_id][_scene_id];
 scene_id = _scene_id;
-
+scene_time = 0;
 //for (var i = 0; i < array_length_1d(cur_scene); i++) start_action(room_id, scene_id, cur_scene[i]);
 
 return true;
@@ -235,12 +280,12 @@ for (var i = 0; i < array_length_1d(cur_actions); i++) {
 }
 return true;
 
-#define start_action(_room_id, _scene_id, _action_id)
-if _scene_id > array_length_1d(action_array[_room_id]) || _action_id > array_length_1d(action_array[_room_id][_scene_id]) {
-	if debug print_debug("[AM] ACTION "+string(_action_id)+" OUTSIDE INITIALIZED RANGE...");
+#define start_action(_room_id, _scene_id, _action_id, _starting_id)
+if _room_id >= array_length_1d(action_array) || _scene_id >= array_length_1d(action_array[_room_id]) || _action_id >= array_length_1d(action_array[_room_id][_scene_id]) || _action_id == 0 {
+	if debug print_debug("[AM] ACTION "+string(_room_id)+":"+string(_scene_id,)+":"+string(_action_id)+" OUTSIDE INITIALIZED RANGE...");
 	return false;
 }
-if debug print_debug("[AM] ACTION LIVE: "+string(_action_id));
+
 var new_action = array_create(P.DIE+1);
 new_action[P.LOAD] = array_clone(action_array[_room_id][_scene_id][_action_id]);
 new_action[P.ROOM_ID] = _room_id;
@@ -251,7 +296,14 @@ action_index++;
 new_action[P.ALIVE_TIME] = 0;
 
 //On action start
-//print_debug(string(new_action[P.LOAD]));
+// print_debug(string(new_action[P.LOAD]));
+
+if array_length(new_action[P.LOAD]) == 0 { //Action Data not found! Exit action start.
+	print("[AM:SA] WARNING: Action data not found! Aborting Action "+string(_room_id)+":"+string(_scene_id)+":"+string(_action_id));
+	return false;
+}
+
+if debug print_debug("[AM] ACTION LIVE: "+string(_room_id)+":"+string(_scene_id)+":"+string(_action_id));
 switch new_action[P.LOAD][L.ACTION_TYPE] {
 	case ACT.CAMERA:
 			obj_stage_main.cam_state = 1;
@@ -260,15 +312,23 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 	case ACT.WINDOW:
 		var _param = new_action[P.LOAD][L.PARAM];
 		var win_over = _param[3];
+		// if _starting_id != id { //Translate to local coordinates if started from a different id
+		// 	_param[1] += _starting_id.x;
+		// 	_param[2] += _starting_id.y;
+		// }
 		with obj_stage_main {
 			if array_length_1d(win_data) < _param[0] {
 				print_debug("[AM] WINDOW OUTSIDE OF INITIALIZED RANGE...");
 				return false;
 			}
 			if win_over != [] for(var i = 0; i < array_length_1d(win_over); i++) for(var j = 0; j < array_length_1d(win_over[i]); j++) win_data[@_param[0]][@(i+1)][@(j+1)] = win_over[i][j];
-			array_push(active_win,[[_param[1],_param[2],new_action[P.ACTION_INDEX],0],array_clone_seriously_why_isnt_this_how_it_works(win_data[_param[0]])]); //Push window data to active windows in the right format 
-								//[[pos_x,pos_y,action_id,alive_time], [meta]]
+			array_push(active_win,[[_param[1],_param[2],new_action[P.ACTION_INDEX], 0, _starting_id],array_clone_seriously_why_isnt_this_how_it_works(win_data[_param[0]])]); //Push window data to active windows in the right format 
+								//[[pos_x,pos_y,action_id,alive_time, tracking_id], [meta]]
 		}
+		// if _starting_id != id { //Translate back from local coordinates
+		// 	_param[1] -= _starting_id.x;
+		// 	_param[2] -= _starting_id.y;
+		// }
 		break;
 	case ACT.CHECK:
     	var _param = new_action[P.LOAD][L.PARAM];
@@ -277,12 +337,13 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 	case ACT.SET:
 		var _param = new_action[P.LOAD][L.PARAM];
 		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] variable_instance_set(id,_param[1],_param[2]);
+		if debug print_debug("[AM] SETTING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 		if array_length_1d(_param) < 4 {
-			if debug print_debug("[AM] SETTING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
-			for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+			
+			for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 			return true; //Never enters the queue
 		}
-		if debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+		// if debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 		break;
 	case ACT.MUSIC:
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -306,8 +367,16 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 				//sound_pitch(_param[1]);
 				break;
     	}
-    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 		return true; //Never enters the queue
+	case ACT.SCENE:
+		var _param = new_action[P.LOAD][L.PARAM];
+		if !_param[0] {
+			change_scene(_param[1]);
+		} else {
+			change_scene(scene_id+_param[1]);
+		}
+		break;
 	case ACT.SUS: //:oO.Oo:
 		var _param = new_action[P.LOAD][L.PARAM];
 		if _param[0] { // Suspend Action
@@ -317,20 +386,53 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 		    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" SUSPENDED");
 		    		array_push(suspened_actions[room_id],cur_actions[i]);
 		    		cur_actions = array_cut(cur_actions, i);
+		    		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+					return true; //Never enters the queue
+		    	}
+			}
+			
+			for (var i = 0; i < array_length_1d(cur_actions); i++) {
+		    	if array_length_1d(cur_actions[i]) > 1 && cur_actions[i][P.ACTION_ID] ==  _param[1] {
+		    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" SUSPENDED");
+		    		array_push(suspened_actions[0],cur_actions[i]);
+		    		cur_actions = array_cut(cur_actions, i);
+		    		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+					return true; //Never enters the queue
 		    	}
 			}
 		} else { //Unsuspend Action
 			for (var i = 0; i < array_length_1d(suspened_actions); i++) {
 		    	if suspened_actions[room_id][i][P.ACTION_ID] == _param[1] {
-		    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" SUSPENDED");
+		    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" UNSUSPENDED");
 		    		array_push(cur_actions, suspened_actions[room_id][i]);
 		    		suspened_actions[room_id] = array_cut(suspened_actions[room_id], i);
-		    		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+		    		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+					return true; //Never enters the queue
+		    	}
+		    	//Repeat for zeroth room
+		    	if suspened_actions[0][i][P.ACTION_ID] == _param[1] {
+		    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" UNSUSPENDED");
+		    		array_push(cur_actions, suspened_actions[0][i]);
+		    		suspened_actions[0] = array_cut(suspened_actions[0], i);
+		    		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 					return true; //Never enters the queue
 		    	}
 			}
 		}
-		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+		if debug print_debug("[AM:SUS] DID NOT FIND SUSPEND TARGET");
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+		return true; //Never enters the queue
+	case ACT.KILL:
+		var _param = new_action[P.LOAD][L.PARAM];
+		for (var i = 0; i < array_length_1d(cur_actions); i++) {
+	    	if array_length_1d(cur_actions[i]) > 1 && cur_actions[i][P.ACTION_ID] ==  _param[1] {
+	    		if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" KILLED");
+	    		cur_actions = array_cut(cur_actions, i);
+	    		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+				return true; //Never enters the queue
+	    	}
+		}
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 		return true; //Never enters the queue
 	case ACT.SPAWN_ART: //Spawn an article. Not counted in room!
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -359,7 +461,7 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
         _art.action_article_index = _param[1][6][1]; //array_room_data[_room_id][i][1][j][6][1] 6D Array!
         _art.room_manager = room_manager;
         _art.debug = obj_stage_main.debug;
-		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 		return true; //Never enters the queue
 	case ACT.SW_ROOM:
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -368,14 +470,15 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     		else switch_to_room_pos = _param[1];
     		room_switch_type = 2;
     		switch_to_room = _param[0];
+    		switch_room = true;
     	}
-    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 		return true; //Never enters the queue
 	case ACT.QUEST_PROG: //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
     	var _param = new_action[P.LOAD][L.PARAM];
     	switch _param[1] {
     		case 2: //add/subtract
-    			print(quest_array[_param[0]][0]);
+    			// print(quest_array[_param[0]][0]);
     			print(_param[2]);
     			quest_set(_param[0],quest_array[_param[0]][0]+_param[2]);
     			break;
@@ -384,10 +487,16 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     			break;
     		default: //set, do not go backwards
     			// print(quest_array[_param[0]][0][0]);
-    			if quest_array[_param[0]][0] == noone || quest_array[_param[0]][quest_array[_param[0]][0]] < _param[2] quest_set(_param[0],_param[2]);
+    			if quest_array[_param[0]][0] == noone || quest_array[_param[0]][0] < _param[2] quest_set(_param[0],_param[2]);
     			break;
     	}
-    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, new_action[P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+		return true; //Never enters the queue
+    	break;
+    case ACT.RANDOM:
+    	var _param = new_action[P.LOAD][L.PARAM];
+    	var index = random_func(_param[0] % 200,array_length_1d(new_action[P.LOAD][L.ON_EXIT])-1,true);
+    	start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][index],_starting_id); //Add Exit Actions
 		return true; //Never enters the queue
     	break;
     default:
@@ -402,7 +511,7 @@ for (var i = 0; i < array_length_1d(cur_actions); i++) {
 	
     if cur_actions[i][P.ACTION_ID] == _action_id {
     	if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" ENDED");
-    	for (var j = 0; j < array_length_1d(cur_actions[i][P.LOAD][L.ON_EXIT]); j++) start_action(room_id, scene_id, cur_actions[i][P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+    	for (var j = 0; j < array_length_1d(cur_actions[i][P.LOAD][L.ON_EXIT]); j++) start_action(room_id, cur_actions[i][P.SCENE_ID], cur_actions[i][P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
         cur_actions = array_cut(cur_actions, i);
         break;
     }
@@ -413,7 +522,7 @@ return true;
 for (var i = 0; i < array_length_1d(cur_actions); i++) {
     if cur_actions[i][P.ACTION_INDEX] == _action_index {
     	if debug print_debug("[AM] ACTION "+string(cur_actions[i][P.ACTION_INDEX])+":"+string(cur_actions[i][P.ACTION_ID])+" ENDED");
-    	for (var j = 0; j < array_length_1d(cur_actions[i][P.LOAD][L.ON_EXIT]); j++) start_action(room_id, cur_actions[i][P.SCENE_ID], cur_actions[i][P.LOAD][L.ON_EXIT][j]); //Add Exit Actions
+    	for (var j = 0; j < array_length_1d(cur_actions[i][P.LOAD][L.ON_EXIT]); j++) start_action(room_id, cur_actions[i][P.SCENE_ID], cur_actions[i][P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
         cur_actions = array_cut(cur_actions, i);
         
         break;
@@ -434,10 +543,17 @@ if quest_array[_id][0]  == noone array_push(quest_active,quest_array[_id]);
 quest_array[@_id][@0] = _progress;//Save current quest progress
 if _progress == noone {
 	if debug print_debug("[AM] Quest Reset: "+string(_id));
-	array_cut(quest_active,array_find_index(quest_active,quest_array[_id][0]));
+	quest_active = array_cut(quest_active,array_find_index(quest_active,quest_array[_id][0]));
 	return noone;
 }
+// if _progress > array_length(quest_array[_id])-1 {
+// 	if debug print_debug("[AM] Quest Complete: "+string(_id));
+// 	quest_active = array_cut(quest_active,array_find_index(quest_active,quest_array[_id][0]));
+// 	array_push(quest_complete_display,_id);
+// 	return self;
+// }
 if debug print_debug("[AM] Quest Progress: "+string(_id)+" : "+string(_progress));
+if _progress >= array_length(quest_array[_id]) return self;
 
 return quest_array[_id][_progress];
 

@@ -45,25 +45,25 @@ with obj_stage_main {
 	//set_view_position(g_cam_pos[0],g_cam_pos[1]);
 
 }
-if debug with oPlayer {
-	draw_debug_text(floor(x),floor(y),string([floor(x/16),floor(y/16)]));
-	draw_debug_text(floor(x),floor(y)+16,string(get_state_name(state)));
-	draw_debug_text(floor(x),floor(y)+32,string(window_timer));
-}
+// if debug with oPlayer {
+// 	draw_debug_text(floor(x),floor(y),string([floor(x/16),floor(y/16)]));
+// 	draw_debug_text(floor(x),floor(y)+16,string(get_state_name(state)));
+// 	draw_debug_text(floor(x),floor(y)+32,string(window_timer));
+// }
 #define set_view_position_smooth(_x,_y,_smooth)
 sm_x = ease_linear(floor(true_pos[0]),floor(_x),1,_smooth);
 sm_y = ease_linear(floor(true_pos[1]),floor(_y),1,_smooth);
 set_view_position(round(sm_x), round(sm_y));
-true_pos[0] += sm_x;
-true_pos[1] += sm_y;
+true_pos[0] = sm_x;
+true_pos[1] = sm_y;
 //set_view_position(sm_x, sm_y);
 //background movements
 with obj_stage_article {
 	if num == 1 && static {
-		//x = round(sm_x);
-		//y = round(sm_y);
-		x = other.sm_x;
-		y = other.sm_y;
+		x = round(other.sm_x);
+		y = round(other.sm_y);
+		// x = round(view_get_xview());
+		// y = round(view_get_yview());
 	}
 }
 

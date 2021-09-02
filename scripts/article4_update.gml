@@ -10,8 +10,11 @@ if !_init {
     trigger_shape = spawn_variables[4];
     trigger_w = spawn_variables[5];
     trigger_h = spawn_variables[6];
-    trigger_negative = spawn_variables[7];
+    if array_length_1d(spawn_variables[7]) > 0 req_item_id = spawn_variables[7][0];
+    if array_length_1d(spawn_variables[7]) > 1 hold_up = spawn_variables[7][1];
+    if array_length_1d(spawn_variables[7]) > 2 trigger_relative = spawn_variables[7][2];
     with obj_stage_article if num == 3 other.action_manager = id;
+    
     //cur_scene = 0;
     //trigger_var = noone;
     //trigger_objects = [pHitBox];
@@ -27,7 +30,7 @@ if !_init {
             trigger_obj_type = pHitBox;
             break;
         case 2: //Stage Article
-            trigger_obj_type = object_stage_article;
+            trigger_obj_type = obj_stage_article;
             break;
     }
     _init = 1;
@@ -45,11 +48,17 @@ switch trigger_shape {
         collis_obj  = instance_place(x,y,trigger_obj_type);
         break;
 }
-if collis_obj != noone && (trigger_negative == 0 || ("num" in collis_obj && num == trigger_negative)) && (active_scene == 0 || cur_scene == active_scene) {
+if collis_obj != noone && (!req_item_id == 0 || (("num" in collis_obj && collis_obj.num == 10 && collis_obj.item_id == trigger_extra[0]))
+                        || (!hold_up || collis_obj.up_down)) && (active_scene == 0 || cur_scene == active_scene) {
     if trigger_cooldown == 0 {
         if debug print_debug("[TZ] TRIGGERED "+string(action_id));
-        with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);
-        if destroy_on_trigger state = 2;
+        if trigger_relative with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.id]);
+        else  with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);
+        // with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.id]);
+        if destroy_on_trigger {
+            instance_destroy();
+            exit;
+        }
         trigger_cooldown = trigger_cooldown_max;
     }
 } else {

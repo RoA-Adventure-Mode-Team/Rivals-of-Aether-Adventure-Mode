@@ -8,7 +8,9 @@ enum TR {
     FAR,
     RANDOM,
     LOW,
-    HIGH
+    HIGH,
+    WAYPOINT,
+    CONE
 }
 
 //Event Enum
@@ -31,10 +33,14 @@ if !_init {
     enem_id = spawn_variables[0];
     spawn_event = spawn_variables[1];
     death_event = spawn_variables[2];
+    waypoints = spawn_variables[3];
+    waypoint_index = spawn_variables[4];
+    if array_length(waypoints) == 0 waypoint_index = -1;
     //player_controller = 1;
+    if debug print_debug("[6:EN] Init Enemy: "+string(enem_id));
     art_event = EN_EVENT.INIT;
     user_event(6);
-    
+    sprite_index = enemy_sprite_get(enem_id,"idle");
     //Spawn event
     if (spawn_event > 0) {
     	with obj_stage_article if num == 3 {
@@ -42,6 +48,40 @@ if !_init {
     		event_triggered = true;
     	}
     }
+    
+    for (var _i = 0; _i < array_length(attached_articles); _i++) {
+        var art;
+        var rel_pos = [attached_articles[_i][1]*16,attached_articles[_i][2]*16];
+        switch attached_articles[_i][3] {
+            case 2:
+                //obj_type = "obj_stage_article_solid";
+                art = instance_create(x+floor(rel_pos[0]),y+floor(rel_pos[1]),"obj_stage_article_solid",attached_articles[_i][0]);
+                break;
+            case 1:
+                //obj_type = "obj_stage_article_platform";
+                art = instance_create(x+floor(rel_pos[0]),y+floor(rel_pos[1]),"obj_stage_article_platform",attached_articles[_i][0]);
+                break;
+            case 0:
+                //obj_type = "obj_stage_article";
+                art = instance_create(x+floor(rel_pos[0]),y+floor(rel_pos[1]),"obj_stage_article",attached_articles[_i][0]);
+            	break;
+        }
+        art.spawn_variables = attached_articles[_i][5];
+        art.depth = attached_articles[_i][4];
+        art.og_depth = attached_articles[_i][4];
+        art.cell_size = cell_size;
+        art.init_pos = [attached_articles[_i][1],attached_articles[_i][2]];
+        art.cell_pos = cell_pos;
+        attached_articles[@_i][@6][@0] = art.id;
+        art.action_article_index = attached_articles[_i][6][1]; //array_room_data[_room_id][i][1][j][6][1] 6D Array!
+        art.room_manager = room_manager;
+        art.debug = obj_stage_main.debug;
+        
+        art.rel_pos = rel_pos;
+        
+        array_push(loaded_articles, art);
+    }
+    
     _init = 1;
     exit;
     //print_debug(get_attack_name(attacks[0]));
@@ -82,7 +122,8 @@ if !_init {
                 with obj_stage_article if get_article_script(id) == 5 && follow_player != other.id follow_player = other.id;
                 get_inputs(player_controller);
             }
-            if instance_exists(ai_target) frame_update();
+            // if ai_target != noone && (waypoint_index > -1 || instance_exists(ai_target)) frame_update();
+            if ai_target != noone frame_update();
             ai_update();
             input_process();
             state_machine();
@@ -164,27 +205,42 @@ if hitpoints_max > 0 {
     }
 }
 //Default AI Targeting
+var new_target = noone;
 switch target_behavior {
     case TR.NEAR:
-        ai_target = instance_nearest(x,y,oPlayer);
+        new_target = instance_nearest(x,y,oPlayer);
         break;
     case TR.FAR:
-        ai_target = instance_furthest(x,y,oPlayer);
+        new_target = instance_furthest(x,y,oPlayer);
         break;
     case TR.RANDOM:
         var player_targ = random_func(0,instance_number(oPlayer), true);
         var i = 0;
-        with oPlayer if i == player_targ other.ai_target = id; else i++;
+        with oPlayer if i == player_targ new_target = id; else i++;
         break;
     case TR.LOW:
-        ai_target = instance_nearest(x,y,oPlayer);
-        with oPlayer if other.ai_target.damage < damage ai_target = id;
+        new_target = instance_nearest(x,y,oPlayer);
+        with oPlayer if get_player_damage(new_target.player) < get_player_damage(player) new_target = id;
         break;
     case TR.HIGH:
-        ai_target = instance_furthest(x,y,oPlayer);
-        with oPlayer if other.ai_target.damage > damage ai_target = id;
+        new_target = instance_furthest(x,y,oPlayer);
+        with oPlayer if get_player_damage(new_target.player) > get_player_damage(player) new_target = id;
+        break;
+    case TR.WAYPOINT:
+        if waypoint_index < 0 {
+            new_target = id;
+            break;
+        } 
+        if patrol_type == 1 && x_dist < waypoint_r && y_dist < waypoint_r waypoint_index++; //if patrolling and near waypoint
+        if waypoint_index < array_length(waypoints) ai_target = waypoints[waypoint_index];
+        break;
+    case TR.CONE:
+        
         break;
 }
+
+if new_target != noone && new_target.team != team ai_target = new_target;
+
 if freeze {
     right_down = false;
     left_down = false;
@@ -309,7 +365,7 @@ switch (enemy_class) {
                 if (left_hard_pressed || right_hard_pressed) {
                     if (left_down || right_down) && able_to_dash {
                         next_state = PS_DASH_START;
-                        hsp = hard_press_dir*initial_dash_speed
+                        hsp = hard_press_dir*initial_dash_speed;
                     }
                 }
                 else if !(left_down || right_down) next_state = PS_IDLE;
@@ -360,7 +416,7 @@ switch (enemy_class) {
                 if (left_hard_pressed || right_hard_pressed) {
                     if (left_down || right_down) && able_to_dash {
                         next_state = PS_DASH_START;
-                        hsp = hard_press_dir*initial_dash_speed
+                        hsp = hard_press_dir*initial_dash_speed;
                     }
                 } else if (left_down || right_down) {
                     next_state = PS_WALK;
@@ -420,7 +476,7 @@ switch (enemy_class) {
                 if (left_hard_pressed || right_hard_pressed) {
                     if !joy_pad_idle && able_to_dash {
                         next_state = PS_DASH_START;
-                        hsp = hard_press_dir*initial_dash_speed
+                        hsp = hard_press_dir*initial_dash_speed;
                     }
                 }
                 else if joy_pad_idle next_state = PS_IDLE;
@@ -466,7 +522,7 @@ switch (enemy_class) {
                 if (left_hard_pressed || right_hard_pressed) {
                     if !joy_pad_idle && able_to_dash {
                         next_state = PS_DASH_START;
-                        hsp = hard_press_dir*initial_dash_speed
+                        hsp = hard_press_dir*initial_dash_speed;
                     }
                 } else if !joy_pad_idle {
                     next_state = PS_WALK;
@@ -596,7 +652,10 @@ else if !down_down can_fallthrough = 0;
 #define physics_update() //Physics updates, every frame
 horiz_col = false;
 vert_col = false;
-is_free = can_be_grounded ? (vsp < 0 || (!place_meet_solid(x,y+2) && !(get_plat(x,y+2) && !can_fallthrough))) : true;
+// is_free = can_be_grounded ? (vsp < 0 || (place_meet(x,y+2) && !(place_meet(x,y-2) && !can_fallthrough))) : true;
+is_free = can_be_grounded ? (vsp < 0 || (!place_meet_solid(x,y+2) && !(place_meet_plat(x,y+2) && !can_fallthrough))) : true;
+
+is_free = can_be_grounded ? (vsp < 0 || (!(place_meet_solid(x,y+2)) && !(place_meet_plat(x,y+2) && !place_meet_plat(x,y-2) && !can_fallthrough) )) : true;
 //free = true;
 //var _y = 0;
 //var _y_limit = 32;
@@ -648,7 +707,7 @@ if (!ignores_walls) {
     if !vert_col && (place_meet_solid(x+5,y) || place_meet_solid(x-5,y)) horiz_col = true;
 }
 //Fix Clipping
-if !is_free && vsp <= 0 && place_meet(x,y+1) y--;
+if !is_free && vsp <= 0 && place_meet(x,y+1) && !place_meet_plat(x,y-1) y--;
 /*if !is_free && vsp <= 0 {
 //if state == PS_LAND || state == PS_LANDING_LAG || state == PS_WAVELAND {
     while (place_meet(x,y-_y+1) && _y < _y_limit+1)  _y++;
@@ -697,7 +756,7 @@ if invincible == 0 {
     mask_index = collision_box;
     if hit_id == noone has_hit = 0;
     if hit_lockout > 0 hit_lockout--;
-    if instance_exists(hit_id) && hit_id.player != player_id.player && (get_player_team(hit_id.player) != team)  && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
+    if instance_exists(hit_id) && hit_id.player != player_id.player && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
         enemy_got_hit(hit_id);
         if (health_share_mode == 0) {
             if (array_length(health_children) > 0) {
@@ -713,47 +772,57 @@ if invincible == 0 {
     }
 } else invincible--;
 
+//Attached article update
+for (var _i = 0; _i < array_length(loaded_articles); _i++) {
+    // loaded_articles[_i].x = x;
+    // loaded_articles[_i].y = y;
+    if !instance_exists(loaded_articles[_i]) {
+    	array_cut(loaded_articles,_i);
+    	_i--;
+    	continue;
+    }
+    loaded_articles[_i].x = x+loaded_articles[_i].rel_pos[0];
+    loaded_articles[_i].y = y+loaded_articles[_i].rel_pos[1];
+}
 #define hitbox_update() //Update enemy hitboxes
-if (instance_exists(pHitBox)) {
-    with asset_get("pHitBox") if "hit_owner" in self && hit_owner == other.id {
-        with (other) {
-            art_event = EN_EVENT.SET_ATTACK;
-            user_event(6); //Custom behavior
-            get_hitboxes(other.attack);
-        }
-        with (oPlayer) {
-            if (place_meeting(x, y, other)) {
-                if (other.hit_owner.has_hit_en == 0) {
-                        other.hit_owner.has_hit_en = 1;
-                }
-                else {
-                    other.hit_owner.my_hitboxID = other.id;
-                    other.hit_owner.was_parried = obj_stage_main.was_parried;
-                    if (!other.hit_owner.was_parried)
-                        other.hit_owner.art_event = EN_EVENT.HIT_PLAYER;
-                    else
-                        other.hit_owner.art_event = EN_EVENT.GOT_PARRIED;
-                    other.hit_owner.hit_player_obj = id;
-                    with (other.hit_owner) {
-                        user_event(6); //Custom behavior
-                    }   
-                }
+with pHitBox if "hit_owner" in self && hit_owner == other.id {
+    with (other) {
+        art_event = EN_EVENT.SET_ATTACK;
+        user_event(6); //Custom behavior
+        get_hitboxes(other.attack);
+    }
+    with (oPlayer) {
+        if (place_meeting(x, y, other)) {
+            if (other.hit_owner.has_hit_en == 0) {
+                    other.hit_owner.has_hit_en = 1;
+            }
+            else {
+                other.hit_owner.my_hitboxID = other.id;
+                other.hit_owner.was_parried = obj_stage_main.was_parried;
+                if (!other.hit_owner.was_parried)
+                    other.hit_owner.art_event = EN_EVENT.HIT_PLAYER;
+                else
+                    other.hit_owner.art_event = EN_EVENT.GOT_PARRIED;
+                other.hit_owner.hit_player_obj = id;
+                with (other.hit_owner) {
+                    user_event(6); //Custom behavior
+                }   
             }
         }
-        if (type != 2) {
-            var x_off = other.hg_x[hbox_num];
-            var y_off = other.hg_y[hbox_num];
-            x_pos = ((other.x + x_off * other.spr_dir) - obj_stage_main.x);
-            y_pos = ((other.y + y_off) - obj_stage_main.y);
-            hsp = other.hsp;
-            vsp = other.vsp;
-            spr_dir = other.spr_dir;
-            
-            if (obj_stage_main.hitstop > 0) {
-                other.hitpause = obj_stage_main.hitstop;
-                obj_stage_main.hitstop = 0;
-                obj_stage_main.hitpause = false;
-            }
+    }
+    if (type != 2) {
+        var x_off = other.hg_x[hbox_num];
+        var y_off = other.hg_y[hbox_num];
+        x_pos = ((other.x + x_off * other.spr_dir) - obj_stage_main.x);
+        y_pos = ((other.y + y_off) - obj_stage_main.y);
+        hsp = other.hsp;
+        vsp = other.vsp;
+        spr_dir = other.spr_dir;
+        
+        if (obj_stage_main.hitstop > 0) {
+            other.hitpause = obj_stage_main.hitstop;
+            obj_stage_main.hitstop = 0;
+            obj_stage_main.hitpause = false;
         }
     }
 }
@@ -827,7 +896,7 @@ switch (battle_state) {
         if (start_battle) {
             var intro_done = true;
             
-            show_healthbar = true;
+            // show_healthbar = true;
             
             if (is_boss && hitpoints_max > 0) {
                 if (battle_state_timer > 30) {
@@ -1430,3 +1499,18 @@ if (_hbox.type == 2 && _hbox.enemies == 0) {
     instance_destroy(_hbox);
 }
 has_hit = 1;
+#define array_cut(_array, _index)
+var _array_cut = array_create(array_length_1d(_array)-1);
+var j = 0;
+for (var i = 0; i < array_length_1d(_array); i++) {
+	if i != _index {
+		_array_cut[@j] = _array[i];
+		j++;
+	}
+}
+return _array_cut;
+
+#define cell_to_real(_pos,_cell_pos) //Translate cell coordinates to real
+//_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
+with room_manager return [(_pos[0]-grid_offset)*cell_size + (cell_dim[0]*_cell_pos[0]-grid_offset*(_cell_pos[0]))*cell_size + render_offset[0], 
+		(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1])*cell_size + render_offset[1]];

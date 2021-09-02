@@ -93,9 +93,17 @@ if debug {
     draw_rectangle_color(0,0,350,110,c_black,c_black,c_black,c_black,c_black);
     draw_set_alpha(1);
     draw_debug_text(2,0,"FPS: "+string(fps));
+    var _count = 0;
+    // with action_manager {
+    // 	for (var _i = 0; _i < array_length_1d(cur_actions); _i++)
+    // 	{
+    // 		if cur_actions[_i][1] == room_id && cur_actions[_i][2] == scene_id _count++;
+    // 	}
+    // 	draw_debug_text(2,16,"ACT: "+string(_count));
+    // }
     with action_manager draw_debug_text(2,16,"ACT: "+string(array_length_1d(cur_actions)));
     draw_debug_text(2,32,"WIN: "+string(array_length_1d(active_win)));
-    var _count = 0;
+    // var _count = 0;
     with obj_stage_article _count++;
     with obj_stage_article_platform _count++;
     with obj_stage_article_solid _count++;
@@ -113,6 +121,7 @@ if debug {
     }
     //draw_circle_color(view_get_wview()/2,view_get_hview()/2,4,c_red,c_red,false);
     draw_circle_color(follow_player.x-view_get_xview(),follow_player.y-view_get_yview(),4,c_red,c_red,false);
+    
     // with action_manager draw_debug_text(100,96,string(suspened_actions));
 }
 //Room Swap effects
@@ -167,7 +176,7 @@ if string_count("`",keyboard_string) {
 win_call = 0;
 user_event(2); //Cursor and Window Draw
 
-draw_debug_text(430-floor(string_length("AM ALPHA "+string(am_vers))/2),0,"AM ALPHA "+string(am_vers)); 
+if debug draw_debug_text(430-floor(string_length("AM ALPHA "+string(am_vers))/2),0,"AM ALPHA "+string(am_vers)); 
 
 //user_event(); //Draw Endscreen
 // #define draw_scene() //Drawing HUD
@@ -332,6 +341,7 @@ repeat ds_list_size(active_bosses) {
     var hbar_shake_y = 0;
     
     with (boss) {
+    	if !show_healthbar continue;
         hbar_color = char_hud_color;
         show_percent = hitpoints_max <= 0;
         hbar_percent = percent;

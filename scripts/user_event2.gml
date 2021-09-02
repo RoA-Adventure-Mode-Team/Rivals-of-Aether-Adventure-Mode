@@ -24,9 +24,10 @@ enum WIN {
 	DIALOG_DEFAULT,
 	AREATITLE,
 	AREAFADE,
-	ARCHY_DIALOG,
+	POP_DIALOG,
 	POINTOUT,
 	QUESTLIST,
+	NOTE_SCROLL
 	
 }
 
@@ -39,6 +40,7 @@ enum GUI {
 	SCROLLBOX,
 	DIALOGBOX_TRIM,
 	LISTBOX,
+	SPRSCR,
 	EXIT
 }
 
@@ -51,18 +53,29 @@ enum SM {
 	LOAD,
 }
 
-if win_call == 0 {
+if win_call == 0 { //HUD Draw Call
 	if mouse_x_i != mouse_x || mouse_y_i != mouse_y cursor_visible = true;
+		
 	if cursor_visible do_cursor();
 	draw_windows(); //Draw Objects
 	if cursor_visible {
-		draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
-		logic_cursor();
+		if debug {
+			draw_sprite_ext(cursor_sprite_i, cursor_index, cursor_x, cursor_y, 1, 1, 0, c_white, 1); //Draw cursor over everything
+			logic_cursor();
+			draw_debug_points();
+		}
+		
 	}
 	exit;
 }
 
 if win_call == 1 with obj_stage_main { //Load Data
+	//Reset
+	debug_point_array = [];
+	win_data = [];
+	active_win = [];
+	
+	//Window Data
 	var i = 0;
 	// var _string ="";
 	// win_add(i++,[WIN.DEBUG,
@@ -84,7 +97,7 @@ if win_call == 1 with obj_stage_main { //Load Data
 		new_varcont(["",_string,_w,_h,_sep,_cmd_char]),
 		new_sprite(sprite_get("gui_lucid"),0,-1),
 		new_scrollbox(_string,8,18,_w,_h,_sep,c_white,asset_get("fName")),
-		new_dialogbox(_cmd_char,noone,"_",0.4,4,cmd_h,cmd_w,_sep,c_white,asset_get("fName")),
+		new_dialogbox(_cmd_char,noone,"_",dialog_tick_rate,4,cmd_h,cmd_w,_sep,c_white,asset_get("fName")),
 		new_textbox(cmd_title,8,2,200,16,c_white,asset_get("fName")),
 	]);
 	
@@ -99,28 +112,33 @@ if win_call == 1 with obj_stage_main { //Load Data
 		new_varcont([0,0,0,0,0]),
 		new_textbox("TITLE_NAME",0,0,700,32,c_white,asset_get("roaLBLFont")),
 	]);
+	
 	var _pos = [32,26];
+	var _offset = [20,-128];
 	var _string ="Test";
+	var _dialog_index = 0;
 	var _sound = asset_get("sfx_may_arc_talk");
 	var _w = 176;
-	win_add(i++,[WIN.ARCHY_DIALOG, //3
-		new_varcont([_string,120,0,0,0,0]),
-		new_sprite(sprite_get("archy_dialog"),0,16),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("fName")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("fName")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1],_w,16,c_black,asset_get("fName")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1],_w,16,c_black,asset_get("fName")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]-2,_pos[1]+2,_w,16,c_black,asset_get("fName")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0]+2,_pos[1]-2,_w,16,c_black,asset_get("fName")),
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,$d252ff,asset_get("fName")) //$ff00ff $ea00ea $d252ff
+	win_add(i++,[WIN.POP_DIALOG, //3
+		new_varcont([_dialog_index,120,0,0,0,0]),
+		new_sprite(sprite_get("s_talk_gui"),_offset[0],14+_offset[1]),
+		new_trim_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0]+_offset[0],_pos[1]+_offset[1],_w,16,c_white,asset_get("fName")) //$ff00ff $ea00ea $d252ff
+		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("fName")),
+		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("fName")),
+		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0]-2,_pos[1],_w,16,c_black,asset_get("fName")),
+		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0]+2,_pos[1],_w,16,c_black,asset_get("fName")),
+		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0]-2,_pos[1]+2,_w,16,c_black,asset_get("fName")),
+		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0]+2,_pos[1]-2,_w,16,c_black,asset_get("fName")),
+		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1],_w,16,$d252ff,asset_get("fName")) //$ff00ff $ea00ea $d252ff
 	]);
+	
 	var _string ="Test";
 	//var _sound = asset_get("sfx_propeller_dagger_loop");
 	var _sound = asset_get("sfx_shop_move");
 	var _w = 400;
 	win_add(i++,[WIN.POINTOUT, //4
-		new_varcont([_string,120,0,0,0,0]),
-		new_trim_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1],_w,16,c_white,asset_get("roaLBLFont")) //$ff00ff $ea00ea $d252ff
+		new_varcont([_string,120,0,0,0,0,0]),
+		new_trim_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1],_w,16,c_white,asset_get("roaLBLFont")) //$ff00ff $ea00ea $d252ff
 	]);
 	
 	win_add(i++,[WIN.QUESTLIST, //5 //Expansive Custom Window, Shows Quest List
@@ -129,19 +147,35 @@ if win_call == 1 with obj_stage_main { //Load Data
 		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
 		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
 	]);
-	var _pos = [144,8];
+	
+	var _pos = [32,8];
 	var _string ="Init";
-	var _sound = noone;
+	var _sound = asset_get("sfx_frog_jab");
 	// var _sound = asset_get("empty_sprite");
 	var _w = 500;
 	win_add(i++,[WIN.DIALOG_DEFAULT, //6
-		new_varcont([1,1]), //ID, Progress
+		new_varcont([1,1,1,_sound]), //ID, Progress, freeze_player,sound/flap
 		new_sprite(sprite_get("talk_gui"),0,0), //Dialog Background Sprite
-		new_sprite(sprite_get("face_default"),0,0), //Dialog Picture
-		new_dialogbox(_string,_sound,"_",0.4,_pos[0],_pos[1]+2,_w,18,c_white,asset_get("medFont")), //Main Text
+		new_varcont([]), //Filler to replace dialog picture
+		// new_sprite(sprite_get("face_default"),0,0), //Dialog Picture
+		new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1]+2,_w,18,c_white,asset_get("medFont")), //Main Text
 		// new_sprite(sprite_get("response_gui"),0,0), //Response Sprite
 		// new_listbox(["Response 1","Response 2"],asset_get("empty_sprite"),_sound,_pos[0],_pos[1]+2,_w,18,c_white,asset_get("medFont")), //Listbox new_listbox(_choices,_select_sprite,_sound,_x,_y,_w,_sep,_color,_font)
 	]);
+	
+	var _sprite = asset_get("empty_sprite");
+	var _x = cam_width;
+	var _y = cam_height;
+	var _rate = [10,10];
+	win_add(i++,[WIN.NOTE_SCROLL, //6 //Expansive Custom Window, Shows Quest List
+		new_varcont([_sprite,_x,_y,_rate]), //sprite, x, y, rate
+		new_sprscr(_sprite,_x,_y,_rate)
+		//new_sprite(sprite_get("gui_test"),0,0),
+		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
+		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
+	]);
+	
+	
 	exit;
 }
 
@@ -149,6 +183,11 @@ if win_call == 2 {//Update Call
 	with obj_stage_main logic_windows(); 
 	exit;
 	
+}
+
+if win_call == 3 { //World Draw Call?
+	
+	exit;
 }
 #define logic_windows() //Update Call
 var _x = 0;
@@ -173,39 +212,40 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				keyboard_string = "";
 				end_window(_i);
 				_i--;
+				break;
 			}
-			if win_active == _i {
-				if string_count("/",keyboard_string) {
-					console_parse = string_parse(_element[4][1]," ");
-					if console_parse != [] {
-						cmd_command(console_parse,_element[4][1],false);
-						// if !cmd_save_output cmd_output = parse_lines(cmd_output,_element[3][4],_element[3][5],16,-1);
-						_element[@4][@1] = cmd_char;
-					}
-					keyboard_string = "";
+			// if win_active == _i {
+			if string_count("/",keyboard_string) {
+				console_parse = string_parse(_element[4][1]," ");
+				if console_parse != [] {
+					cmd_command(console_parse,_element[4][1],false);
+					// if !cmd_save_output cmd_output = parse_lines(cmd_output,_element[3][4],_element[3][5],16,-1);
+					_element[@4][@1] = cmd_char;
 				}
-				if string_count("\",keyboard_string) {
-					_element[@4][@1] = string_delete(_element[4][1],string_length(_element[4][1]),2);
-					keyboard_string = "";
-				}
-				if keyboard_string != "" {
-					_element[@4][@1] += keyboard_string;
-					keyboard_string = "";
-				}
-				// with oPlayer {
-				// 	if attack_held == 1 {
-				// 		other.console_parse = string_parse(_element[4][1]," ");
-				// 		if other.console_parse != [] with other {
-				// 			cmd_command(console_parse,_element[4][1]);
-				// 			if !cmd_save_output cmd_output = parse_lines(cmd_output,_element[3][4],_element[3][5],16,-1);
-				// 			_element[@3][@1] = cmd_output;
-				// 			_element[@4][@1] = cmd_char;
-				// 		}
-				// 		// down_held = 1;
-				// 	}
-				// 	if special_held == 1 _element[@4][@1] = string_delete(_element[4][1],string_length(_element[4][1]),1);
-				// }
+				keyboard_string = "";
 			}
+			if string_count("\",keyboard_string) {
+				_element[@4][@1] = string_delete(_element[4][1],string_length(_element[4][1]),2);
+				keyboard_string = "";
+			}
+			if keyboard_string != "" {
+				_element[@4][@1] += keyboard_string;
+				keyboard_string = "";
+			}
+			// with oPlayer {
+			// 	if attack_held == 1 {
+			// 		other.console_parse = string_parse(_element[4][1]," ");
+			// 		if other.console_parse != [] with other {
+			// 			cmd_command(console_parse,_element[4][1]);
+			// 			if !cmd_save_output cmd_output = parse_lines(cmd_output,_element[3][4],_element[3][5],16,-1);
+			// 			_element[@3][@1] = cmd_output;
+			// 			_element[@4][@1] = cmd_char;
+			// 		}
+			// 		// down_held = 1;
+			// 	}
+			// 	if special_held == 1 _element[@4][@1] = string_delete(_element[4][1],string_length(_element[4][1]),1);
+			// }
+			// }
 			_element[@3][@1] = cmd_output;
 			break;
 		case WIN.AREATITLE:
@@ -220,40 +260,57 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			if alive_time > title_time*2 {
 				end_window(_i);
 				_i--;
+				break;
 			}
 			break;
-		case WIN.ARCHY_DIALOG:
+		case WIN.POP_DIALOG:
 			if alive_time == 1 {
 				//print_debug(string(_element[1][1]));
-				active_win[@_i][1][@3][@1] = _element[1][1];
-				active_win[@_i][1][@4][@1] = _element[1][1];
-				active_win[@_i][1][@5][@1] = _element[1][1];
-				active_win[@_i][1][@6][@1] = _element[1][1];
-				active_win[@_i][1][@7][@1] = _element[1][1];
-				active_win[@_i][1][@8][@1] = _element[1][1];
-				active_win[@_i][1][@9][@1] = _element[1][1];
-				//TEST
-				_element[@1][@4] = _x;
-				_element[@1][@5] = _y;
-				//TEST
+			
+				// _element[@3][@1] = _element[1][1];
+				var _random = random_func_2(id % 24, array_length_1d(action_manager.dialog_array[_element[1][1]])-1, true)+1;
+				_element[@3][@1] = action_manager.dialog_array[_element[1][1]][_random][0];
+				
+				if active_win[_i][0][4] != room_manager {
+					_element[@1][@6] = active_win[_i][0][4]; //Get tracking id if it's not room_id
+					_element[@1][@4] = _element[1][6].x;
+					_element[@1][@5] = _element[1][6].y;
+				} else {
+					_element[@1][@4] = _x;
+					_element[@1][@5] = _y;
+				}
+				print_debug(string(_element[1][4]));
+				print_debug(string(_element[1][5]));
+				// sound_play(dialog_up);
 			}
-			//TEST
-			active_win[@_i][@0][@0] = _element[1][4]-view_get_xview();
-			active_win[@_i][@0][@1] = _element[1][5]-view_get_yview();
-			//
+			if _element[1][6] != room_manager {
+				if !instance_exists(_element[1][6]) { //Abort abort!
+					end_window(_i);
+					_i--;
+					break;
+				}
+				active_win[@_i][@0][@0] = _element[1][6].x-view_get_xview();
+				active_win[@_i][@0][@1] = _element[1][6].y-view_get_yview();
+			} else {
+				active_win[@_i][@0][@0] = _element[1][4]-view_get_xview();
+				active_win[@_i][@0][@1] = _element[1][5]-view_get_yview();
+			}
 			if _element[3][11] > string_length(_element[3][1])-1 {
 				_element[@1][@3] += 1;
 				if _element[1][3] > _element[1][2] {
 					end_window(_i);
 					_i--;
+					break;
 				}
 			}
 			break;
 		case WIN.POINTOUT:
 			if alive_time == 1 {
 				active_win[@_i][1][@2][@1] = _element[1][1];
+				//TEST
 				_element[@1][@4] = _x;
 				_element[@1][@5] = _y;
+				//
 			}
 			//TEST
 			active_win[@_i][@0][@0] = _element[1][4]-view_get_xview();
@@ -264,15 +321,30 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				if _element[1][3] > _element[1][2] {
 					end_window(_i);
 					_i--;
+					break;
 				}
 			}
 			break;
 		case WIN.QUESTLIST:
 			_quests = action_manager.quest_active;
 			// print(_quests[0][_quests[0][0][0]][0]);
+			//Moved to action manager on quest update <- Moving back for proper display
+			for (var _a = 0; _a < array_length_1d(_quests); _a++) {
+				if _quests[_a][0] > array_length(_quests[_a])-1 {
+					if quest_complete_timer == 0 sound_play(quest_complete);
+					quest_complete_timer++;
+					if quest_complete_timer >= quest_complete_timer_max {
+						quest_complete_timer = 0;
+						action_manager.quest_active = array_cut(action_manager.quest_active,_a);
+						_a--;
+					}
+					break;
+					
+				}
+			}
 			break;
 		case WIN.DIALOG_DEFAULT:
-			//Element List: 1 - varcont[], 2 - Bg, 3 - Face, 4- Dialog
+			//Element List: 1 - varcont[id, progress, freeze_players], 2 - Bg, 3 - Face, 4- Dialog
 			if alive_time == 1 {
 				//_element[@1][@1]
 				_element[@4][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][0]; //Set to initial dialog: [id][progress][string,face,bg]
@@ -280,21 +352,41 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 					_element[@3][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][0][1]; //Set to initial dialog: [id][progress][string,face,bg]
 					if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]][0]) > 2 _element[@2][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][2]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
 				}
-					
-				}
+			}
+			var _continue = 1;
 			with oPlayer {
-				if attack_held == 1 || taunt_held == 1 {
-					print("Upping text...");
+				if _element[1][3] && state != PS_SPAWN set_state(PS_SPAWN); //If freeze players
+				if (attack_held == 1 || taunt_held == 1) {
+					// print("Upping text...");
 					_element[@1][@2]++;
 					if _element[1][2] > array_length_1d(action_manager.dialog_array[_element[1][1]])-1 { //The end of the conversation!
-						with other end_window(_i);
+						if _element[1][3] && state == PS_SPAWN { 
+							set_state(PS_IDLE); //If freeze players
+							attack_end();
+						}
+						with other {
+							end_window(_i);
+							_i--;
+							_continue = 0;
+						}
 					}
-					_element[@4][@11] = 0;
-					_element[@4][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][0];
-					if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]]) > 1 {
-					_element[@3][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][1]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
-					if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]]) > 2 _element[@2][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][2]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
+					if _continue {
+						_element[@4][@11] = 0;
+						_element[@4][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][0];
+						if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]]) > 1 {
+						_element[@3][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][1]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
+						if array_length_1d(action_manager.dialog_array[_element[1][1]][_element[1][2]]) > 2 _element[@2][@1] = action_manager.dialog_array[_element[1][1]][_element[1][2]][2]; //Set to initial dialog: [id][progress][data/response_map][string,face,bg]
+						}
 					}
+				}
+			}
+			break;
+		case WIN.NOTE_SCROLL:
+			with oPlayer {
+				if state != PS_SPAWN set_state(PS_SPAWN);
+				if special_down with other {
+					end_window(_i);
+					_i--;
 				}
 			}
 			break;
@@ -338,7 +430,7 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 									destroyed = true;
 									instance_destroy(self);
 								}
-								array_cut(debug_selected,0);
+								debug_selected = array_cut(debug_selected,0);
 							}
 							break;
 						case SM.EXPORT:
@@ -368,6 +460,8 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 					}
 					update_select = true;
 					end_window(_i);
+					_i--;
+					break;
 				}
 				// print(in_rect(mouse_x,mouse_y,_x+_param[3],_y+_param[4],_x+_param[3]+sprite_get_width(_param[2])*2,_y+_param[4]+sprite_get_height(_param[2])*2));
 				// if mb_l_click && _param[5] { //On Left Click do something
@@ -379,6 +473,12 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				// 			break;
 				// 	}
 				// }
+				break;
+			case GUI.SPRSCR: //scroll the sprite  [GUI.SPRSCR,_sprite,_x,_y,_rate];
+				with oPlayer {
+					if up_held _param[3] -= _param[4][1];
+					if down_held _param[3] += _param[4][1];
+				}
 				break;
 		}
 	}
@@ -406,7 +506,7 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 	win_alpha = 1;
 	switch _element[0] {
 		case WIN.DEBUG:
-			win_alpha = .5+(win_active == _i)*.5;
+			// win_alpha = .5+(win_active == _i)*.5;
 			break;
 		case WIN.AREAFADE:
 			win_alpha = _element[3][1];
@@ -415,10 +515,15 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			win_alpha = _element[1][1];
 			// draw_sprite_ext(sprite_get("gui_test"),0,_x,_y,2,2,0,c_white,win_alpha);
 			draw_sprite_ext(asset_get("empty_sprite"),0,_x,_y,2,2,0,c_white,win_alpha);
-			draw_set_alpha(.6);
-			draw_rectangle_color(_x,_y,_x+320,_y+96,c_black,c_black,c_black,c_black,false);
-			draw_set_alpha(1);
+			// draw_set_alpha(.6);
+			// draw_rectangle_color(_x,_y,_x+320,_y+96,c_black,c_black,c_black,c_black,false);
+			// draw_set_alpha(1);
 			for (var _a = 0; _a < array_length_1d(_quests); _a++) {
+				if _quests[_a][0] > array_length(_quests[_a])-1 {
+					draw_sprite_ext(quest_complete_spr,quest_complete_spr_num*2*quest_complete_timer/quest_complete_timer_max,_x,_y+_a*_element[1][4],2,2,0,c_white,win_alpha);
+					continue;
+				}
+				draw_sprite_ext(quest_outline_spr ,0,_x,_y+_a*_element[1][4],2,2,0,c_white,win_alpha); //Get backdrop working
 				draw_sprite_ext(_quests[_a][_quests[_a][0]][2],0,_x,_y+_a*_element[1][4],2,2,0,c_white,win_alpha); //Get Logo Working
 				draw_text_drop(_x+42,_y+_a*_element[1][4]+4,_quests[_a][_quests[_a][0]][0],_element[1][2],_element[1][3],1,1,0,win_alpha);
 				draw_text_drop(_x+42+16,_y+_a*_element[1][4]+4+16,_quests[_a][_quests[_a][0]][1],_element[1][2],_element[1][3],1,1,0,win_alpha);
@@ -438,13 +543,13 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			case GUI.DIALOGBOX:
 				//_param[11] += _param[4];
 				draw_set_font(_param[10]);
-				// if floor(_param[11]/4) % 2 {
-				// 	draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
-				// 	break;
-				// }
-				draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
+				//Command character flash text
+				if !(floor(alive_time/0.1) % 2) draw_text_drop(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,win_alpha);
+				else draw_text_drop(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,win_alpha);
+				// if !(floor(alive_time/_param[4]) % 2) draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
+				// else draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
 				break;
-			case GUI.DIALOGBOX_TRIM:
+			case GUI.DIALOGBOX_TRIM: //VERY HEAVY USE SPARINGLY
 				//_param[11] += _param[4];
 				draw_set_font(_param[10]);
 				var _offset =  2;
@@ -482,6 +587,14 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				draw_sprite_ext(_param[2],_param[5],_x+_param[3],_y+_param[4],2,2,0,c_white,1);
 				draw_text_drop(_x+_param[3]+32,_y+_param[4]+8,_param[6],16,100,1,1,0,1);
 				break;
+			case GUI.SPRSCR: //scroll the sprite  [GUI.SPRSCR,_sprite,_x,_y,_rate];
+				//Background
+				draw_set_alpha(.6);
+				draw_rectangle_color(view_get_xview(),view_get_yview(),view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview(), c_black,c_black,c_black,c_black,false);
+				draw_set_alpha(1);
+				//Sprite Overlay
+				draw_sprite_ext(_param[1],0,_param[2],_param[3],4,4,0,c_white,1);
+				break;
 		}
 	}
 }
@@ -512,6 +625,8 @@ return [GUI.BUTTON,_type,_button_strip,_x,_y,_state,_name];
 var _s = [GUI.VARCONT];
 for (var _i = 0;_i < array_length_1d(_var);_i++) array_push(_s,_var[_i]);
 return _s;
+#define new_sprscr(_sprite,_x,_y,_rate)
+return [GUI.SPRSCR,_sprite,_x,_y,_rate];
 #define win_add(_win_id, _win_data)
 while _win_id >= array_length_1d(win_data)  array_push(win_data, []);
 win_data[@_win_id] = _win_data;
@@ -530,9 +645,9 @@ cursor_y = mouse_y - view_get_yview();
 var _cursor_grid = grid_to_cell([mouse_x+64,mouse_y+64]);
 if debug {
 	//draw_debug_text(cursor_x,cursor_y,string(_cursor_grid[1])+":"+string([floor((_cursor_grid[0][0])/16),floor((_cursor_grid[0][1])/16)])+":"+string([(_cursor_grid[0][0]) % 16, (_cursor_grid[0][1]) % 16]));
-	draw_debug_text(cursor_x,cursor_y,"["+string(_cursor_grid[1][0])+","+string(_cursor_grid[1][1])+"]:["+string(floor((_cursor_grid[0][0])/16))+","+string(floor((_cursor_grid[0][1])/16))+"]:["+string((_cursor_grid[0][0]) % 16)+","+string((_cursor_grid[0][1]) % 16)+"]");
-	draw_debug_text(cursor_x,cursor_y+16,string([cursor_x,cursor_y]));
-	draw_debug_text(cursor_x,cursor_y+32,string([mouse_x,mouse_y]));
+	draw_debug_text(cursor_x,cursor_y+20,"["+string(_cursor_grid[1][0])+","+string(_cursor_grid[1][1])+"]:["+string(floor((_cursor_grid[0][0])/16))+","+string(floor((_cursor_grid[0][1])/16))+"]:["+string((_cursor_grid[0][0]) % 16)+","+string((_cursor_grid[0][1]) % 16)+"]");
+	draw_debug_text(cursor_x,cursor_y+36,string([cursor_x,cursor_y]));
+	draw_debug_text(cursor_x,cursor_y+52,string([mouse_x,mouse_y]));
 }
 return true;
 #define logic_cursor()
@@ -543,8 +658,10 @@ switch mouse_button {
 		if !mb_l_click { //on click
 			mb_l_click = true;
 			click_x = mouse_x;
-			click_y = mouse_x;
-			// print_debug("MB1 CLICK!");
+			click_y = mouse_y;
+			
+			//print_debug("MB1 CLICK!");
+			
 			//Windows
 			var _x = 0;
 			var _y = 0;
@@ -566,6 +683,17 @@ switch mouse_button {
 			
 			//Debug View Objects
 			var _debug_click = !(sign(win_active) == -1);
+			if !_debug_click with obj_stage_article_platform {
+				if collision_point(other.mouse_x,other.mouse_y,self,true,false) != noone {
+					debug_info = !debug_info;
+					depth = (-100*debug_info)+(og_depth*(!debug_info));
+					if debug_info && array_find_index(other.debug_selected,id) == -1 array_push(other.debug_selected,id);
+					else if array_find_index(other.debug_selected,id) != -1 other.debug_selected = array_cut(other.debug_selected,array_find_index(other.debug_selected,id));
+					_debug_click = 1;
+					break;
+				}
+			}
+			
 			if !_debug_click with obj_stage_article {
 				if "static" in self && static break; //Don't Select Background
 				switch num {
@@ -600,6 +728,7 @@ switch mouse_button {
 					break;
 				}
 			}
+			
 			if !_debug_click with obj_stage_article_solid {
 				if collision_point(other.mouse_x,other.mouse_y,self,true,false) != noone {
 					debug_info = !debug_info;
@@ -610,16 +739,9 @@ switch mouse_button {
 					break;
 				}
 			}
-			if !_debug_click with obj_stage_article_platform {
-				if collision_point(other.mouse_x,other.mouse_y,self,true,false) != noone {
-					debug_info = !debug_info;
-					depth = (-100*debug_info)+(og_depth*(!debug_info));
-					if debug_info && array_find_index(other.debug_selected,id) == -1 array_push(other.debug_selected,id);
-					else if array_find_index(other.debug_selected,id) != -1 other.debug_selected = array_cut(other.debug_selected,array_find_index(other.debug_selected,id));
-					_debug_click = 1;
-					break;
-				}
-			}
+			
+			
+			
 		}
 		//print_debug(string(win_active));
 		if win_drag != -1 {
@@ -629,19 +751,39 @@ switch mouse_button {
 		break;
 	case 2:
 		if !mb_r_click { //on click
+		var _debug_click = 0;
 			while array_length_1d(cursor_drag_offset_x) < array_length_1d(debug_selected) {
 				array_push(cursor_drag_offset_x, 0);
 				array_push(cursor_drag_offset_y, 0);
+				_debug_click = 1;
 			}
 			for (var _i = 0;_i < array_length_1d(debug_selected);_i++) {
-				cursor_drag_offset_x[@_i] = mouse_x-debug_selected[_i].x;
-				cursor_drag_offset_y[@_i] = mouse_y-debug_selected[_i].y;
+				if instance_exists(debug_selected[_i]) {
+					cursor_drag_offset_x[@_i] = mouse_x-debug_selected[_i].x;
+					cursor_drag_offset_y[@_i] = mouse_y-debug_selected[_i].y;
+					_debug_click = 1;
+				} else debug_selected = array_cut(debug_selected,_i);
+			}
+			//Debug Points
+			if !_debug_click { 
+				for (var _i = 0; _i < array_length_1d(debug_point_array); _i++) { //Try to find a debug point under the cursor
+					if point_distance(mouse_x,mouse_y,debug_point_array[_i].x,debug_point_array[_i].y) < debug_point_array[_i].r {
+						debug_point_array = array_cut(debug_point_array,_i);
+						_debug_click = 1;
+						break;
+					}
+				}
+				if !_debug_click { //If there wasn't a debug point under the cursor
+					array_push(debug_point_array,new_debug_point(mouse_x,mouse_y,debug_point_r,debug_point_color));
+				}
 			}
 		}
 		mb_r_click = true;
 		for (var _i = 0;_i < array_length_1d(debug_selected);_i++) {
-			debug_selected[_i].x = floor((mouse_x-cursor_drag_offset_x[_i])/2)*2+1;
-			debug_selected[_i].y = floor((mouse_y-cursor_drag_offset_y[_i])/2)*2+1;
+			if instance_exists(debug_selected[_i]) {
+				debug_selected[_i].x = floor((mouse_x-cursor_drag_offset_x[_i])/2)*2+1;
+				debug_selected[_i].y = floor((mouse_y-cursor_drag_offset_y[_i])/2)*2+1;
+			} else debug_selected = array_cut(debug_selected,_i);
 		}
 		break;
 	default:
@@ -655,17 +797,45 @@ switch mouse_button {
 }
 return true;
 
+#define new_debug_point(_mouse_x,_mouse_y,_debug_point_r,_debug_point_color)
+var _new_point = {
+	x: _mouse_x,
+	y: _mouse_y,
+	r: _debug_point_r,
+	c: _debug_point_color
+};
+return _new_point;
+
+#define draw_debug_points()
+// lmb_debug_point = {
+// 	x: 0, //x position of the point
+// 	y: 0,
+// 	r: 10,
+// 	color: $aaaa22
+	
+// };
+var _debug_grid = [];
+for (var _i = 0; _i < array_length_1d(debug_point_array); _i++) {
+	draw_circle_color(debug_point_array[_i].x-view_get_xview(),debug_point_array[_i].y-view_get_yview(),debug_point_array[_i].r,debug_point_array[_i].c,debug_point_array[_i].c,false);
+	_debug_grid = grid_to_cell([debug_point_array[_i].x+64,debug_point_array[_i].y+64]);
+	draw_debug_text(debug_point_array[_i].x-view_get_xview(),debug_point_array[_i].y-view_get_yview(),"["+string(_debug_grid[1][0])+","+string(_debug_grid[1][1])+"]:["+string(floor((_debug_grid[0][0])/16))+","+string(floor((_debug_grid[0][1])/16))+"]:["+string((_debug_grid[0][0]) % 16)+","+string((_debug_grid[0][1]) % 16)+"]");
+	draw_debug_text(debug_point_array[_i].x-view_get_xview(),debug_point_array[_i].y-view_get_yview()+16,"["+string(debug_point_array[_i].x)+","+string(debug_point_array[_i].y)+"]");
+}
+
+return true;
+
 #define cmd_command(_str_a,_str_raw,_sup)
 sup_out = _sup;
 var _with_obj = self;
 _str_a[@0] = string_replace(_str_a[0],cmd_char,"");
 for (var _i = 0;_i < array_length_1d(_str_a);_i++) { //Convert to values
 	if string(_str_a[_i]) != _str_a[_i] blank = 0;
-	else if string_count("sprite:",_str_a[_i]) > 0 _str_a[@_i] = sprite_get(string_replace(string_replace(_str_a[_i],"sprite:'",""),"'",""));
-	else if string_count("asset:",_str_a[_i]) > 0 _str_a[@_i] = asset_get(string_replace(string_replace(_str_a[_i],"asset:'",""),"'",""));
-	else if string_count("sound:",_str_a[_i]) > 0 _str_a[@_i] = sound_get(string_replace(string_replace(_str_a[_i],"sound:'",""),"'",""));
+	// else if string_count("sprite:",_str_a[_i]) > 0 _str_a[@_i] = sprite_get(string_replace(string_replace(_str_a[_i],"sprite:'",""),"'",""));
+	// else if string_count("asset:",_str_a[_i]) > 0 _str_a[@_i] = asset_get(string_replace(string_replace(_str_a[_i],"asset:'",""),"'",""));
+	// else if string_count("sound:",_str_a[_i]) > 0 _str_a[@_i] = sound_get(string_replace(string_replace(_str_a[_i],"sound:'",""),"'",""));
 	else if string_count("r:",_str_a[_i]) > 0 _str_a[@_i] = resource_get(string_replace(string_replace(_str_a[_i],"r:'",""),"'",""));
 	else if string_count("v:",_str_a[_i]) > 0 _str_a[@_i] = variable_instance_get(self,string_replace(string_replace(_str_a[_i],"v:'",""),"'",""));
+	else if string_count("d:",_str_a[_i]) > 0 _str_a[@_i] = real(string_replace(string_replace(_str_a[_i],"d:'",""),"'",""));
 }
 // print(_str_a);
 with _with_obj {
@@ -673,7 +843,17 @@ with _with_obj {
 		// case "action_import":
 		// 	var _action = get_string("Insert the code for the action you want to import!","");
 		// 	break;
-		case "action_play":
+		case "acts": //Display the list of action IDs active
+			var action_id_list = "List of Actions running ID|Time :
+";
+			with action_manager {
+				for (var i = 0; i < array_length_1d(cur_actions); i++) {
+					action_id_list += string(cur_actions[3])+"|"+string(cur_actions[i][4])+", ";
+				}
+			}
+			cmd_print(_str_raw,action_id_list);
+			break;
+		case "act_play":
 			with action_manager array_push(action_queue, [room_id, scene_id, real(_str_a[1])]);
 			break;
 		case "attack": //Cause Enemies to attack
@@ -687,30 +867,61 @@ with _with_obj {
 			break;
 		case "lucid": //Enable breaking commands
 			debug = !debug;
+			with obj_stage_article debug = other.debug;
+			with obj_stage_article_platform debug = other.debug;
+			with obj_stage_article_solid debug = other.debug;
 			cmd_print(_str_raw,"Lucid toggled; WILL desync!");
 			break;
-		case "freecam":
-			if !debug {
-				cmd_print(_str_raw,"Error: Need to be LUCID");
-				break;
-			}
-			cmd_freecam = !cmd_freecam;
-			// follow_player.visible = !visible;
-			cmd_print(_str_raw,"Toggled Freecam Mode (WIP)");
-			break;
+		// case "freecam":
+		// 	if !debug {
+		// 		cmd_print(_str_raw,"Error: Need to be LUCID");
+		// 		break;
+		// 	}
+		// 	cmd_freecam = !cmd_freecam;
+		// 	// follow_player.visible = !visible;
+		// 	cmd_print(_str_raw,"Toggled Freecam Mode (WIP)");
+		// 	break;
 		case "freeze": //Enemy does not do inputs
 			with obj_stage_article if num == 6 freeze = !freeze;
-			cmd_print(_str_raw,"Controlers have been toggled");
+			cmd_print(_str_raw,"Controlers have been toggled for NPCs");
+			break;
+		case "clone":
+		case "c":
+			var _clone;
+			for (var _i = 0; _i < array_length_1d(debug_selected);_i++) {
+				print("Pre-Spawn");
+				switch (debug_selected[_i].object_index) {
+					case obj_stage_article:
+						_clone = instance_create(debug_selected[_i].x, debug_selected[_i].y, "obj_stage_article",debug_selected[_i].num);
+						break;
+					case obj_stage_article_platform:
+						_clone = instance_create(debug_selected[_i].x, debug_selected[_i].y, "obj_stage_article_platform",debug_selected[_i].num);
+						break;
+					case obj_stage_article_solid:
+						_clone = instance_create(debug_selected[_i].x, debug_selected[_i].y, "obj_stage_article_solid",debug_selected[_i].num);
+						break;
+				}
+				print("Post-Spawn");
+				var _c_v_names = variable_instance_get_names(debug_selected[_i]);
+				for (var _j = 0; _j < array_length_1d(_c_v_names); _j++) {
+					if _c_v_names[_j] == "id" continue; //Don't override id
+					variable_instance_set(_clone, _c_v_names[_j],variable_instance_get(debug_selected[_i],_c_v_names[_j]));
+				}
+				print("Post-Var set");
+			}
+			cmd_print(_str_raw,"Cloned Selected Articles");
 			break;
 		case "destroy":
 		case "d":
 			for (var _i = 0; _i < array_length_1d(debug_selected);_i++) {
 				instance_destroy(debug_selected[_i]);
 			}
+			cmd_print(_str_raw,"Destroyed Selected");
 			break;
 		case "clear":
 			cmd_output = "";
-			cmd_print(_str_raw,"Cleared LD Output");
+			debug_point_array = [];
+			cmd_print(_str_raw,"Cleared LD Output and Debug Points");
 			break;
 		case "debug_output": //toggles debug console outputs
 			if !debug {
@@ -729,24 +940,52 @@ with _with_obj {
 				cmd_print(_str_raw,"Debug toggled for selected...");
 			}
 			break;
-		case "export":
-			var _art = debug_selected[0];
-			var _article_type = (_art.object_index == obj_stage_article)*0+
-								(_art.object_index == obj_stage_article_platform)*1+
-								(_art.object_index == obj_stage_article_solid)*2;
-			var _art_sv = "[";
-			//Doesn't convert to a usable name, gotta manually replace it :(
-			// if real(_art.spawn_variables[0]) > 1000 { //Propbably a sprite
-			// 	_art_sv += "sprite_get("+sprite_get_name(real(_art.spawn_variables[0]))+"),";
-			// } else 	_art_sv += string(_art.spawn_variables[0])+",";
-			for (var _i = 0; _i < array_length(_art.spawn_variables);_i++) {
-				_art_sv += string(_art.spawn_variables[_i])+",";
+		case "diff":
+			var _output = "";
+			for (var _i = 1; _i < array_length(debug_point_array); _i++)
+			{
+				_output += "["+string(debug_point_array[_i].x-debug_point_array[_i-1].x) + "," + string(debug_point_array[_i].y-debug_point_array[_i-1].y)+"]"+" : ";
 			}
-			_art_sv += "]";
-			var _art_pos = grid_to_cell([_art.x+64,_art.y+64]);
-			get_string("Copy the below into the room ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script (user_event1)...",
-			"["+string(_art.num)+","+string(floor(_art_pos[0][0]/16))+","+string(_art_pos[0][1]/16)+","+string(_article_type)+","+string(_art.og_depth)+","+_art_sv+",[0,0]"+"],");
-			cmd_print(_str_raw,"Exporting Article into ROOM Format...");
+			cmd_print(_str_raw,"Differences between sequential debug points:
+" + _output);
+			break;
+		case "deselect":
+		case "ds":
+			for (var _i = 0; _i < array_length_1d(debug_selected);_i++) {
+				with debug_selected[_i] {
+					debug_info = 0;
+					depth = og_depth;
+				}
+			}
+			debug_selected = [];
+			break;
+		case "export":
+			for(var _a = 0; _a < array_length(debug_selected); _a++) {
+				if !instance_exists(debug_selected[_a]) {
+					debug_selected = array_cut(debug_selected,_a);
+					_a--;
+				}
+			}
+			for(var _a = 0; _a < array_length(debug_selected); _a++) {
+				var _art = debug_selected[_a];
+				var _article_type = (_art.object_index == obj_stage_article)*0+
+									(_art.object_index == obj_stage_article_platform)*1+
+									(_art.object_index == obj_stage_article_solid)*2;
+				var _art_sv = "[";
+				//Doesn't convert to a usable name, gotta manually replace it :(
+				if real((_article_type == 1 || _article_type == 2) && _art.spawn_variables[0]) > 1000 { //Propbably a sprite
+					_art_sv += "sprite_get("+sprite_get_name(real(_art.spawn_variables[0]))+"),";
+				} //else if string(_art.spawn_variables[0]) == _art.spawn_variables[0] _art_sv += "'"+string(_art.spawn_variables[0])+"',";
+				else _art_sv += string(_art.spawn_variables[0])+",";
+				for (var _i = 1; _i < array_length(_art.spawn_variables);_i++) {
+					_art_sv += string(_art.spawn_variables[_i])+",";
+				}
+				_art_sv += "]";
+				var _art_pos = grid_to_cell([_art.x+64,_art.y+64]);
+				var _ret = get_string("(ctrl+A) Copy the below into the room ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script (user_event1)...",
+				"["+string(_art.num)+","+string(_art_pos[0][0]/16)+","+string(_art_pos[0][1]/16)+","+string(_article_type)+","+string(_art.og_depth)+","+_art_sv+",[0,0]"+"], // Exported from Lucid Dream");
+			}
+			cmd_print(_str_raw,"Exporting Articles into ROOM Format...");
 			break;
 		case "get":
 			if array_length_1d(_str_a) < 2 {
@@ -786,6 +1025,21 @@ with _with_obj {
 			}
 			cmd_print(_str_raw,"You must DIE");
 			break;
+		case "last":
+		case "l":
+			var _shift = 1;
+			if array_length_1d(_str_a) > 1 _shift = _str_a[1];
+			var _com;
+			var _coma = ["l"];
+			while (_coma[0] == cmd_char+"l" || _coma[0] == cmd_char+"last"
+				|| _coma[0] == "l" || _coma[0] == "last") { //Don't do past last commands :P
+				_com = console_com_hist[array_length_1d(console_com_hist)-_shift];
+				_coma = string_parse(_com," ");
+				_shift += 1;
+			}
+			cmd_command(_coma,_com,false);
+			cmd_print(_str_raw,"Repeated the last command");
+			break;
 		case "list":
 			if array_length_1d(_str_a) < 2 {
 				cmd_print(_str_raw,"Error: Article Number Req.");
@@ -814,7 +1068,7 @@ with _with_obj {
 			}
 			cmd_print(_str_raw,_art_list);
 			break;
-		case "new": //The cooler spawn
+		case "new": //hitbox spawn
 			var _hitbox_index = 1;
 			var _hit;
 			with debug_selected[0] {
@@ -829,6 +1083,14 @@ with _with_obj {
 		case "peace": //Make enemies not attack
 			with obj_stage_article if num == 6 peace = !peace;
 			cmd_print(_str_raw,"Aethers' rivalry toggled");
+			break;
+		case "plat": //shortcut for creating a platform
+			if array_length_1d(_str_a) < 2 {
+				cmd_print(_str_raw,"Error: Resource Name Req.");
+				break;
+			}
+			cmd_command(["spawn","1","1","9","r:'"+_str_a[1]+"'"],"",true);
+			cmd_print(_str_raw,"Spawned platform");
 			break;
 		case "s_state": //Save Player States
 			var _variable_names;
@@ -895,12 +1157,6 @@ with _with_obj {
 				// }
 				
 				// print(article1_array);
-			}
-			with obj_article2 {
-				
-			}
-			with obj_article3 {
-				
 			}
 			cmd_print(_str_raw,"Saved State "+string(_state_num));
 			break;
@@ -992,11 +1248,11 @@ with _with_obj {
 				break;
 			}
 			for (var _i = 0; _i < array_length_1d(debug_selected);_i++) if (_str_a[1] in debug_selected[_i]) {
-				if string_count("'",_str_a[2]) == 0 {
-					variable_instance_set(debug_selected[_i],_str_a[1],string_digits(_str_a[2]));
-				} else variable_instance_set(debug_selected[_i],_str_a[1],_str_a[2]);
+				if string_count("'",string(_str_a[2])) == 0 {
+					variable_instance_set(debug_selected[_i],_str_a[1],_str_a[2]);
+				} else variable_instance_set(debug_selected[_i],_str_a[1],string_digits(_str_a[2]));
 			}
-			cmd_print(_str_raw,"Set "+_str_a[1]+" to "+_str_a[2]+" on selected.");
+			cmd_print(_str_raw,"Set "+_str_a[1]+" to "+string(_str_a[2])+" on selected.");
 			break;
 		case "spawn":
 			if array_length_1d(_str_a) < 1 {
@@ -1034,19 +1290,24 @@ with _with_obj {
 			break;
 		case "help":
 			cmd_print(_str_raw,"Valid commands:
+			acts
+			act_play
+			<selected> clone|c
 			<selected> debug_output
-			<selected> destroy
+			diff
+			<selected> destroy|d
 			<selected> export
 			god
 			help
 			kill
 			list [num, selected:self]
 			lucid
+			plat <sprite_name>
 			<selected> man <num>
 			save_output
 			select [id]
-			<selected> set [var] [value]
-			spawn [num] [type] [depth] <arg0 ... arg7>
+			<selected> set|s [var] [value]
+			spawn [num] [type] [depth] <arg0-7>
 			");
 			break;
 		case "":
@@ -1057,6 +1318,8 @@ with _with_obj {
 	}
 }
 sup_out = false;
+array_push(console_com_hist,_str_raw);
+
 return true;
 
 #define cmd_print(_cmd_str,_str)
@@ -1254,9 +1517,9 @@ return;
 with room_manager {
 	_pos = [_pos[0] - render_offset[0],_pos[1] - render_offset[1]];
 	var _sub_pos_x = [(_pos[0] % ((cell_dim[0]-grid_offset)*cell_size)),floor(_pos[0]/((cell_dim[0]-grid_offset)*cell_size))];
-	var _sub_pos_y = [(_pos[1] % ((cell_dim[1]-grid_offset)*cell_size)),floor(_pos[1]/((cell_dim[1]-grid_offset)*cell_size))];
+	var _sub_pos_y = [(_pos[1] % ((cell_dim[1])*cell_size)),floor(_pos[1]/((cell_dim[1])*cell_size))];
 	if sign(_sub_pos_x[0]) == -1 _sub_pos_x[0] += ((cell_dim[0]-grid_offset)*cell_size); 
-	if sign(_sub_pos_y[0]) == -1 _sub_pos_y[0] += ((cell_dim[1]-grid_offset)*cell_size);
+	if sign(_sub_pos_y[0]) == -1 _sub_pos_y[0] += ((cell_dim[1])*cell_size);
     return [[_sub_pos_x[0], //Subcell
 		    _sub_pos_y[0]],
 		   [_sub_pos_x[1], //Cell
