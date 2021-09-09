@@ -14,7 +14,8 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
     last_pos[0] = follow_player.x;
     last_pos[1] = follow_player.y;
     with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
-    // smoothing = 1/5;
+    visible = true;
+    smoothing = 1/5;
 }
 
 //if get_gameplay_time() == 3 { //Move the cam to position
@@ -254,9 +255,11 @@ if _room_id < array_length_1d(array_room_data) {
                         cell_data[@j][@6][@0] = art.id;
                         art.action_article_index = cell_data[j][6][1]; //array_room_data[_room_id][i][1][j][6][1] 6D Array!
                         art.room_manager = id;
+                        art.action_manager = action_manager;
                         art.debug = obj_stage_main.debug;
                         //if cell_data[j][6][1] == 1 cell_data[@j][@6][@0] = -1;
                         articles_spawned++;
+                        art.visible = false;
                         // if debug print_debug("[RM] Room Article: "+string(art.init_pos));
                 }
             }

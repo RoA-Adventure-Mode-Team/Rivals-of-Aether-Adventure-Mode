@@ -7,7 +7,7 @@ if !_init {
     checkpoint_id = spawn_variables[3];
     stock_type = spawn_variables[4];
     stock_limit = spawn_variables[5];
-
+    visible = true;
 }
 state_timer++;
 

@@ -78,6 +78,7 @@ if !_init {
     reload_scenes();
     // debug = true; //Test
     change_scene(1);
+    visible = true;
     _init = true;
     quest_init = true;
     
@@ -209,10 +210,10 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     	if _input_done _action[@P.DIE] = true;
     	break;
     case ACT.ON_QUEST_PROG:
-    	if _param[2] == 1 && quest_array[_param[0]][1] == _param[1] {
+    	if _param[2] == 0 && quest_array[_param[0]][0] == _param[1] {
     		_action[@P.DIE] = true;
     	}
-    	if _param[2] == 1 && quest_array[_param[0]][1] >= _param[1] {
+    	if _param[2] == 1 && quest_array[_param[0]][0] >= _param[1] {
     		_action[@P.DIE] = true;
     	}
     	break;
@@ -541,7 +542,7 @@ return true;
 #define quest_set(_id,_progress)
 if quest_array[_id][0]  == noone array_push(quest_active,quest_array[_id]);
 quest_array[@_id][@0] = _progress;//Save current quest progress
-if _progress == noone {
+if _progress < 0 {
 	if debug print_debug("[AM] Quest Reset: "+string(_id));
 	quest_active = array_cut(quest_active,array_find_index(quest_active,quest_array[_id][0]));
 	return noone;

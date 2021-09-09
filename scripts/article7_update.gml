@@ -15,6 +15,7 @@ if !_init {
                         
     active_scene = spawn_variables[6];
     follow_player = obj_stage_main.follow_player;
+    visible = true;
     _init = 1;
     //print_debug(string(cam_pos));
 }

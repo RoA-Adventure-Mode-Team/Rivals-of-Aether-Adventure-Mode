@@ -1,7 +1,7 @@
 //article16_update, Local Sound
 
 if !_init {
-    
+    visible = true;
     _init = 1;
     exit;
 }

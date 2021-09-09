@@ -312,31 +312,50 @@ action_add(1, 1, 25, ACT.SET,
 [11, "waypoint_index", 0, 0, 2], //article_group, variable, value, ease_type, ease_length
 []); //Actions to start on exit
 
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(1, 3, 1, ACT.SET,  
+[2, "bg_color", $718ae1, 0, 60], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(1, 4, 1, ACT.SET,  
+[2, "bg_color", $813030, 0, 60], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
 ////2: Kei After Door
 // action_add(2, 1, 1, ACT.WAIT,   //room_id, scene_id, action_id, action_type
 // [1],                          //Action arguments
 // [2]);                         //Actionsto start on exit
 
-
+//2: Hallowflame
 action_add(2, 0, 1, ACT.WINDOW, 
 [2, 200, 100, [[],["Hallowflame"],[],["Hallowflame"]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
 
-//Guard Dialog
+//Guard Dialogs
 action_add(2, 0, 2, ACT.WINDOW,
 [3, 2, -3, [[8]]], //window_type, x, y, [id]
 []); //Actions to start on exit
 
 //Spawn 1 Kei for dialog
-// action_add(2, 1, 1, ACT.SPAWN_ART,
-// [[-1,0],[6,0.88,43.94,0,-5,[7,0,0,0,0,0,0,0,],[0,0]]], //cell, [room_format] 
-// [2]); //Actions to start on exit
+action_add(2, 1, 1, ACT.SPAWN_ART,
+[[-1,0],[6,0.88,43.94,0,-5,[7,0,0,0,0,0,0,0,],[0,0]]], //cell, [room_format] 
+[2]); //Actions to start on exit
 
-// //Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
-// action_add(2, 1, 1, ACT.SET,  
-// [2, "bg_color", $813030, 0, 60], //article_group, variable, value, ease_type, ease_length
-// []); //Actions to start on exit
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(2, 3, 1, ACT.SET,  
+[2, "bg_color", $718ae1, 0, 60], //article_group, variable, value, ease_type, ease_length
+[2]); //Actions to start on exit
 
+//Mage Dialog
+action_add(2, 3, 2, ACT.WINDOW, 
+[6, dialog_x, dialog_y, [[9,1]]], //window_type, x, y, [id, progress]
+[]); //Actions to start on exit
+
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(2, 4, 1, ACT.SET,  
+[2, "bg_color", $813030, 0, 60], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
 
 //To Town Quest Complete
 action_add(2, 1, 2, ACT.QUEST_PROG, 
@@ -353,10 +372,13 @@ action_add(2, 1, 4, ACT.SW_ROOM,
 [3, [9851,10185]], //to_room, to_coords
 []); //Actions to start on exit
 
-////3: Temple Inside Rykenburn Discussion
+
+////3: Temple Inside 
+//Rykenburn Discussion
 action_add(3, 0, 1, ACT.WINDOW, 
 [2, 200, 100, [[],["Temple"],[],["Temple"]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
+
 //Rykenburn Introduction Dialog
 action_add(3, 1, 1, ACT.WINDOW, 
 [6, dialog_x, hdialog_y, [[5,1]]], //window_type, x, y, [id, progress, freeze_player]
@@ -372,43 +394,101 @@ action_add(3, 1, 3, ACT.SCENE,
 [0, 2], //[0:set,1:add, scene id]
 []); //Actions to start on exit
 
-////5: Supplier
+//Supplier Quest Update On Crate Gather
+action_add(3, 2, 1, ACT.ON_QUEST_PROG, 
+[3, 5, 1], //quest_id, progress_proc, [0: exact, 1: greater than equal]
+[2]); //Actions to start on exit
+
+//Rykenburn Supplier Complete Dialog
+action_add(3, 2, 2, ACT.WINDOW, 
+[6, dialog_x, hdialog_y, [[7,1]]], //window_type, x, y, [id, progress, freeze_player]
+[3]); //Actions to start on exit
+
+//Supplier Quest Complete
+action_add(3, 2, 3, ACT.QUEST_PROG, 
+[3, 1, 7], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
+[4]); //Actions to start on exit
+
+//Rubbish Quest Start
+action_add(3, 2, 4, ACT.QUEST_PROG, 
+[4, 0, 1], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
+[5]); //Actions to start on exit
+
+//Supplier Quest - update scene to post-crates
+action_add(3, 2, 5, ACT.SCENE, 
+[0, 3], //[0:set,1:add, scene id]
+[]); //Actions to start on exit
+
+
+
+////5: Supplier Meadows
 action_add(5, 0, 1, ACT.WINDOW, 
 [2, 200, 100, [[],["Meadows"],[],["Meadows"]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
+
 //Supplier Info Dialog
-action_add(5, 2, 2, ACT.WINDOW, 
+action_add(5, 0, 2, ACT.WINDOW, 
 [6, dialog_x, dialog_y, [[6,1,1]]], //window_type, x, y, [id, progress, freeze_player]
-[34,36]); //Actions to start on exit
+[3]); //Actions to start on exit
 
 //Supplier Quest Update
-action_add(5, 2, 3, ACT.QUEST_PROG, 
+action_add(5, 0, 3, ACT.QUEST_PROG, 
 [3, 0, 2], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
 []); //Actions to start on exit
 
 //Supplier Quest Plus Crate (Reuse a few times)
-action_add(5, 2, 4, ACT.QUEST_PROG, 
-[3, 1, 1], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
+action_add(5, 0, 4, ACT.QUEST_PROG, 
+[3, 2, 1], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
 []); //Actions to start on exit
 
-//Supplier Quest Update On Crate Gather
-action_add(5, 2, 5, ACT.ON_QUEST_PROG, 
-[3, 5, 1], //quest_id, progress_proc, [0: exact, 1: greater than equal]
+// //Supplier Quest Update On Crate Gather
+// action_add(5, 0, 5, ACT.ON_QUEST_PROG, 
+// [3, 5, 1], //quest_id, progress_proc, [0: exact, 1: greater than equal]
+// []); //Actions to start on exit
+
+//Supplier Quest - update scene to post-crates
+action_add(5, 0, 6, ACT.SCENE, 
+[0, 3], //[0:set,1:add, scene id]
 []); //Actions to start on exit
+
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(5, 0, 8, ACT.SET,  
+[2, "bg_color", $718ae1, 0, 60], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
+
+//DEBUG
+// //Supplier Quest Start
+// action_add(5, 0, 7, ACT.QUEST_PROG, 
+// [3, 1, 2], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
+// []); //Actions to start on exit
+
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(5, 3, 1, ACT.SET,  
+[2, "bg_color", $718ae1, 0, 60], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(5, 4, 1, ACT.SET,  
+[2, "bg_color", $813030, 0, 60], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
 
 ////7: Sewer
 
 
-//Triplat Section Init
+//Room Title Card
 action_add(7, 0, 1, ACT.WINDOW, 
 [2, 200, 100, [[],["Underground Aqueduct"],[],["Underground Aqueduct"]]], //window_type, x, y, [contentoverride]?
 [2]); //Actions to start on exit
+
 //Set the Room Lighting - $2c77a8 for evening, $813030 for night, $333333 for dark
 action_add(7, 0, 2, ACT.SET,  
 [2, "bg_color", $888888, 0, 60], //article_group, variable, value, ease_type, ease_length
 []); //Actions to start on exit
 
-
+//Triplat Section Init
+//Camera Control
 action_add(7, 0, 10, ACT.SPAWN_ART,
 [[1,-1],[7, 0, 70, 0, 0, [0, 1544, 400, 0, 0, 0, 0, 0], [0,13]]], //cell, [room_format]
 [11]); //Actions to start on exit
@@ -432,6 +512,9 @@ action_add(7, 0, 13, ACT.ART_COUNT,
 action_add(7, 0, 14, ACT.SET,
 [13,"state",2,0,1], //article_id, variable, value, ease_type, ease_length
 []); //Actions to start on exit
+
+
+
 
 //Dialog Init
 //1: Quick Test
@@ -478,14 +561,14 @@ dialog_add(5,_i++,["Commander, I'd like to preset my defender."]); //Kwi
 dialog_add(5,_i++,["I've heard you helped out my Prefect when he went on one of his unsafe walks."]); //Ryken
 if fp.am_is_fire dialog_add(5,_i++,["Admirable commitment to civil service, "+fp.nick+"."]); //Ryken
 dialog_add(5,_i++,["I do not need assistance, however the Prefect thinks you can be of use."]); //Ryken
-if fp.am_is_experienced dialog_add(5,_i++,["And indeed, your mastery is appreciated."]); //Ryken
+if fp.am_is_experienced dialog_add(5,_i++,["And indeed, your mastery is useful."]); //Ryken
 else if fp.am_is_noob dialog_add(5,_i++,["And indeed, you show promise."]); //Ryken
 else if fp.am_is_evil dialog_add(5,_i++,["An 'extra-legal' leg is maybe what we want here."]); //Ryken
 else if fp.am_is_fire dialog_add(5,_i++,["And those born of fire are welcome to help."]); //Ryken
 else if fp.am_is_insane dialog_add(5,_i++,["Unstable, but maybe we want that."]); //Ryken
 else dialog_add(5,_i++,["And indeed, with your abilities you can supply help."]); //Ryken
 dialog_add(5,_i++,["A shipment of food has not arrived. It was scheduled to show up today from the east."]); //Ryken
-dialog_add(5,_i++,["Go investigate this. We do not need this shipment, but morale is always appreciated."]); //Ryken
+dialog_add(5,_i++,["Go investigate this. We do not need this shipment, but morale will stay high!"]); //Ryken
 
 //6: Supplier
 _i = 1;
@@ -495,8 +578,10 @@ dialog_add(6,_i++,["They went... Right...."]); //Supplier
 
 //7: Ryken Quest 2
 _i = 1;
-dialog_add(7,_i++,["Hm. They should be here soon then."]); //Ryken
-dialog_add(7,_i++,["There are trash bins which need to be emptied. Please see to it."]); //Ryken
+dialog_add(7,_i++,["Hm. I expect them to be here soon then."]); //Ryken
+dialog_add(7,_i++,["There are more important tasks for you to perform."]); //Ryken
+dialog_add(7,_i++,["Clenliness here has gotten down to unacceptable levels."]); //Ryken
+dialog_add(7,_i++,["There are trash bins which need to be emptied and rubbish to clean up. Please see to it."]); //Ryken
 
 //8: Guard Dialog (NOT USED SEQUENTIALLY - USED IN POPUP)
 _i = 1;
@@ -517,11 +602,23 @@ if fp.am_is_experienced dialog_add(8,_i++,["I have my full confidence in you, "+
 if fp.am_is_not {
     dialog_add(8,_i++,["Why are you here oh god why are you here."]); //Guard
     dialog_add(8,_i++,["88888888888888888888888888888888888888888888888888888888888888888888888"]); //Guard
+    dialog_add(8,_i++,["Hello and Welcome!"]); //Guard
 }
+
+//9: Mage Dialog
+_i = 1;
+dialog_add(9,_i++,["Hello, "+fp.nick]); //Mage
+dialog_add(9,_i++,["Rykie got you on trash duty huh?"]); //Mage
+dialog_add(9,_i++,["I think I've got something that may actually help us out here."]); //Mage
+dialog_add(9,_i++,["Of course we can't talk about this out here - my house is the one with my hat on it. Hard to miss."]); //Mage
+
+dialog_add(9,_i++,["This is the end of the demo! Feel free to explore elsewhere you haven't been!"]); //Mage
+dialog_add(9,_i++,["Thank you for making it this far and be sure to check out the full version on Workshop when it releases!"]); //Mage
+
 //Quest Init
 
 //1: Kei Rescue
-quest_add(1,1,"Rescue","Defend him from the unknown threat.",asset_get("empty_sprite"));
+quest_add(1,1,"Rescue","Defend from an unknown threat!",asset_get("empty_sprite"));
 
 //2: Kei Rescue After
 quest_add(2,1,"Get to Safety","Go to a safe(r) place.",asset_get("empty_sprite"));
@@ -531,7 +628,20 @@ quest_add(3,1,"Missing Shipment","Find the missing shipment",asset_get("empty_sp
 quest_add(3,2,"Missing Shipment","Find the missing crates (0/3)",asset_get("empty_sprite"));
 quest_add(3,3,"Missing Shipment","Find the missing crates (1/3)",asset_get("empty_sprite"));
 quest_add(3,4,"Missing Shipment","Find the missing crates (2/3)",asset_get("empty_sprite"));
-quest_add(3,5,"Recovered Shipment","Found the missing crates (3/3), return to the Supplier.",asset_get("empty_sprite"));
+quest_add(3,5,"Recovered Shipment","Return To Rykenburn",asset_get("empty_sprite"));
+if fp.am_is_fire quest_add(3,5,"Recovered Shipment","Return To Rykenburn, your obligations are completed.",asset_get("empty_sprite"));
+if fp.am_is_evil quest_add(3,5,"Recovered Shipment","Return To Rykenburn for your reward.",asset_get("empty_sprite"));
+
+
+//4: Rykenburn's 2nd Task
+
+quest_add(4,1,"Civil Duties","Collect Rubbish (0/52)",asset_get("empty_sprite"));
+
+//5: Intreaging Option
+quest_add(5,1,"Inquiry","Listen to what she has to say.",asset_get("empty_sprite"));
+quest_add(5,2,"Disconcerning Dissapearances","Find clues for what has been going on.",asset_get("empty_sprite"));
+quest_add(5,3,"Disconcerning Dissapearances","Get to the Temple Archives.",asset_get("empty_sprite"));
+quest_add(5,4,"Disconcerning Dissapearances","Search for information.",asset_get("empty_sprite"));
 
 // quest_add(2,1,"Test Quest2","This is a test quest also!",sprite_get("torch"));
 // quest_add(2,2,"Test Quest2.1","This is a test quest also also!",sprite_get("torch"));

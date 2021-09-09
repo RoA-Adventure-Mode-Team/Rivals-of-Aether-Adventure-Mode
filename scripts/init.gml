@@ -6,8 +6,8 @@ _init = 0;
 am_vers = "v0.8";
 
 //Debug Vars
-debug = true;
-debug_info = true;
+debug = false;
+debug_info = false;
 down_down = 0;
 up_down = 0;
 last_ID = 0;

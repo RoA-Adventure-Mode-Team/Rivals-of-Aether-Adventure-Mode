@@ -26,6 +26,7 @@ if _init == 0 {
     with obj_stage_article if num == 5 other.room_manager = id;
     if alpha_ != 0 image_alpha = alpha_;
     //if static image_alpha = 0;
+    visible = true;
     _init = 1;
 } else {
     image_index += anim_speed;

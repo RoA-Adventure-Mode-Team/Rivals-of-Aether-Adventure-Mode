@@ -10,8 +10,8 @@ if !_init {
     note_spr = spawn_variables[1];
     trigger_w = spawn_variables[2];
     trigger_h = spawn_variables[3];
-    
     set_state(S.IDLE);
+    visible = true;
     _init = 1;
 }
 

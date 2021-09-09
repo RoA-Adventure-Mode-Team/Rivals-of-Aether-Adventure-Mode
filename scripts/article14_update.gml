@@ -11,6 +11,7 @@ if _init == 0 {
     active_particles = [];
     debug = true;
     //depth = -10;
+    visible = true;
     _init = 1;
 } else {
     if alive_time % spawn_time == 0 && obj_stage_main.fps > 59 {

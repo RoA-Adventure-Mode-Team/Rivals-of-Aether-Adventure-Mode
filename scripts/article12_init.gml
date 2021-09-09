@@ -28,6 +28,6 @@ render_sprite = sprite_get("empty_sprite");
 render_index = 0;
 bg_color = $ffffff;
 bg_color_true = bg_color;
-color_rate = .02;
+color_rate = 1;
 val_limit = 70;
 draw = false;

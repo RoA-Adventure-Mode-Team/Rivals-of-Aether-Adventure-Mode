@@ -19,6 +19,7 @@ if !_init {
     with obj_stage_article if num == 3 other.action_manager = id;
     with obj_stage_article if num == 5 other.room_manager = id;
     
+    visible = true;
     _init = 1;
 } else {
     image_index += anim_speed;

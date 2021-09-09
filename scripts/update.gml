@@ -114,7 +114,7 @@ if !_init {
 		
 		if start_down {
 			other.is_paused = !other.is_paused;
-			if is_paused set_player_damage(player, other.paused_percent[player]);
+			if other.is_paused set_player_damage(player, other.paused_percent[player]);
 			else other.paused_percent[player] = get_player_damage(player);
 		}
 		//Keep dash upon landing

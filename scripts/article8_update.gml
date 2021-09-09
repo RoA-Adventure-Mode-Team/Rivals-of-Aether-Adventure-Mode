@@ -10,6 +10,7 @@ if !_init {
     hold_up = spawn_variables[6];
     event_id = spawn_variables[7];
     item_needed = spawn_variables[8];
+    visible = true;
     _init = 1;
 }
 state_timer++;

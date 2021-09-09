@@ -355,12 +355,15 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			}
 			var _continue = 1;
 			with oPlayer {
-				if _element[1][3] && state != PS_SPAWN set_state(PS_SPAWN); //If freeze players
+				if _element[1][3] && (state != PS_SPAWN && state != PS_PRATFALL){
+					if free set_state(PS_PRATFALL); //If freeze players
+					else set_state(PS_SPAWN);
+				}
 				if (attack_held == 1 || taunt_held == 1) {
 					// print("Upping text...");
 					_element[@1][@2]++;
 					if _element[1][2] > array_length_1d(action_manager.dialog_array[_element[1][1]])-1 { //The end of the conversation!
-						if _element[1][3] && state == PS_SPAWN { 
+						if _element[1][3] && (state == PS_SPAWN || state == PS_PRATFALL) { 
 							set_state(PS_IDLE); //If freeze players
 							attack_end();
 						}

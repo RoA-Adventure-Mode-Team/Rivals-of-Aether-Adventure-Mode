@@ -10,6 +10,9 @@ if !_init {
     item_name = spawn_variables[5];
     name_width = string_width(item_name);
     //prite_index = item_sprite_get(item_id,"idle");
+    
+    visible = true;
+    _init = 1;
 }
 
 enum EVT {
@@ -18,6 +21,7 @@ enum EVT {
     USE,
     ALTUSE,
     DESTROY,
+    DROP
 }
 
 state_timer++;
@@ -76,6 +80,7 @@ if state == EVT.ALTUSE { //Rejection & Cooldown
 
 if state == EVT.DESTROY {
     event_flag = EVT.DESTROY;
+    if follow_player != noone follow_player.item_id = noone; //Remove the item from the follow variable if it is filled
     user_event(10); //Item Custom Behavior
     instance_destroy();
     exit;

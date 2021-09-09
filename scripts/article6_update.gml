@@ -41,6 +41,7 @@ if !_init {
     art_event = EN_EVENT.INIT;
     user_event(6);
     sprite_index = enemy_sprite_get(enem_id,"idle");
+    visible = true;
     //Spawn event
     if (spawn_event > 0) {
     	with obj_stage_article if num == 3 {

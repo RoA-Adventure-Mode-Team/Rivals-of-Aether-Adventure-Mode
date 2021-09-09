@@ -6,6 +6,7 @@ enum EVT {
     USE,
     ALTUSE,
     DESTROY,
+    DROP
 }
 
 //Item Global Default behaviors - feel free to customize :)
@@ -46,9 +47,11 @@ switch item_id {
                 break;
         }
         break;
-    case 1: //Small Crate
+    case 1: //Small Crate in Meadows
         switch event_flag {
             case EVT.GRAB:
+                // //Progress quest
+                // start_action(room_manager.cur_room, 0, 4, action_manager);
                 break;
             case EVT.IDLE:
                 break;
@@ -64,3 +67,6 @@ switch item_id {
 #define set_state(_state)
 state_timer = 0;
 state = _state;
+
+#define start_action(_room_id, _scene_id, _action_id, _starting_id)
+with action_manager array_push(action_queue,[_room_id,_scene_id,_action_id,_starting_id]);

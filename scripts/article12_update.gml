@@ -7,6 +7,7 @@ if _init == 0 {
     follow_object = spawn_variables[2];
     if follow_object == 1 //Player
         with obj_stage_main other.follow_object = follow_player;
+    visible = true;
     _init = 1;
     //print_debug("[DL] ARTICLE-ACTION INDEX: "+string(action_article_index));
 } else {

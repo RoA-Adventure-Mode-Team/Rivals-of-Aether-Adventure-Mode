@@ -37,7 +37,7 @@ sprite_change_collision_mask("3[F0]ground",true,0,0,0,0,0,0);
 
 sprite_change_collision_mask("5[-1,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("5[-1,-1]ground",true,0,0,0,0,0,0);
-// sprite_change_collision_mask("5[0,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("5[0,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("5[1,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("5[2,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("5[2,-1]ground",true,0,0,0,0,0,0);
@@ -161,6 +161,7 @@ sprite_change_offset("enemy_3_utilt",96, 158);
 
 sprite_change_offset("enemy_4_idle",74, 94);
 sprite_change_offset("enemy_4_hurt",74, 94);
+sprite_change_offset("enemy_4_spinhurt",74, 94);
 sprite_change_offset("enemy_4_walk",74, 94);
 sprite_change_offset("enemy_4_walkturn",74, 94);
 sprite_change_offset("enemy_4_jumpstart",74, 94);
@@ -175,6 +176,7 @@ sprite_change_offset("enemy_7_idle",30, 70);
 sprite_change_offset("enemy_7_walk",36, 62);
 
 sprite_change_offset("enemy_8_idle",104, 144);
+sprite_change_offset("enemy_8_spinhurt",104, 144);
 sprite_change_offset("enemy_8_hurt",104, 144);
 sprite_change_offset("enemy_8_walk",104, 144);
 sprite_change_offset("enemy_8_dashstart",104, 144);
