@@ -41,6 +41,7 @@ print_debug(player_name);
 //Which user_event to run for hitpause
 if !("hit_player_event" in self) hit_player_event = -1;
 
+//How should this character be addressed?
 if !("pronouns" in self)   pronouns = ["they","them","their","are"];
                                     //Lore Booleans
 //The character's element, defines the general themes of what character's presume about them.
@@ -53,7 +54,7 @@ if !("am_is_abyssal" in self)       am_is_abyssal = false;          //Is a creat
 if !("am_is_subterranain" in self)  am_is_subterranain = false;     //Is from the underground
 
 //Quirks that greatly effect how a character acts and percieves the world
-if !("am_is_vocal" in self)         am_is_vocal = true;             //Is capable of speaking/understanding complex languages
+if !("am_is_verbal" in self)        am_is_verbal = true;            //Is capable of speaking complex languages
 if !("am_is_noob" in self)          am_is_noob = false;             //Is unfamiliar with things or naieve
 if !("am_is_experienced" in self)   am_is_experienced = false;      //Exude experience
 
@@ -69,11 +70,15 @@ if !("am_is_insane" in self)        am_is_insane = false;           //Experience
 
 
 //The very nature of the character's constitution
-if !("am_is_small" in self)         am_is_small = false;            //If the character is small
 if !("am_is_undead" in self)        am_is_undead = false;           //Was dead... now is not
 if !("am_is_construct" in self)     am_is_construct = false;        //Is living through unnatural means ("built" instead of "born")
 if !("am_is_magic" in self)         am_is_magic = false;            //Is this character supernatural in a magical way
-if !("am_is_guest" in self)         am_is_guest = true;             //Is this character a strange visitor from another dimension
+if !("am_is_big" in self)           am_is_big = false;              //Is this character much larger than average?
+if !("am_is_small" in self)         am_is_small = false;            //Is this character much smaller than average?
+if !("am_is_handed" in self)        am_is_handed = true;            //Does this character have appendages to hold things with?
+if !("am_is_clothed" in self)       am_is_clothed = true;           //Does this character wear clothing?
+
+if !("am_is_guest" in self)         am_is_guest = true;             //Is this character an atherian local, or are they a strange guest from another dimension?
 
 //Very Game-breaking or meta flags
 if !("am_is_realitybreak" in self)  am_is_realitybreak = false;     //Is this character a reality manipulator
@@ -81,17 +86,174 @@ if !("am_is_not" in self)           am_is_not = false;              //They do no
 
 //Base cast AM declarations, will adjust as lore comes out :)
 switch p_name {
+    //No talk me angy
     case "Zetterburn":
         am_is_fire = true;
-        am_is_past = true;
+        // am_is_past = true;
         am_is_experienced = true;
+        // am_is_clothed = false; LOINCLOTH
+        am_is_guest = false; 
         pronouns = ["he","him","his","is"];
         break;
+    //Bastard turned good boi
     case "Forsburn":
         am_is_fire = true;
-        am_is_past = true;
+        // am_is_past = true;
         am_is_experienced = true;
+        am_is_guest = false; 
         pronouns = ["he","him","his","is"];
         break;
-    
+    //Protagonist Prime
+    case "Clairen":
+        am_is_fire = true;
+        am_is_future = true;
+        am_is_experienced = true;
+        am_is_guest = false; 
+        pronouns = ["she","her","hers","is"];
+        break;
+    //Hands off my bread government
+    case "Mollo":
+        am_is_fire = true;
+        am_is_future = true;
+        am_is_experienced = true;
+        am_is_chaotic = true;
+        am_is_guest = false; 
+        pronouns = ["he","him","his","is"];
+        break;
+    //I speak for the trees
+    case "Maypul":
+        am_is_earth = true;
+        // am_is_experienced = true;
+        am_is_clothed = false;
+        am_is_guest = false; 
+        pronouns = ["she","her","hers","is"];
+        break;
+    //Rocc :)
+    case "Kragg":
+        am_is_earth = true;
+        am_is_verbal = false;
+        am_is_experienced = true;
+        am_is_insane = true;
+        am_is_clothed = false;
+        am_is_guest = false; 
+        pronouns = ["he","him","his","is"];
+        break;
+    //I AM the trees. And the vines. And the flowers.
+    case "Sylvanos":
+        am_is_earth = true;
+        am_is_experienced = true;
+        am_is_myth = true;
+        am_is_verbal = false;
+        am_is_evil = true;
+        am_is_chaotic = true;
+        am_is_insane = true;
+        am_is_clothed = false;
+        am_is_big = true;
+        am_is_handed = false;
+        am_is_guest = false; 
+        pronouns = ["he","him","his","is"];
+        break;
+    //Love the character
+    case "Olympia":
+        am_is_earth = true;
+        am_is_subterranain = true;
+        am_is_noob = true;
+        am_is_experienced = true;
+        am_is_guest = false; 
+        pronouns = ["she","her","hers","is"];
+        break;
+    //Trickster god and lovecraftian horror
+    case "Orcane":
+        am_is_water = true;
+        am_is_noob = true; //Does not mean he's naieve - just that others percieve it
+        // am_is_undead = true; //when orcane side specials are we sure it's the same orcane?
+        am_is_myth = true;
+        am_is_verbal = false;
+        // am_is_experienced = true; //Does not mean he's experienced - it means others do not percieve it
+        am_is_handed = false;
+        am_is_guest = false; 
+        // am_is_not = true;
+        pronouns = ["he","him","his","is"];
+        break;
+    //ICE FUCKED UP GOTTA UNFUCKUP THE ICE
+    case "Etalus":
+        am_is_water = true;
+        // am_is_noob = true;
+        // am_is_verbal = false; //??? on this one
+        am_is_experienced = true;
+        am_is_big = true;
+        am_is_guest = false; 
+        pronouns = ["he","him","his","is"];
+        break;
+    //Master Cai better have lived a long, good life I stg
+    case "Ranno":
+        am_is_water = true;
+        am_is_experienced = true;
+        am_is_guest = false; 
+        pronouns = ["he","him","his","is"];
+        break;
+    //Monke
+    case "Hodan":
+        am_is_water = true;
+        am_is_aether = true; //Wild guess but here we go
+        am_is_experienced = true;
+        am_is_insane = true;
+        am_is_guest = false; 
+        pronouns = ["he","him","his","is"];
+        break;
+    //Racist bottom text
+    case "Wrastor":
+    case "Bradshaw":
+        am_is_air = true;
+        am_is_experienced = true;
+        am_is_evil = true;
+        am_is_guest = false; 
+        pronouns = ["he","him","his","is"];
+        break;
+    //We need more lore on her. Ok she's the storm's architect BUT WHAT DOES THAT MEAN???
+    case "Absa":
+        am_is_air = true;
+        am_is_experienced = true;
+        // am_is_evil = true;
+        am_is_guest = false; 
+        pronouns = ["she","her","hers","is"];
+        break;
+    //Turned that mindset into a grindset (grinding bird bones that is)
+    case "Elliana":
+        am_is_evil = true; //Still, did nothing wrong
+    case "Ayala":
+        am_is_air = true;
+        am_is_experienced = true;
+        am_is_chaotic = true; //She helped the "bad guys" a *lot*
+        // am_is_future = true;
+        am_is_guest = false; 
+        pronouns = ["she","her","hers","is"];
+        break;
+    //
+    case "Pomme":
+        am_is_air = true;
+        am_is_evil = true;
+        am_is_experienced = true;
+        am_is_future = true;
+        am_is_guest = false; 
+        pronouns = ["she","her","hers","is"];
+        break;
+    //Upair is a kill move
+    case "Ori":
+        am_is_aether = true;
+        am_is_verbal = false;
+        am_is_magic = true;
+        am_is_small = true; //Cannon Ori is tiny
+        am_is_experienced = true;
+        //They are a leaf and I don't think we get cannonical pronouns
+        break;
+    //????
+    case "Shovel Knight":
+    case "Gus":
+        // am_is_aether = true;
+        am_is_magic = true; //He collects artifacts wth magical powers
+        am_is_experienced = true;
+        am_is_subterranain = true;
+        pronouns = ["he","him","his","is"];
+        break;
 }

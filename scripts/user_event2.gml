@@ -164,10 +164,10 @@ if win_call == 1 with obj_stage_main { //Load Data
 	]);
 	
 	var _sprite = asset_get("empty_sprite");
-	var _x = cam_width;
-	var _y = cam_height;
-	var _rate = [10,10];
-	win_add(i++,[WIN.NOTE_SCROLL, //6 //Expansive Custom Window, Shows Quest List
+	var _x = cam_width/2;
+	var _y = cam_height/3;
+	var _rate = [0,10];
+	win_add(i++,[WIN.NOTE_SCROLL, //6 //Shows world notes
 		new_varcont([_sprite,_x,_y,_rate]), //sprite, x, y, rate
 		new_sprscr(_sprite,_x,_y,_rate)
 		//new_sprite(sprite_get("gui_test"),0,0),
@@ -391,6 +391,10 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 					end_window(_i);
 					_i--;
 				}
+				if left_down _x -= rate[0];
+				if right_down _y += rate[0];
+				if up_down _x -= rate[1];
+				if down_down _y += rate[1];
 			}
 			break;
 	}
