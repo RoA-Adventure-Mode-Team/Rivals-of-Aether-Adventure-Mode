@@ -1,4 +1,10 @@
-//article5_init, Room Manager
+//article5_update, Room Manager
+
+// with oPlayer if state == PS_RESPAWN {
+// 	print("[article5:update] started check");
+// 	// set_state(PS_IDLE);
+// }
+
 if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
     //with obj_stage_article if num == 3 other.action_manager = id;
     /*cam_pos_left = [view_get_xview(),view_get_yview()];
@@ -23,6 +29,10 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
 	//with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
 //}
 
+// with oPlayer if state == PS_RESPAWN {
+// 	print("[article5:update] before respawn check");
+// 	// set_state(PS_IDLE);
+// }
 with oPlayer { //Respawn Code
 	// print(respawn_point);
 	if state == PS_DEAD || state == PS_RESPAWN {
@@ -34,7 +44,11 @@ with oPlayer { //Respawn Code
 		}
 		
 		//Refund Stonks
-		set_player_stocks(id,get_player_stocks(id)+1);
+		// set_player_stocks(player,get_player_stocks(player)+1);
+		// if state == PS_RESPAWN {
+		// 	print("[article5:respawn] completed check");
+		// 	// set_state(PS_IDLE);
+		// }
 		
 		// x = (respawn_point[0][0]+respawn_point[1][0]*cell_dim[0])*cell_size;
 		// y = (respawn_point[0][1]+respawn_point[1][1]*cell_dim[1])*cell_size;	
@@ -64,12 +78,13 @@ with oPlayer { //Respawn Code
 if switch_room room_switch(switch_to_room);
 if room_switch_on room_switch_update();
 
-if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
+if get_gameplay_time() > 2 { //Scrolling Room
     /*cam_pos_left = [view_get_xview(),view_get_yview()];
     cam_pos_right = [view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview()];
     true_pos = [cam_pos_left[0]+view_get_wview()/2,cam_pos_left[1]+view_get_hview()/2];
     */
-    if follow_player.state != PS_HITSTUN && follow_player.state != PS_DEAD set_follow_point(follow_objects);
+    if follow_player.state != PS_HITSTUN && follow_player.state != PS_DEAD && follow_player.state != PS_RESPAWN set_follow_point(follow_objects);
+    // if follow_player.state == PS_RESPAWN print("[article5:follow_point & player] completed check");
     //Frame Cleanups
     last_pos[0] = follow_point.x;
     last_pos[1] = follow_point.y;
@@ -78,7 +93,11 @@ if get_gameplay_time() > 2 && room_type == 1 { //Scrolling Room
     pos_in_cell = grid_to_cell([follow_point.x,follow_point.y]);
 }
 
+// with oPlayer if state == PS_RESPAWN print("[article5:update] completed check");
+
 cur_room_time++;
+
+//Music Find
 #define set_follow_point(_obj_array) //Set the point the world cam will follow to
 // var _x_avg = 0;
 // var _y_avg = 0;
@@ -149,7 +168,7 @@ if _room_id_ind != - 1 {
 // 	despawn_room();
 //     room_render(cur_room);
 // }
-free = false;
+// free = false;
 with oPlayer {
 	set_state(PS_IDLE);
 	respawn_point = [x,y,other.cur_room]; //Reset respawn every room change ^^;

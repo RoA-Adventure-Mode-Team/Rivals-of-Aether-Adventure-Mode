@@ -6,8 +6,8 @@ _init = 0;
 am_vers = "v0.8";
 
 //Debug Vars
-debug = false;
-debug_info = false;
+debug = true;
+debug_info = true;
 down_down = 0;
 up_down = 0;
 last_ID = 0;
@@ -23,8 +23,10 @@ cam_y_left = view_get_yview();
 cam_x_center = view_get_wview()/2;
 cam_x_l3 = view_get_wview()/3;
 cam_x_r3 = 2*view_get_wview()/3;
-cam_width = view_get_wview();
-cam_height = view_get_hview();
+cam_width = view_get_wview(); //960
+cam_height = view_get_hview(); //540
+
+print([cam_width,cam_height]);
 
 cam_state = 0;
 cam_smooth = 5;
@@ -222,6 +224,8 @@ sfx_ice_chain - Typewriter
 sfx_may_arc_talk - Arcade Talk!
 */
 
+//Using custom music setups
+//music_set_volume(0);
 #define add_cred()
 
 return true;

@@ -77,7 +77,7 @@ if state == EVT.ALTUSE { //Rejection & Cooldown
     event_flag = EVT.ALTUSE;
     user_event(10); //Item Custom Behavior
 }
-
+with oPlayer if state == PS_RESPAWN print("[art10:update] completed check");
 if state == EVT.DESTROY {
     event_flag = EVT.DESTROY;
     if follow_player != noone follow_player.item_id = noone; //Remove the item from the follow variable if it is filled

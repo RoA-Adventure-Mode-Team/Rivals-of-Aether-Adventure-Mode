@@ -1,5 +1,5 @@
 //article12_draw, Dynamic Lighting, By CaptnTechnicality
-if(draw)
+if(!cant_root && draw)
 {
     gpu_set_blendenable(false);
     gpu_set_colorwriteenable(false,false,false,true);
@@ -11,7 +11,7 @@ if(draw)
     gpu_set_blendmode(bm_add);
     with (obj_stage_article) {
         if (num == 12) {
-            draw_sprite_ext(render_sprite, render_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
+            draw_sprite_ext(render_sprite, render_index, x, y, image_xscale*spr_dir, image_yscale, image_angle, c_white, 1);
             //if val_limit < color_get_saturation(other.bg_color_true) draw_sprite_ext(render_sprite, render_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
             draw = false;
         }
@@ -27,7 +27,7 @@ if(draw)
     gpu_set_blendmode_ext(bm_dest_colour,bm_one);
     with (obj_stage_article) {
         if (num == 12) {
-            draw_sprite_ext(render_sprite, render_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
+            draw_sprite_ext(render_sprite, render_index, x, y, image_xscale*spr_dir, image_yscale, image_angle, c_white, 1);
             //if val_limit < color_get_value(other.bg_color_true) draw_sprite_ext(render_sprite, render_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
         }
     }

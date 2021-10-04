@@ -183,28 +183,28 @@ World Drawn Animated Sprite:
 #############
 */
 //DO NOT EDIT BELOW
-#define scene_switch(_scene_id)
-with obj_stage_article if num == 3 switch_to_scene = _scene_id;
-#define room_switch(_room_id)
-with obj_stage_article if num == 5 switch_to_room = _room_id;
-#define freeze_players()
-with oPlayer {
-    clear_button_buffer(PC_LEFT_HARD_PRESSED);
-	clear_button_buffer(PC_RIGHT_HARD_PRESSED);
-	clear_button_buffer(PC_UP_HARD_PRESSED);
-	clear_button_buffer(PC_DOWN_HARD_PRESSED);
-	clear_button_buffer(PC_LEFT_STRONG_PRESSED);
-	clear_button_buffer(PC_RIGHT_STRONG_PRESSED);
-	clear_button_buffer(PC_UP_STRONG_PRESSED);
-	clear_button_buffer(PC_DOWN_STRONG_PRESSED);
-	clear_button_buffer(PC_LEFT_STICK_PRESSED);
-	clear_button_buffer(PC_RIGHT_STICK_PRESSED);
-	clear_button_buffer(PC_UP_STICK_PRESSED);
-	clear_button_buffer(PC_DOWN_STICK_PRESSED);
-	clear_button_buffer(PC_JUMP_PRESSED);
-	clear_button_buffer(PC_ATTACK_PRESSED);
-	clear_button_buffer(PC_SHIELD_PRESSED);
-	clear_button_buffer(PC_SPECIAL_PRESSED);
-	clear_button_buffer(PC_STRONG_PRESSED);
-	clear_button_buffer(PC_TAUNT_PRESSED);
-}
+// #define scene_switch(_scene_id)
+// with obj_stage_article if num == 3 switch_to_scene = _scene_id;
+// #define room_switch(_room_id)
+// with obj_stage_article if num == 5 switch_to_room = _room_id;
+// #define freeze_players()
+// with oPlayer {
+//     clear_button_buffer(PC_LEFT_HARD_PRESSED);
+// 	clear_button_buffer(PC_RIGHT_HARD_PRESSED);
+// 	clear_button_buffer(PC_UP_HARD_PRESSED);
+// 	clear_button_buffer(PC_DOWN_HARD_PRESSED);
+// 	clear_button_buffer(PC_LEFT_STRONG_PRESSED);
+// 	clear_button_buffer(PC_RIGHT_STRONG_PRESSED);
+// 	clear_button_buffer(PC_UP_STRONG_PRESSED);
+// 	clear_button_buffer(PC_DOWN_STRONG_PRESSED);
+// 	clear_button_buffer(PC_LEFT_STICK_PRESSED);
+// 	clear_button_buffer(PC_RIGHT_STICK_PRESSED);
+// 	clear_button_buffer(PC_UP_STICK_PRESSED);
+// 	clear_button_buffer(PC_DOWN_STICK_PRESSED);
+// 	clear_button_buffer(PC_JUMP_PRESSED);
+// 	clear_button_buffer(PC_ATTACK_PRESSED);
+// 	clear_button_buffer(PC_SHIELD_PRESSED);
+// 	clear_button_buffer(PC_SPECIAL_PRESSED);
+// 	clear_button_buffer(PC_STRONG_PRESSED);
+// 	clear_button_buffer(PC_TAUNT_PRESSED);
+// }

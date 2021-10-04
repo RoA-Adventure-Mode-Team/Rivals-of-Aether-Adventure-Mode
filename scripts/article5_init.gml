@@ -75,7 +75,7 @@ cell_pos = [0,0];
 cell_data = 0;
 rel_pos = 0;
 obj_type = "";
-article_frame_limit = 10000;
+article_frame_limit = 10000; //Chunk loading if it lags EXPERIMENTAL
 art = noone;
 //follow_objects  = [];
 /*with oPlayer {

@@ -5,8 +5,8 @@ sprite_change_offset("char_arrow",0,0);
 sprite_change_offset( "boss_hp_back", 320, 0);
 sprite_change_offset( "boss_hp_bar", 320, 0);
 
-sprite_change_offset("bg2",240, 135);
-sprite_change_offset("bg3",240, 135);
+sprite_change_offset("bg2",240, 135+2);
+sprite_change_offset("bg3",240, 135+2);
 
 sprite_change_offset("column_deco",210, 310);
 sprite_change_offset("column_deco_black",210, 310);
@@ -33,7 +33,8 @@ sprite_change_collision_mask("2[1,0]ground",true,0,0,0,0,0,0);
 
 sprite_change_collision_mask("3[F0]ground",true,0,0,0,0,0,0);
 
-
+sprite_change_collision_mask("4[-1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("4[0,0]ground",true,0,0,0,0,0,0);
 
 sprite_change_collision_mask("5[-1,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("5[-1,-1]ground",true,0,0,0,0,0,0);
@@ -50,6 +51,20 @@ sprite_change_collision_mask("7[1,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("7[1,-1]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("7[2,0]ground",true,0,0,0,0,0,0);
 sprite_change_collision_mask("7[2,-1]ground",true,0,0,0,0,0,0);
+
+sprite_change_collision_mask("8[0,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("8[0,-1]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("8[1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("8[1,-1]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("8[-1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("8[-1,-1]ground",true,0,0,0,0,0,0);
+
+sprite_change_collision_mask("9[0,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("9[0,-1]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("9[1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("9[1,-1]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("9[-1,0]ground",true,0,0,0,0,0,0);
+sprite_change_collision_mask("9[-1,-1]ground",true,0,0,0,0,0,0);
 
 sprite_change_collision_mask("6[F0]ground",true,0,0,0,0,0,0);
 
@@ -76,6 +91,7 @@ sprite_change_offset("well",24, 70);
 sprite_change_offset("light", 39, 46);
 sprite_change_offset("light_dimver", 40, 49);
 sprite_change_offset("light_dimver_larg", 40*4, 49*3+25);
+sprite_change_offset("enemy_10_vision", 0, 84);
 sprite_change_offset("house_main_inside",15, 111);
 sprite_change_offset("house_main_insideb",15, 111);
 sprite_change_collision_mask("house_main_insideb",true,0,0,0,0,0,0);
@@ -189,6 +205,19 @@ sprite_change_offset("enemy_8_fspecial",104, 144);
 sprite_change_offset("enemy_8_fspecial_air",104, 144);
 
 sprite_change_offset("enemy_9_idle",32, 70);
+
+sprite_change_offset("enemy_100_idle",104, 144);
+sprite_change_offset("enemy_100_spinhurt",104, 144);
+sprite_change_offset("enemy_100_hurt",104, 144);
+sprite_change_offset("enemy_100_walk",104, 144);
+sprite_change_offset("enemy_100_dashstart",104, 144);
+sprite_change_offset("enemy_100_dash",104, 144);
+sprite_change_offset("enemy_100_jumpstart",104, 144);
+sprite_change_offset("enemy_100_jump",104, 144);
+sprite_change_offset("enemy_100_doublejump",104, 144);
+sprite_change_offset("enemy_100_land",104, 144);
+sprite_change_offset("enemy_100_fspecial",104, 144);
+sprite_change_offset("enemy_100_fspecial_air",104, 144);
 
 sprite_change_offset("fx_enemy_abyssdeath",48, 48);
 sprite_change_offset("fx_enemy_abyssdeath2",52, 52);

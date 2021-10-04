@@ -63,6 +63,10 @@ dialog_y = 360;
 // hdialog_x = 144;
 hdialog_y = 32;
 
+//Music Managing
+cur_music_id = -1;
+music_array = [];
+
 // quest_add(3,1,"Test Quest","This is a test quest!");
 // quest_add(3,2,"Test Quest","This is a test quest! Part 2!");
 // quest_add(3,3,"Dfferent Title!","Completely different text!");

@@ -1,7 +1,7 @@
 //
 //user_event(1);
+
 if !_init {
-	
 	scene_manager = instance_create(0,0,"obj_stage_article",3);
 	action_manager = scene_manager.id;
 	room_manager = instance_create(0,0,"obj_stage_article",5);
@@ -33,6 +33,7 @@ if !_init {
 	}
 	_init = 1;
 } else {
+	// with oPlayer if state == PS_RESPAWN print("[update] started check");
 	if debug {
 		with oPlayer { //Debug vars
 			djumps = 0; 
@@ -96,7 +97,40 @@ if !_init {
 			invincible = true;
 			invince_time = 2;
 		}
+		//DEBUG - TESTING RESPAWN
+		// if special_held == 1 {
+		// 	dead_pos = [x,y];
+		// 	set_state(PS_RESPAWN);
+		// }
+		//DEBUG - testing end of game 
 		// if attack_down && taunt_down end_match();
+		
+		//Removing CPUs without ending the game
+		if "temp_level" in self {
+			visible = false;
+			image_xscale = 0;
+			image_yscale = 0;
+			set_state(PS_SPAWN);
+			// clear_button_buffer(PC_LEFT_HARD_PRESSED);
+			// clear_button_buffer(PC_RIGHT_HARD_PRESSED);
+			// clear_button_buffer(PC_UP_HARD_PRESSED);
+			// clear_button_buffer(PC_DOWN_HARD_PRESSED);
+			// clear_button_buffer(PC_LEFT_STRONG_PRESSED);
+			// clear_button_buffer(PC_RIGHT_STRONG_PRESSED);
+			// clear_button_buffer(PC_UP_STRONG_PRESSED);
+			// clear_button_buffer(PC_DOWN_STRONG_PRESSED);
+			// clear_button_buffer(PC_LEFT_STICK_PRESSED);
+			// clear_button_buffer(PC_RIGHT_STICK_PRESSED);
+			// clear_button_buffer(PC_UP_STICK_PRESSED);
+			// clear_button_buffer(PC_DOWN_STICK_PRESSED);
+			// clear_button_buffer(PC_JUMP_PRESSED);
+			// clear_button_buffer(PC_ATTACK_PRESSED);
+			// clear_button_buffer(PC_SHIELD_PRESSED);
+			// clear_button_buffer(PC_SPECIAL_PRESSED);
+			// clear_button_buffer(PC_STRONG_PRESSED);
+			// clear_button_buffer(PC_TAUNT_PRESSED);
+			continue;
+		}
 		//Land Spam Fix
 		if state == PS_LAND && free set_state(PS_IDLE_AIR);
 		//Wall Jumps
@@ -106,11 +140,17 @@ if !_init {
 		has_walljump = wall_here && has_walljump_actual;
 		// if (place_meeting(x+22,y,obj_stage_article_solid) || place_meeting(x-22,y,obj_stage_article_solid)) && state == PS_HITSTUN && get_player_damage(player) > 150 { //Alpha splat death?
 		// if get_player_damage(player) > other.max_percent || //Die on too much percent taken
-		// 	player.x > view_get_wview()+view_get_xview() || player.x < view_get_xview() ||
-		// 	player.y > view_get_hview()+view_get_yview() || player.x < view_get_yview() { //Die on getting outside of the camera range
-		// 	dead_pos = [x,y];
-		// 	create_deathbox(x,y-32,10,10,player,true,0,2,2);
-		// }
+		
+		if death_cooldown != 0 death_cooldown--;
+		if state == PS_HITSTUN && (x > view_get_wview()+view_get_xview() || x < view_get_xview() ||
+			y > view_get_hview()+view_get_yview() || y < view_get_yview()) { //Die on getting outside of the camera range
+			if death_cooldown == 0 {
+				death_cooldown = death_cooldown_max;
+				dead_pos = [x,y];
+				// set_state(PS_SPAWN);
+				create_deathbox(x,y-32,32,32,player,true,0,2,1);
+			}
+		}
 		
 		if start_down {
 			other.is_paused = !other.is_paused;
@@ -142,6 +182,8 @@ if !_init {
 		prev_free = free;
 		if state != PS_SPAWN speedrun_timer++; //Track each player's time when not in spawn state (unmovable)
 		// if state != PS_AIR_DODGE old_pos = [x,y];
+		
+		// if state == PS_RESPAWN print("[update:player] completed check");
 	}
 	
 	
@@ -155,6 +197,8 @@ if !_init {
 	//Window Update Call
 	win_call = 2;
 	user_event(2);
+	
+	// with oPlayer if state == PS_RESPAWN print("[update:windows] completed check");
 	
 	/*with oPlayer {
 		other.down_down = down_down;

@@ -41,7 +41,9 @@ enum EN {
     GUARD, //8
     SUPPLIER, //9
     NGUARD, //10
+    RYKEN = 100 //100
 };
+// with oPlayer if state == PS_RESPAWN print("[ue6] started check");
 
 switch (enem_id) {
     case EN.OU:
@@ -2915,13 +2917,24 @@ switch (enem_id) {
     	}
     	break;
      case EN.GUARD:
+     case EN.NGUARD:
     	switch(art_event) {
     		case EN_EVENT.INIT:
     		//Initializations Here
-                
-            sprite_name = "guard";
-            //player_controller = 1;
-            hitpoints_max = 50;
+    		
+    		if enem_id == EN.NGUARD {
+            	enem_type = EN.NGUARD;
+            	enem_id = EN.GUARD; //Use GUARD sprites
+            	sprite_name = "nguard";
+            	hitpoints_max = 200;
+            	char_name = "Night Guard";
+            }
+            else {
+            	enem_type = EN.GUARD;
+            	sprite_name = "guard";
+            	hitpoints_max = 50;
+            	char_name = "Guard";
+            }
             
             collision_box = asset_get("ex_guy_hurt_box");
             mask_index =  collision_box; // Collision Mask
@@ -2937,14 +2950,28 @@ switch (enem_id) {
             ai_decision_time = 10;
             
             //NPC Varaibles
-            char_name = "Guard";
+            // char_name = "Guard";
             show_healthbar = false;
             team = 1;
             patrol_type = 0;
             waypoint_index = -1;
-            attached_articles = [
-            	[4,-1,-4,0,0,[2,0,0,120,0,32,64,[0,1,1]],[0,0]]
-            	];
+           
+            
+            if enem_type == EN.GUARD {
+	            attached_articles = [
+	            	[4,-1,-4,0,0,[2,0,0,120,0,32,64,[0,1,1,0]],[0,0]]
+	            	];
+            } else {
+            	attached_articles = [
+	            	[4,-1,-4,0,0,[3,0,0,1,0,180,100,[0,0,1,1]],[0,0]],
+	            	// [4,-1,-4,0,0,[3,0,0,1,sprite_get("enemy_10_vision"),128,64,[0,0,1,1]],[0,0]],
+	            	[12, 0, 0, 0, -20, [sprite_get("enemy_10_vision"), 20, 0, 1, 0, 0, 0, 0], [0,0]],
+	            	];
+	            	//Night guards always in front
+	            	og_depth = -9;
+            		depth = -9;
+            }
+            
             //AI Behavior Variables
             //Movement
             ai_range_low = 42; //The preferred minimum range
@@ -3346,7 +3373,7 @@ switch (enem_id) {
     		case EN_EVENT.DEATH:
     		break;
     		case EN_EVENT.SET_ATTACK:
-    		 with (obj_stage_main) {
+    			with (obj_stage_main) {
                     switch (other.attack) {
                         case AT_FSPECIAL:
                             set_attack_value(AT_FSPECIAL, AG_CATEGORY, 0);
@@ -3640,9 +3667,26 @@ switch (enem_id) {
     		break;
     	}
     break;
+   // case EN.RYKEN: //Moved to user_event7
+   // break;
 }
 
-//Extra functions
+user_event(7); //User event 7 - extension
+// with oPlayer if state == PS_RESPAWN print("[ue6] completed check");
+//DO NOT EDIT BELOW
+#define create_smoke(_x, _y, _amount, _length, _dir_min, _dir_max, _spd_min, _spd_max, _frict)
+var smoke = instance_create(_x, _y, "obj_stage_article",18); //Ryken's Smoke
+smoke.smoke_length = _length;
+smoke.smoke_particle_amount = _amount;
+smoke.spr_dir = spr_dir;
+smoke.smoke_spread_dir_min = _dir_min;
+smoke.smoke_spread_dir_max = _dir_max;
+smoke.smoke_speed_min = _spd_min;
+smoke.smoke_speed_max = _spd_max;
+smoke.smoke_friction = _frict;
+smoke.player_id = self;
+
+return smoke;
 #define arc_calc_x_speed(x1, y1, x2, y2, vspd, g)
 var dX = x2 - x1;
 var dY = y2 - y1;
@@ -3651,8 +3695,6 @@ if (dX == 0) {
 }
 var t = (abs(vspd) / g) + sqrt(abs(vspd * vspd) / (g * g) - (dY / g));
 return dX / t;
-
-//DO NOT EDIT BELLOW
 #define enemy_sprite_get(_name,_sprite) //Get the sprite of this article
 return sprite_get("enemy_"+string(_name)+"_"+string(_sprite));
 #define place_meet(__x,__y) //get place_meeting for the usual suspects
@@ -3675,3 +3717,6 @@ return (place_meeting(__x,__y,asset_get("jumpthrough_32_obj")) ||
 var _plat = instance_place(__x,__y,obj_stage_article_platform);
 if instance_exists(_plat) return _plat;
 else return instance_place(__x,__y,asset_get("jumpthrough_32_obj"));
+#define set_state(_state)
+next_state = _state;
+return _state;

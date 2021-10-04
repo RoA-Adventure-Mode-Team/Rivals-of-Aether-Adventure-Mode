@@ -24,6 +24,8 @@ nick = "";
 action_manager = 0;
 room_manager = 0;
 dead_pos = [x,y];
+death_cooldown = 0;
+death_cooldown_max = 120;
 old_pos = [x,y];
 
 respawn_point = [2607,10091,1]; //x,y, Room #
@@ -90,7 +92,7 @@ switch p_name {
     case "Zetterburn":
         am_is_fire = true;
         // am_is_past = true;
-        am_is_experienced = true;
+        // am_is_experienced = true;
         // am_is_clothed = false; LOINCLOTH
         am_is_guest = false; 
         pronouns = ["he","him","his","is"];
@@ -99,7 +101,7 @@ switch p_name {
     case "Forsburn":
         am_is_fire = true;
         // am_is_past = true;
-        am_is_experienced = true;
+        // am_is_experienced = true;
         am_is_guest = false; 
         pronouns = ["he","him","his","is"];
         break;
@@ -185,7 +187,7 @@ switch p_name {
         am_is_guest = false; 
         pronouns = ["he","him","his","is"];
         break;
-    //Master Cai better have lived a long, good life I stg
+    //Master Cai better have lived a long, good life I stg frog boy doesn't deserve tragedy
     case "Ranno":
         am_is_water = true;
         am_is_experienced = true;
@@ -257,3 +259,9 @@ switch p_name {
         pronouns = ["he","him","his","is"];
         break;
 }
+
+//AM - Specific variables
+//Rykenburn
+smoked = false;
+smoke_hit_cooldown = 0;
+smoked_id = noone;

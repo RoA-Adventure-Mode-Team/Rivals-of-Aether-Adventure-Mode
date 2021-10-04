@@ -21,7 +21,7 @@ enum ACT {
     //frames
     MUSIC, //set music
     //type, 1, 2
-    SET, //Set article data
+    SET, //Set data
     //article_id, variable, value, ease_type, ease_length
     ON_INPUT, //Do a thing when a player presses a button
     //follow_player?, input_type
@@ -43,11 +43,19 @@ enum ACT {
     //article_group, threshold, [lower than or equal:0 greater than or equal:1]
     SCENE, //Switches the scene
     //0:set,1:add, scene id
-    RANDOM, //Pick a random exit action to do
+    RANDOM, //Pick a random exit action to do?
     //seed
-    
+    SET_RELATIVE, //Set data relative to whatever caused this action (by default, passed by trigger zones)?
+    //variable, value, ease_type, ease_length
+    EVENT, //Trigger an item event?
+    //event_id
+    HITBOX, //Spawn a hitbox at an intersect location upon entering
+    //attack_id, hitbox_id
+    KILLBOX, //Spawn a killbox at an intersect location upon entering, killing whatever has intersected
+    //killbox background
+    TRANS_MUSIC, //transition music with a crossfade time (time of zero is a cut)
+    //to_music_index, fade_time
 }
-
 enum P {
     LOAD,
     ROOM_ID,
@@ -55,7 +63,9 @@ enum P {
     ACTION_ID,
     ALIVE_TIME,
     ACTION_INDEX,
-    DIE
+    DIE,
+    
+    REL_ID
 }
 
 enum L {
@@ -81,9 +91,11 @@ if !_init {
     visible = true;
     _init = true;
     quest_init = true;
-    
+    debug = true; //Test
     exit;
 }
+
+// with oPlayer if state == PS_RESPAWN print("[article3:update] started check");
 
 if array_length_1d(end_action_queue) > 0 process_end_queue();
 if array_length_1d(end_action_index) > 0 process_end_index();
@@ -94,6 +106,8 @@ if get_gameplay_time() % tick_rate != 0 exit;
 
 action_tick();
 scene_tick();
+
+// with oPlayer if state == PS_RESPAWN print("[article3:update] completed check");
 
 #define process_action_queue()
 // if debug print_debug("[AM] PROGESSING ACTION QUEUE..."+string(action_queue));
@@ -160,9 +174,8 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     	}
     	break;
     case ACT.SET:
-	    switch _param[3] { //ease_type
+	    switch _param[3] { //ease_type?
 	    	default:
-	    		
 		    	with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
 		    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[1],variable_instance_get(id,_param[1]));
 					variable_instance_set(id,_param[1],ease_linear(variable_instance_get(id,"action_old_"+_param[1]),_param[2],_action[P.ALIVE_TIME],_param[4]));
@@ -175,10 +188,26 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
 	    	break;
 	     }
     	break;
+    case ACT.SET_RELATIVE:
+	    switch _param[2] { //ease_type
+	    	default:
+	    		
+		    	with _action[P.REL_ID] {
+		    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[0],variable_instance_get(id,_param[0]));
+					variable_instance_set(id,_param[0],ease_linear(variable_instance_get(id,"action_old_"+_param[0]),_param[1],_action[P.ALIVE_TIME],_param[3]));
+					// if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+				}
+				if _action[P.ALIVE_TIME] > _param[3] {
+		    		_action[@P.DIE] = true;
+		    	}
+	    	
+	    	break;
+	     }
+    	break;
     case ACT.ON_INPUT:
     	var _input_done = 0;
     	with oPlayer {
-    		if !_param[0] || other.follow_player == id {
+    		if !_param[0] { //|| other.follow_player == id { //Removing local player reference for multiplayer stability
     			switch _param[1] {
     				case PC_TAUNT_PRESSED:
     					if taunt_down _input_done = 1;
@@ -248,6 +277,21 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     		_action[@P.DIE] = true;
     	}
     	break;
+    // case ACT.TRANS_MUSIC: //to_music_index, fade_time
+    // 	if _param[1] > 0 _param[1]--;
+    // 	else {
+    // 		_action[@P.DIE] = true;
+    // 	}
+    // 	sound_volume(music_array[cur_music_id],
+    // 	break;
+    case ACT.TRANS_MUSIC:
+    	if get_gameplay_time() > 125 && cur_music_id != _param[0] { //Haha yea man what if music functions just didn't do anything for 125 frames that would be an epic prank haha
+    		if debug print("[AM] ... ON FRAME 126!");
+    		music_play_file(_param[0]);
+    		cur_music_id = _param[0];
+    		_action[@P.DIE] = true;
+    	}
+    	break;
     default: //type with no code here
     	//print_debug("ACTION UNDEFINED");
         break;
@@ -293,6 +337,7 @@ new_action[P.ROOM_ID] = _room_id;
 new_action[P.SCENE_ID] = _scene_id;
 new_action[P.ACTION_ID] = _action_id;
 new_action[P.ACTION_INDEX] = action_index;
+new_action[P.REL_ID] = _starting_id;
 action_index++;
 new_action[P.ALIVE_TIME] = 0;
 
@@ -300,7 +345,7 @@ new_action[P.ALIVE_TIME] = 0;
 // print_debug(string(new_action[P.LOAD]));
 
 if array_length(new_action[P.LOAD]) == 0 { //Action Data not found! Exit action start.
-	print("[AM:SA] WARNING: Action data not found! Aborting Action "+string(_room_id)+":"+string(_scene_id)+":"+string(_action_id));
+	print("[AM] WARNING: Action data not found! Aborting Action "+string(_room_id)+":"+string(_scene_id)+":"+string(_action_id));
 	return false;
 }
 
@@ -313,10 +358,6 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 	case ACT.WINDOW:
 		var _param = new_action[P.LOAD][L.PARAM];
 		var win_over = _param[3];
-		// if _starting_id != id { //Translate to local coordinates if started from a different id
-		// 	_param[1] += _starting_id.x;
-		// 	_param[2] += _starting_id.y;
-		// }
 		with obj_stage_main {
 			if array_length_1d(win_data) < _param[0] {
 				print_debug("[AM] WINDOW OUTSIDE OF INITIALIZED RANGE...");
@@ -326,14 +367,40 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 			array_push(active_win,[[_param[1],_param[2],new_action[P.ACTION_INDEX], 0, _starting_id],array_clone_seriously_why_isnt_this_how_it_works(win_data[_param[0]])]); //Push window data to active windows in the right format 
 								//[[pos_x,pos_y,action_id,alive_time, tracking_id], [meta]]
 		}
-		// if _starting_id != id { //Translate back from local coordinates
-		// 	_param[1] -= _starting_id.x;
-		// 	_param[2] -= _starting_id.y;
-		// }
 		break;
 	case ACT.CHECK:
     	var _param = new_action[P.LOAD][L.PARAM];
 		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] if variable_instance_get(id,_param[1]) == _param[2] _action[@P.DIE] = true;
+    	break;
+    case ACT.HITBOX:
+		var _param = new_action[P.LOAD][L.PARAM];
+    	if _starting_id == id {
+    		if debug print_debug("[AM] UNSET ID, CANNOT SPAWN HITBOX.");
+    	} else {
+    		if debug print_debug("[AM] SPAWNING HITBOX...");
+    		create_hitbox(_param[0],_param[1],_starting_id.x,_starting_id.y);
+    	}
+    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+		return true; //Never enters the queue
+    	break;
+    case ACT.KILLBOX:
+		var _param = new_action[P.LOAD][L.PARAM];
+    	if _starting_id == id {
+    		if debug print_debug("[AM] UNSET ID, CANNOT SPAWN KILLBOX.");
+    	} else {
+    		if debug print_debug("[AM] SPAWNING KILLBOX...");
+    		// create_hitbox(_param[0],_param[1],_starting_id.x,_starting_id.y);
+    		// if _starting_id.object_index ==  oPlayer {
+    		// if debug print_debug("[AM]... ON PLAYER");
+    		create_deathbox(_starting_id.x,_starting_id.y-32,1000,1000,-1,true,0,2,_param[0]);
+    		// }
+    		// if _starting_id.object_index == obj_stage_article {
+    		// 	state = 2; //Set to the universal destroy state
+    		// 	// instance_destroy();
+    		// }
+    	}
+    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+		return true; //Never enters the queue
     	break;
 	case ACT.SET:
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -420,7 +487,7 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 		    	}
 			}
 		}
-		if debug print_debug("[AM:SUS] DID NOT FIND SUSPEND TARGET");
+		if debug print_debug("[AM] DID NOT FIND SUSPEND TARGET");
 		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 		return true; //Never enters the queue
 	case ACT.KILL:
@@ -476,7 +543,13 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 		return true; //Never enters the queue
 	case ACT.QUEST_PROG: //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-    	var _param = new_action[P.LOAD][L.PARAM];
+		var _param = new_action[P.LOAD][L.PARAM];
+		if _param[0] > array_length_1d(quest_array) { //ABORT ABORT
+			if debug print("[AM] Quest Array index not found!");
+			for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+			return true; //Never enters the queue
+		}
+    	
     	switch _param[1] {
     		case 2: //add/subtract
     			// print(quest_array[_param[0]][0]);
@@ -497,8 +570,28 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     case ACT.RANDOM:
     	var _param = new_action[P.LOAD][L.PARAM];
     	var index = random_func(_param[0] % 200,array_length_1d(new_action[P.LOAD][L.ON_EXIT])-1,true);
-    	start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][index],_starting_id); //Add Exit Actions
+    	start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][index],_starting_id); //Add Random Exit Actions
 		return true; //Never enters the queue
+    	break;
+    case ACT.TRANS_MUSIC:
+    	var _param = new_action[P.LOAD][L.PARAM];
+    	if debug print("[AM] PLAYING MUSIC...");
+    	if get_gameplay_time() > 125 && cur_music_id != _param[0] {
+	    	// if cur_music_id > 0 sound_volume(music_array[cur_music_id][0],0,_param[1]);
+	    	// sound_volume(music_array[_param[0]][0],0,0);
+	    	// sound_volume(music_array[_param[0]][0],1,_param[1]);
+	    	// sound_play(music_array[_param[0]][0],true,0,1);
+	    	music_play_file(_param[0]);
+	    	cur_music_id = _param[0];
+	  //  	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+			// return true; //Never enters the queue
+    	}
+    	if debug && cur_music_id == _param[0] print("[AM] MUSIC ALREADY PLAYING");
+    	
+    	if get_gameplay_time() > 125 { //Yeeeaaa seee it was the start of the game before the music kicks in so I'll need you to come in on frame 126 that would be greeaaat.
+	    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+			return true; //Never enters the queue
+    	}
     	break;
     default:
         break;
@@ -583,42 +676,51 @@ with room_manager {
 			(_pos[1]-grid_offset)*cell_size + (cell_dim[1]*_cell_pos[1]-grid_offset*(_cell_pos[1]))*cell_size + render_offset[1]];
 }
 
+// #define music_find_length(_music_id)
+// if array_length_1d(music_array) < _music_id return noone;
+// return music_array[_music_id][1];
+
+// #define set_music(_music_id)
+// // sound_play(music_array[_music_id][0],true,false,1);
+// cur_music_id = _music_id;
+// return;
+
 //Returns an array of two angle points from opposite radial directions in a fixed step count. Should be ~> 3 to minimize errors in finding sharper collisions.
-#define circle_search(_steps,_x,_y,_d) //The max steps, the x value of the center of the circle, the y value of the center of the circle, and the distance from the center
+// #define circle_search(_steps,_x,_y,_d) //The max steps, the x value of the center of the circle, the y value of the center of the circle, and the distance from the center
 
-return [angle_query(180,0,collision_point(_x-_d*dcos(0),_y+_d*dsin(0),obj_stage_article_solid,false,true),_steps,_x,_y,_d,0),
-        angle_query(180,360,collision_point(_x-_d*dcos(360),_y+_d*dsin(360),obj_stage_article_solid,false,true),_steps,_x,_y,_d,0)];
+// return [angle_query(180,0,collision_point(_x-_d*dcos(0),_y+_d*dsin(0),obj_stage_article_solid,false,true),_steps,_x,_y,_d,0),
+//         angle_query(180,360,collision_point(_x-_d*dcos(360),_y+_d*dsin(360),obj_stage_article_solid,false,true),_steps,_x,_y,_d,0)];
     
-#define angle_query(_ang_new,_ang_old,_ang_old_r,_steps,_x,_y,_d,_rec) //provide with starting angles angle1, angle2, the result at angle2, the max steps, the x value of the center of the circle, the y value of the center of the circle, and the distance from the center. _rec is zero. Will return an angle if it finds one, -1 if it doesn't.
-if (_steps == 0) { //reached the end of the resolution - prevent recursing past the step limit
-    if (_rec == 0) return _ang_old; //return the old step as the approximate angle
-    else return -1; //return an unexpected value for an angle in this schema, did not find an angle difference.
-}
+// #define angle_query(_ang_new,_ang_old,_ang_old_r,_steps,_x,_y,_d,_rec) //provide with starting angles angle1, angle2, the result at angle2, the max steps, the x value of the center of the circle, the y value of the center of the circle, and the distance from the center. _rec is zero. Will return an angle if it finds one, -1 if it doesn't.
+// if (_steps == 0) { //reached the end of the resolution - prevent recursing past the step limit
+//     if (_rec == 0) return _ang_old; //return the old step as the approximate angle
+//     else return -1; //return an unexpected value for an angle in this schema, did not find an angle difference.
+// }
 
-var _ang_new_r = collision_point(_x-_d*dcos(_ang_new),_y+_d*dsin(_ang_new),obj_stage_article_solid,false,true); //check collision value at the new angle
-var _diff = angle_difference(_ang_old,_ang_new); //The difference of the angles
+// var _ang_new_r = collision_point(_x-_d*dcos(_ang_new),_y+_d*dsin(_ang_new),obj_stage_article_solid,false,true); //check collision value at the new angle
+// var _diff = angle_difference(_ang_old,_ang_new); //The difference of the angles
 
-if (_ang_new_r != _ang_old_r) { //If a difference is found
+// if (_ang_new_r != _ang_old_r) { //If a difference is found
 
-    _ang_old = _ang_new;
-    _ang_new -= _diff/2; //Take half the angle difference and add onto the direction of the difference
-    _rec = 0; //Successfuly found a difference, no need to recurse
+//     _ang_old = _ang_new;
+//     _ang_new -= _diff/2; //Take half the angle difference and add onto the direction of the difference
+//     _rec = 0; //Successfuly found a difference, no need to recurse
     
-} else { //Difference not found, checking other places
+// } else { //Difference not found, checking other places
 
-    _rec += 1; //Add to _rec so the function knows its recursing step
-    if !(_rec & 1) _ang_new += 2*_diff; //If it's odd & same, check the other side
-    else { //if it's even & same, aka if a difference was not found across both angles, recurse down for the remaining steps. (Edge case for if no difference is found and all branches need searching, like a very sharp corner)
-        var _branch_result_m = angle_query(_ang_new-_diff/2,_ang_new,_ang_new_r,_steps-1,_x,_y,_d,_rec); //Recruse across the negative line
-        var _branch_result_p = angle_query(_ang_new+_diff/2,_ang_new,_ang_new_r,_steps-1,_x,_y,_d,_rec); //Recruse across the positive line
-        if (_branch_result_m != -1) return _branch_result_m; //Found an angle across this recursive negative line
-        if (_branch_result_p != -1) return _branch_result_p; //Found an angle across this recursive positive line
-        //If it gets past this, did not find an angle at all with the given step resolution! Move on to the next one.
-        _ang_new += 2*_diff;
-        _rec -= 1;
-    }
+//     _rec += 1; //Add to _rec so the function knows its recursing step
+//     if !(_rec & 1) _ang_new += 2*_diff; //If it's odd & same, check the other side
+//     else { //if it's even & same, aka if a difference was not found across both angles, recurse down for the remaining steps. (Edge case for if no difference is found and all branches need searching, like a very sharp corner)
+//         var _branch_result_m = angle_query(_ang_new-_diff/2,_ang_new,_ang_new_r,_steps-1,_x,_y,_d,_rec); //Recruse across the negative line
+//         var _branch_result_p = angle_query(_ang_new+_diff/2,_ang_new,_ang_new_r,_steps-1,_x,_y,_d,_rec); //Recruse across the positive line
+//         if (_branch_result_m != -1) return _branch_result_m; //Found an angle across this recursive negative line
+//         if (_branch_result_p != -1) return _branch_result_p; //Found an angle across this recursive positive line
+//         //If it gets past this, did not find an angle at all with the given step resolution! Move on to the next one.
+//         _ang_new += 2*_diff;
+//         _rec -= 1;
+//     }
     
-}
+// }
 
-_steps -= 1; //Pass on the return until the steps run out, infinite prevention
-return angle_query(_ang_new,_ang_old,_ang_new_r,_steps,_x,_y,_d,_rec); //Recurse across the difference line
+// _steps -= 1; //Pass on the return until the steps run out, infinite prevention
+// return angle_query(_ang_new,_ang_old,_ang_new_r,_steps,_x,_y,_d,_rec); //Recurse across the difference line

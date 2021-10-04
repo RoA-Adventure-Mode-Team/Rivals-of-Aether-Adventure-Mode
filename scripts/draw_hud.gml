@@ -39,6 +39,8 @@ enum L {
     ON_EXIT
 }
 
+// with oPlayer if state == PS_RESPAWN print("[draw_hud] started check");
+
 //draw_set_font(asset_get("medFont"));
 //draw_text_trans_outline(temp_x,temp_y,"TEST FONT",10,1000,1,1,0,c_white,c_black,1);
 //draw_debug_text(temp_x-200,temp_y-470,string(cur_scene));
@@ -129,8 +131,14 @@ with room_manager {
     //if other.game_end set_view_position(init_cam_pos[0],init_cam_pos[1]);
     switch room_switch_type {
         case 1: //Fade Out/In
-    		if room_switch_timer < room_switch_time/2 draw_rectangle_color(0,0,960,540*room_switch_timer/(room_switch_time/2),c_black,c_black,c_black,c_black,c_black);
-    		if room_switch_timer >= room_switch_time/2 draw_rectangle_color(0,540*(room_switch_timer-(room_switch_time/2))/(room_switch_time/2),960,540,c_black,c_black,c_black,c_black,c_black);
+    		if room_switch_timer < room_switch_time/2 {
+    			draw_rectangle_color(0,0,960,540*room_switch_timer/(room_switch_time/2),c_black,c_black,c_black,c_black,c_black);
+    			music_fade((room_switch_timer-(room_switch_time/2))/(room_switch_time/2),0.5);
+    		}
+    		if room_switch_timer >= room_switch_time/2 {
+    			draw_rectangle_color(0,540*(room_switch_timer-(room_switch_time/2))/(room_switch_time/2),960,540,c_black,c_black,c_black,c_black,c_black);
+				music_fade(room_switch_timer/(room_switch_time/2),0.5);
+    		}
     		break;
     	case 2:
     	    draw_sprite_ext(sprite_get("1px"),0,0,0,960,540,0,c_black,-abs(room_switch_timer-(room_switch_time/2))/(room_switch_time/2)+1); //-abs(room_switch_timer-(room_switch_time/2))/(room_switch_time/2)+1
@@ -177,6 +185,12 @@ win_call = 0;
 user_event(2); //Cursor and Window Draw
 
 if debug draw_debug_text(430-floor(string_length("AM ALPHA "+string(am_vers))/2),0,"AM ALPHA "+string(am_vers)); 
+
+// with oPlayer if state == PS_RESPAWN {
+// 	print("[draw_hud] completed check");
+// 	// set_state(PS_IDLE);
+// }
+
 
 //user_event(); //Draw Endscreen
 // #define draw_scene() //Drawing HUD

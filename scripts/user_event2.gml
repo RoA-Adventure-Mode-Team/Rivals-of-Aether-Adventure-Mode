@@ -27,8 +27,8 @@ enum WIN {
 	POP_DIALOG,
 	POINTOUT,
 	QUESTLIST,
-	NOTE_SCROLL
-	
+	NOTE_SCROLL,
+	CREDIT_SCROLL
 }
 
 enum GUI {
@@ -40,7 +40,6 @@ enum GUI {
 	SCROLLBOX,
 	DIALOGBOX_TRIM,
 	LISTBOX,
-	SPRSCR,
 	EXIT
 }
 
@@ -52,7 +51,7 @@ enum SM {
 	SAVE,
 	LOAD,
 }
-
+// with oPlayer if state == PS_RESPAWN print("[ue2] started check");
 if win_call == 0 { //HUD Draw Call
 	if mouse_x_i != mouse_x || mouse_y_i != mouse_y cursor_visible = true;
 		
@@ -66,6 +65,7 @@ if win_call == 0 { //HUD Draw Call
 		}
 		
 	}
+	// with oPlayer if state == PS_RESPAWN print("[ue2:hud] ended check");
 	exit;
 }
 
@@ -95,19 +95,19 @@ if win_call == 1 with obj_stage_main { //Load Data
 	var _cmd_char = cmd_char;
 	win_add(i++,[WIN.DEBUG, //0
 		new_varcont(["",_string,_w,_h,_sep,_cmd_char]),
-		new_sprite(sprite_get("gui_lucid"),0,-1),
+		new_sprite(sprite_get("gui_lucid"),0,-1,1),
 		new_scrollbox(_string,8,18,_w,_h,_sep,c_white,asset_get("fName")),
 		new_dialogbox(_cmd_char,noone,"_",dialog_tick_rate,4,cmd_h,cmd_w,_sep,c_white,asset_get("fName")),
 		new_textbox(cmd_title,8,2,200,16,c_white,asset_get("fName")),
 	]);
 	
 	win_add(i++,[WIN.AREATITLE, //1
-		new_sprite(sprite_get("area_title"),0,0),
+		new_sprite(sprite_get("area_title"),0,0,1),
 		new_textbox("TITLE_NAME",0,0,200,16,c_white,asset_get("roaLBLFont"))
 	]);
 	
 	win_add(i++,[WIN.AREAFADE, //2
-		new_sprite(sprite_get("area_title"),4,12),
+		new_sprite(sprite_get("area_title"),4,12,1),
 		new_textbox("TITLE_NAME",2,2,700,32,c_black,asset_get("roaLBLFont")),
 		new_varcont([0,0,0,0,0]),
 		new_textbox("TITLE_NAME",0,0,700,32,c_white,asset_get("roaLBLFont")),
@@ -121,7 +121,7 @@ if win_call == 1 with obj_stage_main { //Load Data
 	var _w = 176;
 	win_add(i++,[WIN.POP_DIALOG, //3
 		new_varcont([_dialog_index,120,0,0,0,0]),
-		new_sprite(sprite_get("s_talk_gui"),_offset[0],14+_offset[1]),
+		new_sprite(sprite_get("s_talk_gui"),_offset[0],14+_offset[1],1),
 		new_trim_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0]+_offset[0],_pos[1]+_offset[1],_w,16,c_white,asset_get("fName")) //$ff00ff $ea00ea $d252ff
 		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1]+2,_w,16,c_black,asset_get("fName")),
 		// new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1]-2,_w,16,c_black,asset_get("fName")),
@@ -155,40 +155,51 @@ if win_call == 1 with obj_stage_main { //Load Data
 	var _w = 500;
 	win_add(i++,[WIN.DIALOG_DEFAULT, //6
 		new_varcont([1,1,1,_sound]), //ID, Progress, freeze_player,sound/flap
-		new_sprite(sprite_get("talk_gui"),0,0), //Dialog Background Sprite
+		new_sprite(sprite_get("talk_gui"),0,0,1), //Dialog Background Sprite
 		new_varcont([]), //Filler to replace dialog picture
 		// new_sprite(sprite_get("face_default"),0,0), //Dialog Picture
-		new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1]+2,_w,18,c_white,asset_get("medFont")), //Main Text
+		new_dialogbox(_string,_sound,"_",dialog_tick_rate,_pos[0],_pos[1]+2,_w,22,c_white,asset_get("medFont")), //Main Text
 		// new_sprite(sprite_get("response_gui"),0,0), //Response Sprite
 		// new_listbox(["Response 1","Response 2"],asset_get("empty_sprite"),_sound,_pos[0],_pos[1]+2,_w,18,c_white,asset_get("medFont")), //Listbox new_listbox(_choices,_select_sprite,_sound,_x,_y,_w,_sep,_color,_font)
 	]);
 	
 	var _sprite = asset_get("empty_sprite");
-	var _x = cam_width/2;
-	var _y = cam_height/3;
+	// var _x = cam_width/2;
+	// var _y = cam_height/3;
+	var _x = 0;
+	var _y = 0;
 	var _rate = [0,10];
-	win_add(i++,[WIN.NOTE_SCROLL, //6 //Shows world notes
+	win_add(i++,[WIN.NOTE_SCROLL, //7 //Shows world notes
 		new_varcont([_sprite,_x,_y,_rate]), //sprite, x, y, rate
-		new_sprscr(_sprite,_x,_y,_rate)
-		//new_sprite(sprite_get("gui_test"),0,0),
+		new_sprite(sprite_get("black"),-200,0,0.5),
+		new_sprite(_sprite,_x,_y,1),
 		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
 		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
 	]);
 	
+	var _sprite = asset_get("empty_sprite");
+	win_add(i++,[WIN.CREDIT_SCROLL, //8 //Custom Credits Scroll
+		new_varcont([_sprite,-1,0]), //sprite, scroll_speed_y,scroll_speed_x
+		new_sprite(_sprite,0,0,1),
+		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
+		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
+	]);
 	
+	// with oPlayer if state == PS_RESPAWN print("[ue2:load] ended check");
 	exit;
 }
 
 if win_call == 2 {//Update Call
 	with obj_stage_main logic_windows(); 
+	// with oPlayer if state == PS_RESPAWN print("[ue2:update] ended check");
 	exit;
 	
 }
 
-if win_call == 3 { //World Draw Call?
+// if win_call == 3 { //World Draw Call?
 	
-	exit;
-}
+// 	exit;
+// }
 #define logic_windows() //Update Call
 var _x = 0;
 var _y = 0;
@@ -355,9 +366,9 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			}
 			var _continue = 1;
 			with oPlayer {
-				if _element[1][3] && (state != PS_SPAWN && state != PS_PRATFALL){
-					if free set_state(PS_PRATFALL); //If freeze players
-					else set_state(PS_SPAWN);
+				if _element[1][3] {
+					if free && state != PS_PRATFALL set_state(PS_PRATFALL); //If freeze players
+					else if !free && state != PS_SPAWN set_state(PS_SPAWN);
 				}
 				if (attack_held == 1 || taunt_held == 1) {
 					// print("Upping text...");
@@ -385,16 +396,39 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			}
 			break;
 		case WIN.NOTE_SCROLL:
+			if alive_time == 1 {
+				_element[@3][@1] = _element[1][1];
+				_element[@3][@2] = _element[1][2];
+				_element[@3][@3] = _element[1][3];
+			}
 			with oPlayer {
 				if state != PS_SPAWN set_state(PS_SPAWN);
-				if special_down with other {
-					end_window(_i);
-					_i--;
+				if special_down || attack_down || taunt_down {
+					set_state(PS_IDLE);
+					with other {
+						end_window(_i);
+						_i--;
+					}
 				}
-				if left_down _x -= rate[0];
-				if right_down _y += rate[0];
-				if up_down _x -= rate[1];
-				if down_down _y += rate[1];
+				
+				// if left_down _x -= _element[1][4][0];
+				// if right_down _y += _element[1][4][0];
+				// if up_down _x -= _element[1][4][1];
+				// if down_down _y += _element[1][4][1];
+			}
+			break;
+		case WIN.CREDIT_SCROLL:
+			if alive_time == 1 {
+				_element[@2][@1] = _element[1][1];
+			}
+			//Swapped axis because vertical scroll is more common
+			_element[@2][@3] += _element[1][2];
+			_element[@2][@2] += _element[1][3];
+			
+			if _element[@2][@3] < -400 || _element[@2][@2] < -400
+			|| _element[@2][@3] > view_get_hview()+400 || _element[@2][@2] > view_get_wview()+400 with other {
+				end_window(_i);
+				_i--;
 			}
 			break;
 	}
@@ -481,12 +515,6 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				// 	}
 				// }
 				break;
-			case GUI.SPRSCR: //scroll the sprite  [GUI.SPRSCR,_sprite,_x,_y,_rate];
-				with oPlayer {
-					if up_held _param[3] -= _param[4][1];
-					if down_held _param[3] += _param[4][1];
-				}
-				break;
 		}
 	}
 }
@@ -541,7 +569,7 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 		_param = _element[_j];
 		switch _param[0] {
 			case GUI.SPRITE:
-				draw_sprite_ext(_param[1],0,_x+_param[2],_y+_param[3],2,2,0,c_white,win_alpha);
+				draw_sprite_ext(_param[1],0,_x+_param[2],_y+_param[3],2,2,0,c_white,win_alpha*_param[4]);
 				break;
 			case GUI.TEXTBOX:
 				draw_set_font(_param[7]);
@@ -594,14 +622,6 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				draw_sprite_ext(_param[2],_param[5],_x+_param[3],_y+_param[4],2,2,0,c_white,1);
 				draw_text_drop(_x+_param[3]+32,_y+_param[4]+8,_param[6],16,100,1,1,0,1);
 				break;
-			case GUI.SPRSCR: //scroll the sprite  [GUI.SPRSCR,_sprite,_x,_y,_rate];
-				//Background
-				draw_set_alpha(.6);
-				draw_rectangle_color(view_get_xview(),view_get_yview(),view_get_xview()+view_get_wview(),view_get_yview()+view_get_hview(), c_black,c_black,c_black,c_black,false);
-				draw_set_alpha(1);
-				//Sprite Overlay
-				draw_sprite_ext(_param[1],0,_param[2],_param[3],4,4,0,c_white,1);
-				break;
 		}
 	}
 }
@@ -610,8 +630,8 @@ return true;
 
 #define new_textbox(_default_string,_x,_y,_w,_sep,_color,_font)
 return [GUI.TEXTBOX,_default_string,_x,_y,_w,_sep,_color,_font];
-#define new_sprite(_sprite,_x,_y)
-return [GUI.SPRITE,_sprite,_x,_y];
+#define new_sprite(_sprite,_x,_y,_a)
+return [GUI.SPRITE,_sprite,_x,_y,_a];
 #define new_dialogbox(_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font)
 var _char_vis = 0;
 return [GUI.DIALOGBOX,_default_string,_sound,_ticker,_ticker_time,_x,_y,_w,_sep,_color,_font,_char_vis];
@@ -632,8 +652,6 @@ return [GUI.BUTTON,_type,_button_strip,_x,_y,_state,_name];
 var _s = [GUI.VARCONT];
 for (var _i = 0;_i < array_length_1d(_var);_i++) array_push(_s,_var[_i]);
 return _s;
-#define new_sprscr(_sprite,_x,_y,_rate)
-return [GUI.SPRSCR,_sprite,_x,_y,_rate];
 #define win_add(_win_id, _win_data)
 while _win_id >= array_length_1d(win_data)  array_push(win_data, []);
 win_data[@_win_id] = _win_data;
@@ -988,6 +1006,10 @@ with _with_obj {
 					_art_sv += string(_art.spawn_variables[_i])+",";
 				}
 				_art_sv += "]";
+				//Replace misformatted into formatted
+				string_replace_all(_art_sv, "},  }","]");
+				string_replace_all(_art_sv, ",{ { ","]");
+				
 				var _art_pos = grid_to_cell([_art.x+64,_art.y+64]);
 				var _ret = get_string("(ctrl+A) Copy the below into the room ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script (user_event1)...",
 				"["+string(_art.num)+","+string(_art_pos[0][0]/16)+","+string(_art_pos[0][1]/16)+","+string(_article_type)+","+string(_art.og_depth)+","+_art_sv+",[0,0]"+"], // Exported from Lucid Dream");
@@ -1289,7 +1311,14 @@ with _with_obj {
 				init_pos = [_art_pos[0][0]/16,_art_pos[0][1]/16];
 				cell_pos = [_art_pos[1][0],_art_pos[1][1]];
 				debug = other.debug;
+				
+				//Add to selected on spawn
+				debug_info = !debug_info;
+				depth = (-100*debug_info)+(og_depth*(!debug_info));
+				if debug_info && array_find_index(other.debug_selected,id) == -1 array_push(other.debug_selected,id);
+				else if array_find_index(other.debug_selected,id) != -1 other.debug_selected = array_cut(other.debug_selected,array_find_index(other.debug_selected,id));
 			}
+			
 			cmd_print(_str_raw,"Spawned <"+string(_str_a[2])+":"+string(_str_a[1])+">");
 			// print(_handl.spawn_variables);
 			break;

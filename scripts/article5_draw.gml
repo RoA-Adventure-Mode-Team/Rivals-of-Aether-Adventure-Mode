@@ -45,6 +45,7 @@ with obj_stage_main {
 	//set_view_position(g_cam_pos[0],g_cam_pos[1]);
 
 }
+// with oPlayer if state == PS_RESPAWN print("[article5:draw] completed check");
 // if debug with oPlayer {
 // 	draw_debug_text(floor(x),floor(y),string([floor(x/16),floor(y/16)]));
 // 	draw_debug_text(floor(x),floor(y)+16,string(get_state_name(state)));

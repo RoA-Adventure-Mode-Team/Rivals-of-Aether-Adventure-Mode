@@ -294,6 +294,8 @@ hg_shitp[100] = 0;
 hitb = noone;
 hitb_pos = [0,0];
 
+has_hit_player = false;
+
 //Input Variables
 joy_dir = 0;
 joy_pad_idle = 0;

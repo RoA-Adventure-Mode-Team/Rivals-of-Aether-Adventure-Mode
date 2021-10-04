@@ -88,8 +88,8 @@ RYKENBURN:
 If Fire: "Admirable commitment to civil service, [PLAYER]."
 "I do not need assistance, however the Prefect thinks you can be of use."
 {
-If Experienced: "And indeed, your mastery is appreciated."
-If Noob: "And indeed, you show promise."
+If Experienced: "Your mastery is appreciated."
+If Noob: "You show much promise."
 If Insane: "Unstable, but maybe we want that."
 If Fire: "And indeed, those born of fire are welcome to help."
 If Evil: "An 'extra-legal' leg is maybe what we want here." 
@@ -133,7 +133,7 @@ EXT. OUTSIDE TEMPLE, HALLOWFLAME, AFTERNOON - lighting changed to be an orange c
 WITCH (Obscured) - 
 "Hey there, [PLAYER]."
 WITCH peeks out from behind a pillar
-"He's not being very cooperative, isn't he?"//"The big bull's got a list of bull for you to complete, huh?"
+"He's not being very cooperative, isn't he?"//"The big bull's got a list of bull for you to mull & pull, huh?"
 "I think I've got something that will actually help you."
 "Of course we can't talk about this out here - my house is the one with my hat on it. Hard to miss."
 WITCH disappears behind the pillar, a flash of smoke and she's gone.
@@ -146,12 +146,12 @@ CHECKPOINT
 If NOOB: "Welcome! I'm surprised you didn't get lost."
 If PLAYER takes a considerable time: "Welcome! Must have gotten a bit sidetracked..."
 "I have a lead which should help you figure out what's going on."
-"Dr Lacuna is a royal researcher who came here." 
+"Lacuna is a royal researcher who came here." 
 "I have watched them descend into the closed-off aqueduct every night - until a few days ago."
 "It's a bit suspicious don't you think?"
 "If I searched myself, I'd befall whatever fate happened to the others."
 "You, as a guest of the Commander, have extra privilege to be a bit nosy."
-"I'd start with talking with Dr. Lacuna, seeing where that leads."
+"I'd start with talking with Lacuna, seeing where that leads."
 PLAYER can explore WITCH HOUSE, maybe find an item and find a checkpoint upon exit.
 QUEST UPDATE, A LEAD - "Question Dr. Lacuna at their home."
 EXT. HALLOWFLAME, AFTERNOON - lighting changed to be an orange-grey color (as the sun is setting)
@@ -162,7 +162,7 @@ PLAYER must explore HALLOWFLAME, the door marked with glowing blue markings.
 INT. DESTROYED HOUSE - House marked with scratch marks, scattered books and plundered supplies. Hints of abyss and soldier activity.
 *Commence fight - 1 wave - 1 A. FLEYE*
 - A Scroll Item is on the ground
-SCROLL: "Experiment 79: Control is still minimal. Subject conscious for 5 minutes before consumption."
+SCROLL: "Experiment 20: Control is still minimal. Subject fully sapient for 5 minutes before psychosis."
 "There is no discernible reversible process - This is something we need to get 100% reliable."
 "This log will be delivered to the Temple's archives before sunrise for safekeeping."
 QUEST UPDATE, A LEAD - FAIL
@@ -179,8 +179,8 @@ Further stealth section indoors
 SCROLL - "Experiment 5: Successful preliminary results. Subject is conscious and extremely aggressive."
 "Will suggest further research be undertaken in a more secluded locale."
 
-SCROLL - "Experiment 7: "Subject screamed and thrashed their confines for hours on end before falling silent from exhaustion."
-"The new center in the Underground Aqueduct has proven adequate at containing such outbursts without restraints."
+SCROLL - "Experiment 47: "Subject screamed and thrashed their confines for hours on end before falling silent from exhaustion."
+"The new chamber in the Underground Aqueduct has proven adequate at containing such outbursts without restraints."
 "A spare key is included with this note."
 ITEM ADD - PADLOCK KEY
 QUEST UPDATE, THE LACUNA QUESTION - "Find the laboratory in the Underground Aqueduct."
@@ -191,6 +191,7 @@ INT. UNDERGROUND SEWER - Winding passages with a default path - but due to PLAYE
 PLAYER spawns next to a doorway with light beaming through.
 
 After some rooms of platforming and enemies, come across BOATMAN.
+[ (OLD - going to slate BOATMAN as a disguised Gustav)
 BOATMAN: "Hello [PLAYER]. I haven't seen you around down here."
 "I just enjoy the quiet down here."
 "The building decisions of generations of architects stacked on one another."
@@ -198,6 +199,13 @@ BOATMAN: "Hello [PLAYER]. I haven't seen you around down here."
 "...Though with how you've romped about the place, I'm guessing that's where you're headed."
 "I no longer have a boat due to venturing there. Stay safe!"
 "Take this for the road." *Player gets a burger item, and restores 50%*
+]
+BOATMAN: "Hello [PLAYER]. I'm unsure if we have met yet!"
+"I'm a hunter, here for some particularly big game."
+"It has been very elusive in this slippery underground." 
+"Fortunately, I have some very tantalizing bait for it to encounter."
+"I have set up camp to rest and wait for the trap to spring."
+"Would you like to share the night?"
 CHECKPOINT
 
 Massive well down to even lower depths. as the player falls, some hints of abyss tissue appear.
@@ -221,14 +229,16 @@ TEXT -
 "
 In the 5th Year of our Emperor Loxodont: Deliver to Hallowflame Command. Confidential.
 Ryken, 
-It is in times like this where my duty to Fire is superior to my duty to the Emperor. 
+It is in times like this where my duty to Fire is superior to all others. 
 It is not safe for you to return to the Capital after this campaign. 
-L has mobilized forces personally loyal and has been dispatching potential enemies to the regime.
+L has mobilized personally loyal forces and has been removing potential enemies to the regime.
 Do not trust communication from the capital.
-Your name is on his list. Your belongings have been confiscated, and your family has been taken to an undisclosed location.
-I hope with this warning you can stay alive and free. And eventually, restore order.
+Your belongings have been confiscated, and your family has been taken to an undisclosed location.
+I hope with this warning you can stay alive and free. 
+And eventually, with what you have found there, restore order.
+
 From,
-A Concerned Citizen 
+Morning Star
 "
 EXIT STAGE
 
@@ -289,3 +299,13 @@ If Experienced:
 If Not:
 "Why are you here oh god why are [PLAYER] here..."
 "888888888888888888888888888888888888888888888888"
+
+#NOT:
+"There is nothing awaiting you at the end."
+"What do you mean. It makes no sense. It makes no sense."
+"What the hell are you saying. No, it's never that nice."
+"No. You cannot face it. No. No. No. No. No."
+"If only you could be more uncomfortable where it matters."
+"It's there. It's always there."
+"The price is too high. You can't get rid of it. It continues."
+"Why do you perpetuate it? Are you sick? Are you addicted?"

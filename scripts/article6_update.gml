@@ -87,6 +87,7 @@ if !_init {
     exit;
     //print_debug(get_attack_name(attacks[0]));
 } else {
+	if debug with pHitBox visible = true;
     with oPlayer {
         //print(other.in_render);
         if !other.in_render other.in_render = other.physics_range == -1 || (point_distance(other.x,other.y,x,y) < other.physics_range);
@@ -112,10 +113,11 @@ if !_init {
                 }
             }
             
-            if (hitpause > 0)
-                hitpause--;
+            if (hitpause > 0) hitpause--;
             reset_variables();
             boss_update();
+            
+            //DEBUG control function, not multiplayer safe!
             if player_controller != 0 {
                 with oPlayer {
                     if player == other.player_controller set_state(PS_IDLE_AIR);
@@ -123,6 +125,8 @@ if !_init {
                 with obj_stage_article if get_article_script(id) == 5 && follow_player != other.id follow_player = other.id;
                 get_inputs(player_controller);
             }
+            //
+            
             // if ai_target != noone && (waypoint_index > -1 || instance_exists(ai_target)) frame_update();
             if ai_target != noone frame_update();
             ai_update();
@@ -149,6 +153,7 @@ if !_init {
         hsp = 0;
         vsp = 0;
     }
+    // with oPlayer if state == PS_RESPAWN print("[art6:update] completed check");
 }
 
 #define reset_variables()
@@ -784,6 +789,7 @@ for (var _i = 0; _i < array_length(loaded_articles); _i++) {
     }
     loaded_articles[_i].x = x+loaded_articles[_i].rel_pos[0];
     loaded_articles[_i].y = y+loaded_articles[_i].rel_pos[1];
+    loaded_articles[_i].spr_dir = spr_dir;
 }
 #define hitbox_update() //Update enemy hitboxes
 with pHitBox if "hit_owner" in self && hit_owner == other.id {
@@ -795,16 +801,21 @@ with pHitBox if "hit_owner" in self && hit_owner == other.id {
     with (oPlayer) {
         if (place_meeting(x, y, other)) {
             if (other.hit_owner.has_hit_en == 0) {
-                    other.hit_owner.has_hit_en = 1;
+            	other.hit_owner.has_hit_player = false;
+                other.hit_owner.has_hit_en = 1;
+                    
             }
             else {
+            	other.hit_owner.has_hit_player = true;
                 other.hit_owner.my_hitboxID = other.id;
                 other.hit_owner.was_parried = obj_stage_main.was_parried;
+                other.hit_owner.hit_player_obj = id;
+               
                 if (!other.hit_owner.was_parried)
                     other.hit_owner.art_event = EN_EVENT.HIT_PLAYER;
                 else
                     other.hit_owner.art_event = EN_EVENT.GOT_PARRIED;
-                other.hit_owner.hit_player_obj = id;
+               
                 with (other.hit_owner) {
                     user_event(6); //Custom behavior
                 }   
@@ -1083,23 +1094,26 @@ if (hitpause <= 0) {
     art_event = EN_EVENT.ATTACK_UPDATE;
     user_event(6); //Custom behavior
     
-    if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
-        if window >= ag_num_windows {
-            is_attacking = false;
-            next_state = PS_IDLE;
-            hurtbox_spr = collision_box;
-            set_sprite_from_state(enem_id, next_state);
-            window = 1;
-            window_timer = 0;
-            was_parried = false;
-            obj_stage_main.was_parried = false;
+    if window >= ag_num_windows {
+        is_attacking = false;
+        next_state = PS_IDLE;
+        hurtbox_spr = collision_box;
+        set_sprite_from_state(enem_id, next_state);
+        window = 1;
+        window_timer = 0;
+        was_parried = false;
+        obj_stage_main.was_parried = false;
+        has_hit_player = false;
+        hit_player_obj = noone;
+        super_armor = false;
+    }
+    else {
+    	if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
+        if ag_window_type[window] != 9 &&  ag_window_type[window] != 8 {
+            window++;
         }
-        else {
-            if ag_window_type[window] != 9 &&  ag_window_type[window] != 8 {
-                window++;
-            }
-            window_timer = 0;
-        }
+        window_timer = 0;
+    	}
     }
     
     if (ag_window_type[window] == 8 && !is_free) {

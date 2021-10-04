@@ -34,7 +34,7 @@ enum ACT {
     //frames
     MUSIC, //set music
     //type, 1, 2
-    SET, //Set article data
+    SET, //Set data
     //article_id, variable, value, ease_type, ease_length
     ON_INPUT, //Do a thing when a player presses a button
     //follow_player?, input_type
@@ -42,8 +42,8 @@ enum ACT {
     //to_room, to_coords
     QUEST_PROG, //Quest-related actions
     //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-    ON_QUEST_PROG, //When a quest is at the progress, do thing
-    //quest_id, progress_proc, [0: exact, 1: greater than equal]
+    ON_QUEST_PROG,
+    //quest_id, progress_proc
     SUS, //Suspend Action by ID
     //suspend_bool, action_id
     KILL, //Remove the first of the action type given
@@ -55,136 +55,27 @@ enum ACT {
     ART_COUNT, //When the article count for the following article drops a threshold, continue
     //article_group, threshold, [lower than or equal:0 greater than or equal:1]
     SCENE, //Switches the scene
-    //[0:set,1:add, scene id]
-    RANDOM, //Pick a random exit action to do
+    //0:set,1:add, scene id
+    RANDOM, //Pick a random exit action to do?
     //seed
+    SET_RELATIVE, //Set data relative to whatever caused this action (by default, passed by trigger zones)?
+    //variable, value, ease_type, ease_length
+    EVENT, //Trigger an item event?
+    //event_id
+    HITBOX, //Spawn a hitbox at an intersect location upon entering
+    //attack_id, hitbox_id
+    KILLBOX, //Spawn a killbox at an intersect location upon entering, killing whatever has intersected
+    //killbox background
+    TRANS_MUSIC, //transition music with a crossfade time (time of zero is a cut)
+    //to_music_index, fade_time
 }
 
 //Reset Arrays
 action_array = [];
 scene_array = [];
 //
-/*
-action_add(1, 1, 4, ACT.CAMERA,
-[],
-[]);
-*/
+
 //Scene & Action Data Here
-
-// action_add(1, 1, 2, ACT.WINDOW, 
-// [0, 500, 20, []], //window_type, x, y, [contentoverride]
-// []); //Actions to start on exit
-// action_add(1, 1, 3, ACT.CONTROL, //ACT.CONTROL has Issues
-// [30, all, PS_SPAWN], //life_time, player, state_override
-// []); //Actions to start on exit
-// action_add(1, 1, 3, ACT.WAIT, //Preceeds on Input
-// [30], //follow_player?, input_type
-// [4]); //Actions to start on exit
-// action_add(1, 1, 4, ACT.SUS, 
-// [1, 5], //article_id, variable, value, ease_type?, ease_length?
-// [6]); //Actions to start on exit
-// action_add(1, 1, 5, ACT.WINDOW, 
-// [2, 200, 100, [[],["TOPSOIL VILLAGE"],[],["TOPSOIL VILLAGE"]]], //window_type, x, y, [contentoverride]?
-// []); //Actions to start on exit
-// action_add(1, 1, 6, ACT.WAIT, //Archy Presentation
-// [600], //follow_player, input_type
-// [7]); //Actions to start on exit
-// action_add(1, 1, 7, ACT.SW_ROOM, 
-// [4], //to_room
-// []); //Actions to start on exit
-
-// action_add(1, 1, 200, ACT.WINDOW, //Dialog Window Example
-// [6, 200, 100, []], //window_type, x, y, [contentoverride]
-// []); //Actions to start on exit
-
-// action_add(1, 1, 201, ACT.WINDOW, //Quest Window
-// [5, 0, 120, []], //window_type, x, y, [contentoverride]
-// []); //Actions to start on exit
-
-// action_add(1, 1, 202, ACT.QUEST_PROG, 
-// [3, 0, 1], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-// [203]); //Actions to start on exit
-
-// action_add(1, 1, 203, ACT.ON_INPUT, //Preceeds on Input
-// [0,PC_TAUNT_PRESSED], //follow_palyer?, input_type
-// [204,205]); //Actions to start on exit
-
-// action_add(1, 1, 204, ACT.QUEST_PROG, 
-// [3, 2, 1], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-// []); //Actions to start on exit
-
-// action_add(1, 1, 205, ACT.ON_INPUT, //Preceeds on Input
-// [0,PC_ATTACK_PRESSED], //follow_palyer?, input_type
-// [206]); //Actions to start on exit
-
-// action_add(1, 1, 206, ACT.QUEST_PROG, 
-// [2, 0, 3], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
-// []); //Actions to start on exit
-
-
-/*action_add(1, 1, 200, ACT.ON_INPUT, //Archy Presentation
-[0,PC_SHIELD_PRESSED], //follow_player?
-[201]); //Actions to start on exit
-action_add(1, 1, 201, ACT.WINDOW,
-[4, 5540, 5460, [["Silouettes"]]],
-[]); //Actions to start on exit
-*/
-
-//Room 3: Enemy Test
-
-// action_add(3, 1, 1, ACT.WINDOW, 
-// [2, 200, 100, [[],["ENEMY TEST"],[],["ENEMY TEST"]]], //window_type, x, y, [contentoverride]?
-// []); //Actions to start on exit
-
-// //Room 4: Sewer
-// action_add(4, 1, 1, ACT.SET, 
-// [69, "bg_color", $999999, 0, 60], //article_id, variable, value, ease_type, ease_length
-// [2]); //Actions to start on exit
-// action_add(4, 1, 2, ACT.WINDOW,
-// [2, 200, 100, [[],["UNDERGROUND AQUEDUCT"],[],["UNDERGROUND AQUEDUCT"]]], //window_type, x, y, [contentoverride]
-// []); //Actions to start on exit
-// action_add(4, 1, 3, ACT.SW_ROOM, 
-// [1], //player_id, life_time, state_override, ease_type, ease_value
-// []); //Actions to start on exit
-
-// action_add(4, 1, 4, ACT.ON_INPUT, //Archy Presentation
-// [0,PC_TAUNT_PRESSED], //follow_player?
-// [5]); //Actions to start on exit
-// action_add(4, 1, 5, ACT.WINDOW,
-// [4, 5750, 8170, [["Dynamic Lighting"]]],
-// [6]); //Actions to start on exit
-
-// action_add(4, 1, 6, ACT.ON_INPUT, //Archy Presentation
-// [0,PC_TAUNT_PRESSED], //follow_player?
-// [7]); //Actions to start on exit
-// action_add(4, 1, 7, ACT.WINDOW,
-// [4, 6640, 8400, [["Particle Emitters"]]],
-// []); //Actions to start on exit
-
-// action_add(4, 1, 8, ACT.WAIT, 
-// [120], //frames
-// [9]); //Actions to start on exit
-// action_add(4, 1, 9, ACT.WINDOW,
-// [4, 5368, 8162, [["Article Culling"]]],
-// []); //Actions to start on exit
-
-
-
-/*action_add(1, 1, 1, ACT.DIALOG, 
-[LWO.TXT_HUD, 100, 200, 300, 50, -1, 0, "Dynamic Lighting Test", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
-[2,2]); //Actions to start on exit
-action_add(1, 1, 2, ACT.DIALOG, 
-[LWO.TXT_HUD, 300, 300, 200, 50, -1, 0, "Test String2", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
-[1]); //Actions to start on exit
-action_add(1, 1, 3, ACT.DIALOG, 
-[LWO.TXT_HUD, 300, 500, 200, 50, -1, 0, "Test String3", asset_get("roundFont"), -1, 0.2, -1], //obj_type, x, y, l, h, bg_spr, bg_spr_speed, text_full, font, alignment, scroll_speedm, scroll_sound], 
-[4]); //Actions to start on exit
-action_add(1, 1, 4, ACT.CAMERA,
-[60, 500, 22, 0, 20],//action_time, x, y, focus_type, smooth 
-[5]); //Actions to start on exit
-action_add(1, 1, 5, ACT.CAMERA,
-[60, 400, 50, 1, 20],//action_time, x, y, focus_type, smooth 
-[]); //Actions to start on exit*/
 
 //Room 0: Global action declarations? (TODO IF USEFUL)
 // action_add(0, 1, 1, ACT.WAIT,   //room_id, scene_id, action_id, action_type
@@ -202,12 +93,24 @@ action_add(1, 1, 5, ACT.CAMERA,
 // [2]); //Actions to start on exit
 
 // scene_add(1, 1, []);
-action_add(1, 0, 1, ACT.WINDOW, 
+action_add(1, 0, 1, ACT.TRANS_MUSIC, 
+["Fire_Capital_Calm"], //music_name
+[3]); //Actions to start on exit
+
+action_add(1, 0, 3, ACT.WINDOW, 
 [2, 200, 100, [[],["Outskirts"],[],["Outskirts"]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
+
+//DEBUG: Note Take -> Credits Scrolling
+action_add(1, 0, 2, ACT.WINDOW, 
+[7, 0, 0, [[sprite_get("noteExample")]]], //window_type, x, y, [contentoverride]?
+[]); //Actions to start on exit
+
+
 action_add(1, 1, 1, ACT.WAIT,   //room_id, scene_id, action_id, action_type
 [1],                          //Action arguments
 [2]);                         //Actions to start on exit
+
 
 //Start Quest Dialog
 action_add(1, 1, 2, ACT.WINDOW, //Start this once at scene start.. successive scene changes should never start this again
@@ -328,13 +231,22 @@ action_add(1, 4, 1, ACT.SET,
 // [2]);                         //Actionsto start on exit
 
 //2: Hallowflame
-action_add(2, 0, 1, ACT.WINDOW, 
-[2, 200, 100, [[],["Hallowflame"],[],["Hallowflame"]]], //window_type, x, y, [contentoverride]?
-[]); //Actions to start on exit
+action_add(2, 0, 1, ACT.TRANS_MUSIC, 
+["Fire_Capital_Calm"], //window_type, x, y, [contentoverride]?
+[4]); //Actions to start on exit
 
 //Guard Dialogs
 action_add(2, 0, 2, ACT.WINDOW,
 [3, 2, -3, [[8]]], //window_type, x, y, [id]
+[]); //Actions to start on exit
+
+//NGuard Killbox
+action_add(2, 0, 3, ACT.HITBOX,
+[AT_JAB, 1], //window_type, x, y, [id]
+[]); //Actions to start on exit
+
+action_add(2, 0, 4, ACT.WINDOW, 
+[2, 200, 100, [[],["Hallowflame"],[],["Hallowflame"]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
 
 //Spawn 1 Kei for dialog
@@ -417,6 +329,18 @@ action_add(3, 2, 4, ACT.QUEST_PROG,
 //Supplier Quest - update scene to post-crates
 action_add(3, 2, 5, ACT.SCENE, 
 [0, 3], //[0:set,1:add, scene id]
+[]); //Actions to start on exit
+
+
+
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $333333 for dark
+action_add(4, 0, 1, ACT.SET,  
+[2, "bg_color", $333333, 0, 60], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
+//NGuard Killbox
+action_add(4, 0, 3, ACT.KILLBOX,
+[2], //[attack, index]
 []); //Actions to start on exit
 
 
@@ -508,9 +432,16 @@ action_add(7, 0, 13, ACT.ART_COUNT,
 [12,0,0], //article_group, threshold, [lower than or equal:0 greater than or equal:1]
 [14]); //Actions to start on exit
 
-//Remove the camera lockenemies
+//Remove the camera lock
 action_add(7, 0, 14, ACT.SET,
 [13,"state",2,0,1], //article_id, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
+//9 Swoosh pipes
+
+//Set the player VSP
+action_add(5, 0, 2, ACT.SET_RELATIVE,  
+["vsp", -16, 0, 5], //article_group, variable, value, ease_type, ease_length
 []); //Actions to start on exit
 
 
@@ -526,7 +457,7 @@ action_add(7, 0, 14, ACT.SET,
 with obj_stage_main other.fp = fp;
 with fp {
     if am_is_fire nick = "Citizen";
-    else if am_is_abyssal || !am_is_vocal nick = "Beast";
+    else if am_is_abyssal || !am_is_verbal nick = "Beast";
     else if am_is_insane || am_is_realitybreak || am_is_magic nick = "Odd Stranger";
     else if am_is_noob || am_is_small nick = "Little One";
     else nick = "Stranger";
@@ -615,6 +546,15 @@ dialog_add(9,_i++,["Of course we can't talk about this out here - my house is th
 dialog_add(9,_i++,["This is the end of the demo! Feel free to explore elsewhere you haven't been!"]); //Mage
 dialog_add(9,_i++,["Thank you for making it this far and be sure to check out the full version on Workshop when it releases!"]); //Mage
 
+//10: Boatman
+_i = 1;
+dialog_add(10,_i++,["Hello, "+fp.nick+". I haven't seen you around down here."]); //Boatman
+dialog_add(10,_i++,["I'm a hunter, here for some particularly big game."]); //Boatman
+dialog_add(10,_i++,["It has been very elusive in this slippery underground."]); //Boatman
+dialog_add(10,_i++,["Fortunately, I have some very tantalizing bait for it to encounter."]); //Boatman
+dialog_add(10,_i++,["I have set up camp to rest and wait for the trap to spring."]); //Boatman
+dialog_add(10,_i++,["Would you like to share the night?"]); //Boatman
+
 //Quest Init
 
 //1: Kei Rescue
@@ -624,24 +564,27 @@ quest_add(1,1,"Rescue","Defend from an unknown threat!",asset_get("empty_sprite"
 quest_add(2,1,"Get to Safety","Go to a safe(r) place.",asset_get("empty_sprite"));
 
 //3: Supplier Gather
-quest_add(3,1,"Missing Shipment","Find the missing shipment",asset_get("empty_sprite"));
-quest_add(3,2,"Missing Shipment","Find the missing crates (0/3)",asset_get("empty_sprite"));
-quest_add(3,3,"Missing Shipment","Find the missing crates (1/3)",asset_get("empty_sprite"));
-quest_add(3,4,"Missing Shipment","Find the missing crates (2/3)",asset_get("empty_sprite"));
-quest_add(3,5,"Recovered Shipment","Return To Rykenburn",asset_get("empty_sprite"));
-if fp.am_is_fire quest_add(3,5,"Recovered Shipment","Return To Rykenburn, your obligations are completed.",asset_get("empty_sprite"));
-if fp.am_is_evil quest_add(3,5,"Recovered Shipment","Return To Rykenburn for your reward.",asset_get("empty_sprite"));
-
+quest_add(3,1,"Food for Thought","Find the missing shipment",asset_get("empty_sprite"));
+quest_add(3,2,"Food for Thought","Find the missing crates (0/3)",asset_get("empty_sprite"));
+quest_add(3,3,"Food for Thought","Find the missing crates (1/3)",asset_get("empty_sprite"));
+quest_add(3,4,"Food for Thought","Find the missing crates (2/3)",asset_get("empty_sprite"));
+quest_add(3,5,"Food for Thought","Return To Rykenburn",asset_get("empty_sprite"));
+if fp.am_is_fire quest_add(3,5,"Food for Thought","Return To Rykenburn, your obligations are completed.",asset_get("empty_sprite"));
+if fp.am_is_evil quest_add(3,5,"Food for Thought","Return To Rykenburn for your reward.",asset_get("empty_sprite"));
 
 //4: Rykenburn's 2nd Task
-
 quest_add(4,1,"Civil Duties","Collect Rubbish (0/52)",asset_get("empty_sprite"));
 
-//5: Intreaging Option
+//5: The Lacuna Question
 quest_add(5,1,"Inquiry","Listen to what she has to say.",asset_get("empty_sprite"));
-quest_add(5,2,"Disconcerning Dissapearances","Find clues for what has been going on.",asset_get("empty_sprite"));
-quest_add(5,3,"Disconcerning Dissapearances","Get to the Temple Archives.",asset_get("empty_sprite"));
-quest_add(5,4,"Disconcerning Dissapearances","Search for information.",asset_get("empty_sprite"));
+quest_add(5,2,"The Lacuna Question","Visit Dr Lacuna.",asset_get("empty_sprite"));
+quest_add(5,3,"The Lacuna Question","Find clues for what has been going on.",asset_get("empty_sprite"));
+quest_add(5,4,"The Lacuna Question","Get to the Temple Archives.",asset_get("empty_sprite"));
+quest_add(5,5,"The Lacuna Question","Search for information.",asset_get("empty_sprite"));
+
+//6: Find Laboratory
+quest_add(6,1,"Decend into Darkness","Find the entrance to the Underground Aqueduct.",asset_get("empty_sprite"));
+quest_add(6,2,"Decend into Darkness","Search for the laboratory in the Underground Aqueduct.",asset_get("empty_sprite"));
 
 // quest_add(2,1,"Test Quest2","This is a test quest also!",sprite_get("torch"));
 // quest_add(2,2,"Test Quest2.1","This is a test quest also also!",sprite_get("torch"));
@@ -649,6 +592,13 @@ quest_add(5,4,"Disconcerning Dissapearances","Search for information.",asset_get
 // quest_add(3,1,"Test Quest1.1","This is a test quest!",sprite_get("borgar"));
 // quest_add(3,2,"Test Quest1.2","This is a test quest! Part 2!",sprite_get("borgar"));
 // quest_add(3,3,"Different Title!1.3","Completely different text!",sprite_get("borgar"));
+
+// music_add(0,"Fire_Capital_Calm");
+// music_add(1,"Fire_Capital_Night_Theme");
+// music_add(2,"Fire_Capital_Sewers_Complex");
+// music_add(3,"Main_Battle_Theme");
+// music_add(4,"Vs_Rykenburn");
+// music_add(5,"Credits_Theme");
 
 
 
@@ -658,6 +608,7 @@ quest_add(5,4,"Disconcerning Dissapearances","Search for information.",asset_get
     print_debug(string(action_array));
     print_debug(string(scene_array));
 }*/
+
 #define action_add(_room_id, _scene_id, _action_id, _action_type, _param, _on_exit)
 while _room_id >= array_length_1d(action_array) array_push(action_array, []);
 while _scene_id >= array_length_1d(action_array[_room_id]) array_push(action_array[_room_id], []);
@@ -685,7 +636,6 @@ while _id >= array_length_1d(quest_array) array_push(quest_array,[]);
 while _progress >= array_length_1d(quest_array[_id]) array_push(quest_array[_id],[]);
 quest_array[@_id][@0] = noone;//Save quest progress here
 quest_array[@_id][@_progress] = [_title,_description,_spr];
-if debug print_debug("[AM] Quest Edited: "+string(_id)+" : "+string(_progress));
 return true;
 
 #define dialog_add(_id,_progress,_data) //Dialog Data: [string,_text_sprite_face_override,_sprite_bg_override]
@@ -699,6 +649,14 @@ while _progress >= array_length_1d(dialog_array[_id]) array_push(dialog_array[_i
 dialog_array[@_id][@0] = noone; //Save dialog progress
 dialog_array[@_id][@_progress] = _data; //Save dialog progress
 return true;
+
+// #define music_add(_music_id,_music_index)
+// while array_length_1d(music_array) < _music_id array_push(music_array, []);
+// music_array[_music_id] = [_music_index];
+
+// #define music_find_length(_music_id)
+// if array_length_1d(music_array) < _music_id return noone;
+// return music_array[_music_id][1];
 
 // #define control(_dir,_but)
 // return [_dir,_but];

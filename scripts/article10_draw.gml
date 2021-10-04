@@ -9,5 +9,6 @@ if debug_info {
 
 if state_timer < 60 && state == 1 {
     if (follow_player.spr_dir == 1) draw_debug_text(x-name_width,y,item_name);
+    with oPlayer if state == PS_RESPAWN print("[art10:draw] completed check");
     else draw_debug_text(x,y,item_name);
 }
