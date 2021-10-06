@@ -143,9 +143,73 @@ There are a few pre-allocated articles with custom coding to serve different obj
 
 ### Article1 - Quick Terrain
 Quick Terrain is the standard visual article - it will spawn in its position, display a sprite and do nothing else! If you set the article to be solid, it will be solid throughout the bounding box. If you set it to be a platform, it will create a platform position at the top of the spritebox. MAJOR NOTE: Precise collision changes these rules - solid articles with precise collision on their sprites will only have collision on non fully transparent pixels! And platform ground at the top of the sprite will only exist if the pixel at the top edge is non fully transparent.
+
 #### Arguments
-```
-```
+`...[sprite_index, anim_speed, 0, static, alpha, image_blend, 0], ...`
+
+**sprite_index** - (int) the sprite index of the article to draw
+**anim_speed** - (float) the speed of the animation if the sprite strip is more than 1 frame
+**static** - (bool) if the sprite follows the camera instead of the rest of the world
+**alpha** - (float) the transparency of the sprite from 0 to 1
+**image_blend** - (color) the color to apply to the sprite as a filter
+
+### Article2 - UNUSED
+Article2 is left empty
+
+#### Arguments
+`...[], ...`
+
+### Article3 - Action Manager
+The Action Manager is instanced once on startup, and only one can exist. It persists for the full duration of the level, and generally can be acecssed globally with `action_manager`. It is responsible for executing all the code related to AM actions.
+
+#### Arguments
+`...[], ...`
+
+### Article4 - Detection Zones
+Detection Zones are areas that trigger an action when certain criteria are met.
+
+#### Arguments
+`...[action_id, active_scene, trigger_obj_type, trigger_cooldown_max, trigger_shape, trigger_w, trigger_h, [req_item_id,hold_up,trigger_relative,check_visibility]], ...`
+
+**action_id** - (int) the id of the action to perform
+**active_scene** - (int) the minimum scene index for a detection zone to 
+**trigger_obj_type** - (int) the object_index of what it is listening for. Defaults to `oPlayer`
+**trigger_cooldown_max** - (int) the frame count before the zone refreshes and allows another activation. If set to -1, the zone will destroy on activation
+**trigger_shape** - (enum) the shape of the trigger zone. 0 is a rectangle, 1 is a circle, and any other value will have it use it's sprite mask
+**trigger_w** - (int) the width of the detection box (radius for a circle)
+**trigger_h** - (int) the height of the detection box (unused for a circle)
+**req_item_id** - (int) the required item an entity must be carrying in order for the detection to take place. Defaults to 0, aka not needing an item
+**hold_up** - (bool) if an up input is required to activate this box. It will spawn a prompt below the entity when colliding.
+**trigger_relative** - (bool) do the actions get performed on the stage main object, or on the entity that detected it? Defaults to false
+**check_visibility** - (bool) does the box check to see that the entity is clearly visible (not depth behind any mask) before firing?
+
+### Article5 - Room Manager
+The Room Manager is instanced once on startup, and only one can exist. It persists for the full duration of the level, and generally can be acecssed globally with `room_manager`. It is responsible for executing all the code related to AM rooms.
+
+#### Arguments
+`...[], ...`
+
+### Article6 - Article NPC
+Article NPCs function a lot like player objects, except with slightly less overhead and a few simplified rules. Please see the dedicated section for initializing Article NPCs for setting up each NPC id right in the file structure and `user_event6`
+
+#### Arguments
+`...[enem_id, 0, 0, waypoints, 0, 0, 0], ...`
+
+**enem_id** - (int) the id of the npc to spawn
+**waypoints** - (array[index,index]) an array of 2D points that can be used by the npc to navigate. Custom navigation of these points can be set in the AI scripts for this article NPC id.=
+
+### Article6 - Room Transition
+Room Transition is a dedicated article to transfering players between rooms.
+
+#### Arguments
+`...[sprite_index, anim_speed, group, static, alpha, image_blend, 0], ...`
+
+**sprite_index** - (int) the sprite index of the article to draw
+**anim_speed** - (float) the speed of the animation if the sprite strip is more than 1 frame
+**group** - (int) DEPRECATED - used to be the sprite group, now has been generalized to article_group
+**static** - (bool) if the sprite follows the camera instead of the rest of the world
+**alpha** - (float) the transparency of the sprite from 0 to 1
+**image_blend** - (color) the color to apply to the sprite as a filter
 
 ## Action Manager & Loading Structure (article3, user_event0)
 *Actions* are events which can manipulate the room and the GUI while it is loaded and running. They are loaded from *user_event0* whenever a scene or room changes, and follow a specific format:
@@ -172,11 +236,11 @@ AM Devs keep in mind how these are set, I highly recommend formatting dialog to 
 
 You can customize which pronouns a character gets addressed as via the `pronouns` variable in the character's `init.gml` file. AM Devs can customize the default pronouns via `other_init.gml`. 
 
-Nicknames are something the character goes by if people do not know their name - generally this is customized by the level (as we assume people do not know them, and the npcs have their own ideas on what to call this new person), however a default value can be provided by a character in the case the level creator does not wish to make nicknames.
+Nicknames are something the character goes by if people do not know their name - generally this is customized by the level (as we assume npcs do not know them and have their own ideas on what to call this new person), however a default value can be provided by a character in the case the level creator does not wish to make nicknames. Use `nick` in `other_init.gml` for this feature.
 
 ### Character Attributes
 
-There are a few character attributes that can be used to effect options, either to change things that don't make sense (calling a small character 'big guy' or the inverse), or to provide a more accurate option (an evil character probably won't do charity hero work but they may take pay). Here is a list of the default provided, feel free to add your own to your levels and character creators feel free to set them as you please. Most of these if not defined are assumed false except for a few cases where true is the most likely answer. (See `other_init.gml` for the list of default assignments)
+There are a few character attributes that can be used to effect options, either to change things that don't make sense (calling a small character 'big guy' or the inverse), or to provide a more accurate option (an evil character probably won't do charity hero work but they may take pay). Here is a list of the default provided, feel free to add your own to your levels and character creators feel free to set them as you please. Most of these if not defined are assumed to be the most likely answer. (See `other_init.gml` for the list of default assignments)
 
 ```
 am_is_fire 			- Is a fire elemental - fire, plasma, smoke, cooking
