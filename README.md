@@ -67,7 +67,7 @@ Anything we can't do in Workshop stage coding (file access/read/write, zoom, vie
 
 #### Online Multiplayer Support?
 
-Online Multiplayer is something that was initially scoped in but with further changes to the online system on its way it's something we can't officially support fully at this time. We've made efforts to make sure that our gameplay code is client-independent however this does not preclude desyncs due to loading and lag and multiplayer may be very unstable.
+Online Multiplayer is something that was initially scoped in but with further changes to the online system on its way it's something we can't officially support fully at this time. We've made efforts to make sure that our gameplay code is client-independent however this does not preclude desyncs due to loading and lag and multiplayer may be very unstable. Feel free to submit bugs about this feature, just no promises it'll be 100% working at any time :P
 
 ### Core Engine Changes
 
@@ -239,19 +239,21 @@ A Camera Controller Zone is an article dedicated to camera manipulation. You can
 Room Transition is a dedicated article to transfering players between rooms.
 
 #### Arguments
-`...[sprite_index, anim_speed, group, static, alpha, image_blend, 0], ...`
+`...[active_scene, trigger_shape, trigger_w, trigger_h, to_room, extra_room_vars, hold_up, event_id, item_needed], ...`
 
-**sprite_index** - (int) the sprite index of the article to draw
+**active_scene** - (int) the minimum scene index for a detection zone to fire
 
-**anim_speed** - (float) the speed of the animation if the sprite strip is more than 1 frame
+**trigger_shape** - (enum) the shape of the trigger zone. 0 is a rectangle, 1 is a circle, and any other value will have it use it's sprite mask
 
-**group** - (int) DEPRECATED - used to be the sprite group, now has been generalized to article_group
+**trigger_w** - (int) the width of the detection box (radius for a circle)
 
-**static** - (bool) if the sprite follows the camera instead of the rest of the world
+**trigger_h** - (int) the height of the detection box (unused for a circle)
 
-**alpha** - (float) the transparency of the sprite from 0 to 1
+**to_room** - (int) the room_id of the room to transition to
 
-**image_blend** - (color) the color to apply to the sprite as a filter
+**extra_room_vars** - (array[enum,int,int]) in order: the type of room transtion effect, the x position in the next room to go to, and the y position in the next room to go to
+
+**hold_up** - (bool) if an up input is required for the room transition to occur
 
 ## Action Manager & Loading Structure (article3, user_event0)
 *Actions* are events which can manipulate the room and the GUI while it is loaded and running. They are loaded from *user_event0* whenever a scene or room changes, and follow a specific format:
