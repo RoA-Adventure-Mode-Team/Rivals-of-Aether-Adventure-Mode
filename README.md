@@ -139,6 +139,13 @@ The actual data for spawning articles in the right places is in *user_event1.gml
 **custom_args** - any extra custom arguments that you would like to make. (See the *Article* for extra) should persist between room loads.
 
 ## Default Articles
+There are a few pre-allocated articles with custom coding to serve different object requirements for making a level complete. Here is a quick breakdown of each and their arguments.
+
+### Article1 - Quick Terrain
+Quick Terrain is the standard visual article - it will spawn in its position, display a sprite and do nothing else! If you set the article to be solid, it will be solid throughout the bounding box. If you set it to be a platform, it will create a platform position at the top of the spritebox. MAJOR NOTE: Precise collision changes these rules - solid articles with precise collision on their sprites will only have collision on non fully transparent pixels! And platform ground at the top of the sprite will only exist if the pixel at the top edge is non fully transparent.
+#### Arguments
+```
+```
 
 ## Action Manager & Loading Structure (article3, user_event0)
 *Actions* are events which can manipulate the room and the GUI while it is loaded and running. They are loaded from *user_event0* whenever a scene or room changes, and follow a specific format:
@@ -154,3 +161,75 @@ The actual data for spawning articles in the right places is in *user_event1.gml
 There are a plethora of basic actions which perform all sorts of tasks which allow for the full creation of a level. If you need to extend functionality you can add your own actions inside article3. There are plenty of types of actions: instant, conditional, perpetual, etc to show how to work with the system internally.
 
 ### Default Action Types & Variables
+
+## Player/Character Options
+
+AM Features a few mostly lore options to make sure characters are properly addressed and to offer some customization to make stories make a bit more sense from a character's PoV.
+
+AM Devs keep in mind how these are set, I highly recommend formatting dialog to utilize these features (can be called via the `follow_player` object, the local player). 
+
+### Pronouns & Nicknames
+
+You can customize which pronouns a character gets addressed as via the `pronouns` variable in the character's `init.gml` file. AM Devs can customize the default pronouns via `other_init.gml`. 
+
+Nicknames are something the character goes by if people do not know their name - generally this is customized by the level (as we assume people do not know them, and the npcs have their own ideas on what to call this new person), however a default value can be provided by a character in the case the level creator does not wish to make nicknames.
+
+### Character Attributes
+
+There are a few character attributes that can be used to effect options, either to change things that don't make sense (calling a small character 'big guy' or the inverse), or to provide a more accurate option (an evil character probably won't do charity hero work but they may take pay). Here is a list of the default provided, feel free to add your own to your levels and character creators feel free to set them as you please. Most of these if not defined are assumed false except for a few cases where true is the most likely answer. (See `other_init.gml` for the list of default assignments)
+
+```
+am_is_fire 			- Is a fire elemental - fire, plasma, smoke, cooking
+am_is_water			- Is a water elemental - water, ice, poison, sweat
+am_is_air			- Is an air elemental - wind, music, thunder, pure rage
+am_is_earth			- Is an earth elemental - rock, plant, plant, crystal
+am_is_aether		- Is an aether elemental - Space, mysticism
+am_is_abyssal		- Is a creature of the abyss
+am_is_subterranain	- Is from the underground
+ 
+am_is_verbal		- Is capable of speaking complex languages
+am_is_noob			- Is unfamiliar with things or naieve
+am_is_experienced 	- Does exude experience
+
+am_is_future		- Is this character from a future?
+am_is_past			- Is this character from the past?
+am_is_myth			- Is this character part of a mythos?
+
+am_is_evil			- Has a self-centered moral compass
+am_is_chaotic		- Has a particularly flexible moral compass
+am_is_insane		- Experiences reality in a unique way
+
+am_is_undead		- Was dead... now is not
+am_is_construct		- Is living through "unnatural" means aka " purpose-built"
+am_is_magic			- Is supernatural in a magical way
+am_is_big			- Is this character much larger than average?
+am_is_small			- Is this character much smaller than average?
+am_is_handed		- Does this character have appendages to hold things with?
+
+am_is_guest			- Is this character not an atherian local?
+
+am_is_realitybreak	- Is this character a casual reality manipulator?
+am_is_not			- They do not belong. They shouldn't be here. They do not belong. They shouldn't be here. They do not belong. They shouldn't be here.
+
+```
+
+Hallowflame and the empty AM template come with the base cast pre-set!
+
+Feel free to reach out and suggest additional options!
+
+## Optimization Strategies
+
+The RoAAM team will continue to do our best optimizing the engine over time, however as stated in Limitations there is a lot of overhead to account for, and the mod will not run well on lower end computers. Here are a list of optimization strategies figured out during the development of Hallowflame to help lift the computational burden.
+
+1. Bundle as many articles into one as you can. This means all animated sprites of the about the same speed should be all on one sheet. Keep all solid, static collision bundled as one article per cell and define the bounding box as precise in load.gml.
+2. Break up rooms when appropriate, have smaller rooms instead of bundling many into one. If you have a small offshoot room make it it's own thing so that the room manager doesn't need to spawn everything else on room transfer.
+3. Keep heavily in mind the number of active enemies. Enemies in particular are VERY heavy, I would suggest limiting it to 3-4 on-screen enemies. Off-screen enemies on the other hand don't have much to process and have about as much overhead as any article. 
+
+## Miscellaneous Tips & Publishing Guidelines
+
+The freedom to make anything a developer desires is a core philosophy of this tool. However, I hope to establish some guidelines in order to minimize confusion.
+
+- Please clearly label a stage made with AM - with an [AM] tag in the title and "Adventure Mode" in the description somewhere (so that it can be searched for on the workshop!)
+- Try to make situations which make some sense for a lot of characters. Keep in mind character-specific traits and create alternative options where it makes sense. Making a character-specific adventure is fine but keep in mind people will want to play the adventure with anyone on the workshop.
+- On a similar note speaking FOR the player character is an odd choice that should probably be avoided due to how many personalities exist in the workshopverse.
+- Comment your code thoroughly! This API certainly isn't immediately readable, clearly label the purpose of everything.
