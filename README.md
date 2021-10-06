@@ -29,6 +29,8 @@ An **Article** is exactly as it sounds - it's a stage article object! AM forces 
 
 A **Window** is a collection of GUI elements per the Window API (user_event2). You can define custom windows at the top using GUI elements, and you can define custom game frame and draw frame logic inside the respective functions. Windows and GUI Components have custom logic code as well as draw code that draws relative to the screen position.
 
+Most of a level's custom code will be within user_events - `user_event0`, `user_event1`, `user_event2`, `user_event6` and `user_event10`. You may edit any of the base code however you'd like, however we do recommend keeping out of the base files unless you know exactly what you're doing. If you are unsure about making a modification feel free to message our team and we'll be able to direct you :)
+
 ## Lucid Dream Development Console
 
 Outside of the actual operating structure is **Lucid Dream**, the development console built in the Window API. It has a plethora of functions for creating, editing, and exporting articles. Open it with tilda (\`), type with the keyboard, enter is ?, backspace is \\. Currently, it defaults to strings for arguments but you can specify a few argument parameters to get the variable type needed.
@@ -125,6 +127,7 @@ The actual data for spawning articles in the right places is in *user_event1.gml
     	.
     ]
 **cell_x** - the cell's x coordinate on the cell grid (cells are 163x85 subcells large, or 2608x1360 units)
+
 **cell_y** - the cell's x coordinate on the cell grid (cells are 163x85 subcells large, or 2608x1360 units)
 
 **article_data** - the data for each article being spawned in a cell. Each article instance is stored as an array in the following structure:
@@ -177,13 +180,13 @@ Detection Zones are areas that trigger an action when certain criteria are met.
 
 **action_id** - (int) the id of the action to perform
 
-**active_scene** - (int) the minimum scene index for a detection zone to 
+**active_scene** - (int) the minimum scene index for a detection zone to fire
 
 **trigger_obj_type** - (int) the object_index of what it is listening for. Defaults to `oPlayer`
 
 **trigger_cooldown_max** - (int) the frame count before the zone refreshes and allows another activation. If set to -1, the zone will destroy on activation
 
-**trigger_shape** - (enum) the shape of the trigger zone. 0 is a rectangle, 1 is a circle, and any other value will have it use it's sprite mask
+**trigger_shape** - (enum) the shape of the trigger zone. 0 is a RECTANGLE, 1 is a CIRCLE, and any other value will have it use its SPRITE_MASK
 
 **trigger_w** - (int) the width of the detection box (radius for a circle)
 
@@ -210,9 +213,29 @@ Article NPCs function a lot like player objects, except with slightly less overh
 `...[enem_id, 0, 0, waypoints, 0, 0, 0], ...`
 
 **enem_id** - (int) the id of the npc to spawn
-**waypoints** - (array[index,index]) an array of 2D points that can be used by the npc to navigate. Custom navigation of these points can be set in the AI scripts for this article NPC id.=
+**waypoints** - (array[index,index]) an array of 2D points that can be used by the npc to navigate. Custom navigation of these points can be set in the AI scripts for this article NPC id.
 
-### Article6 - Room Transition
+### Article7 - Camera Controller Zone
+A Camera Controller Zone is an article dedicated to camera manipulation. You can set the position of the camera while inside the zone and also which axis are locked (horizontal vs vertical vs both)
+
+#### Arguments
+`...[trigger_shape, trigger_w, trigger_h, lock_type, cam_lock_x, cam_lock_y, active_scene, 0], ...`
+
+**trigger_shape** - (enum) the shape of the trigger zone. 0 is a rectangle, 1 is a circle, and any other value will have it use it's sprite mask
+
+**trigger_w** - (int) the width of the detection box (radius for a circle)
+
+**trigger_h** - (int) the height of the detection box (unused for a circle)
+
+**lock_type** - (enum) which axis get locked - 0 is BOTH, 1 is only Y, and 2 is only X
+
+**cam_lock_x** - (int) the position to transition the camera to in the X axis. If 0, will default to the middle of the article's shape.
+
+**cam_lock_y** - (int) the position to transition the camera to in the Y axis. If 0, will default to the middle of the article's shape.
+
+**active_scene** - (int) the minimum scene index for a detection zone to fire
+
+### Article8 - Room Transition
 Room Transition is a dedicated article to transfering players between rooms.
 
 #### Arguments
@@ -237,9 +260,12 @@ Room Transition is a dedicated article to transfering players between rooms.
     [act_args],
     [act_starts]);
 
-**room_id** - the room the action belongs to. It will only run when the current room is this room.
-**scene_id** - the room's scene the action will run on. If this is 0, it will always run.
-**action_id** - the id for this action, used to be referenced to for starting other actions.
+**room_id** - the room the action belongs to. It will only run when the current room is this room
+
+**scene_id** - the room's scene the action will run on. If this is 0, it will always run
+
+**action_id** - the id for this action, used to be referenced to for starting other actions
+
 
 There are a plethora of basic actions which perform all sorts of tasks which allow for the full creation of a level. If you need to extend functionality you can add your own actions inside article3. There are plenty of types of actions: instant, conditional, perpetual, etc to show how to work with the system internally.
 
