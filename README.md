@@ -148,9 +148,13 @@ Quick Terrain is the standard visual article - it will spawn in its position, di
 `...[sprite_index, anim_speed, 0, static, alpha, image_blend, 0], ...`
 
 **sprite_index** - (int) the sprite index of the article to draw
+
 **anim_speed** - (float) the speed of the animation if the sprite strip is more than 1 frame
+
 **static** - (bool) if the sprite follows the camera instead of the rest of the world
+
 **alpha** - (float) the transparency of the sprite from 0 to 1
+
 **image_blend** - (color) the color to apply to the sprite as a filter
 
 ### Article2 - UNUSED
@@ -172,15 +176,25 @@ Detection Zones are areas that trigger an action when certain criteria are met.
 `...[action_id, active_scene, trigger_obj_type, trigger_cooldown_max, trigger_shape, trigger_w, trigger_h, [req_item_id,hold_up,trigger_relative,check_visibility]], ...`
 
 **action_id** - (int) the id of the action to perform
+
 **active_scene** - (int) the minimum scene index for a detection zone to 
+
 **trigger_obj_type** - (int) the object_index of what it is listening for. Defaults to `oPlayer`
+
 **trigger_cooldown_max** - (int) the frame count before the zone refreshes and allows another activation. If set to -1, the zone will destroy on activation
+
 **trigger_shape** - (enum) the shape of the trigger zone. 0 is a rectangle, 1 is a circle, and any other value will have it use it's sprite mask
+
 **trigger_w** - (int) the width of the detection box (radius for a circle)
+
 **trigger_h** - (int) the height of the detection box (unused for a circle)
+
 **req_item_id** - (int) the required item an entity must be carrying in order for the detection to take place. Defaults to 0, aka not needing an item
-**hold_up** - (bool) if an up input is required to activate this box. It will spawn a prompt below the entity when colliding.
+
+**hold_up** - (bool) if an up input is required to activate this box. It will spawn a prompt below the entity when colliding
+
 **trigger_relative** - (bool) do the actions get performed on the stage main object, or on the entity that detected it? Defaults to false
+
 **check_visibility** - (bool) does the box check to see that the entity is clearly visible (not depth behind any mask) before firing?
 
 ### Article5 - Room Manager
@@ -205,10 +219,15 @@ Room Transition is a dedicated article to transfering players between rooms.
 `...[sprite_index, anim_speed, group, static, alpha, image_blend, 0], ...`
 
 **sprite_index** - (int) the sprite index of the article to draw
+
 **anim_speed** - (float) the speed of the animation if the sprite strip is more than 1 frame
+
 **group** - (int) DEPRECATED - used to be the sprite group, now has been generalized to article_group
+
 **static** - (bool) if the sprite follows the camera instead of the rest of the world
+
 **alpha** - (float) the transparency of the sprite from 0 to 1
+
 **image_blend** - (color) the color to apply to the sprite as a filter
 
 ## Action Manager & Loading Structure (article3, user_event0)
