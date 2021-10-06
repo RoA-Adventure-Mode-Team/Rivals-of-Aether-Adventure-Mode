@@ -167,7 +167,7 @@ Article2 is left empty
 `...[], ...`
 
 ### Article3 - Action Manager
-The Action Manager is instanced once on startup, and only one can exist. It persists for the full duration of the level, and generally can be acecssed globally with `action_manager`. It is responsible for executing all the code related to AM actions.
+The Action Manager is instanced once on startup, and only one can exist (singleton). It persists for the full duration of the level, and generally can be acecssed globally with `action_manager`. It is responsible for executing all the code related to AM actions.
 
 #### Arguments
 `...[], ...`
@@ -201,7 +201,7 @@ Detection Zones are areas that trigger an action when certain criteria are met.
 **check_visibility** - (bool) does the box check to see that the entity is clearly visible (not depth behind any mask) before firing?
 
 ### Article5 - Room Manager
-The Room Manager is instanced once on startup, and only one can exist. It persists for the full duration of the level, and generally can be acecssed globally with `room_manager`. It is responsible for executing all the code related to AM rooms.
+The Room Manager is instanced once on startup, and only one can exist (singleton). It persists for the full duration of the level, and generally can be acecssed globally with `room_manager`. It is responsible for executing all the code related to AM rooms.
 
 #### Arguments
 `...[], ...`
