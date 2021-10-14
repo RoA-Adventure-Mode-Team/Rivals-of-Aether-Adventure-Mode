@@ -19,8 +19,8 @@ enum ACT {
     
     WAIT, //waits
     //frames
-    MUSIC, //set music
-    //type, 1, 2
+    PLAY_SOUND,
+    //sound_name
     SET, //Set data
     //article_id, variable, value, ease_type, ease_length
     ON_INPUT, //Do a thing when a player presses a button
@@ -43,7 +43,7 @@ enum ACT {
     //article_group, threshold, [lower than or equal:0 greater than or equal:1]
     SCENE, //Switches the scene
     //0:set,1:add, scene id
-    RANDOM, //Pick a random exit action to do?
+    RANDOM, //Pick a random exit action to do
     //seed
     SET_RELATIVE, //Set data relative to whatever caused this action (by default, passed by trigger zones)?
     //variable, value, ease_type, ease_length
@@ -55,6 +55,8 @@ enum ACT {
     //killbox background
     TRANS_MUSIC, //transition music with a crossfade time (time of zero is a cut)
     //to_music_index, fade_time
+    DESPAWN, //Article group to despawn/remove 
+    //article_id
 }
 enum P {
     LOAD,
@@ -175,11 +177,18 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     	break;
     case ACT.SET:
 	    switch _param[3] { //ease_type?
+	    	case 1:
+	    		variable_instance_set(id,_param[1],_param[2]);
+	    		break;
 	    	default:
 		    	with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
 		    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[1],variable_instance_get(id,_param[1]));
-					variable_instance_set(id,_param[1],ease_linear(variable_instance_get(id,"action_old_"+_param[1]),_param[2],_action[P.ALIVE_TIME],_param[4]));
-					// if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+					if is_real(variable_instance_get(id,"action_old_"+_param[1])) {
+						variable_instance_set(id,_param[1],ease_linear(floor(variable_instance_get(id,"action_old_"+_param[1])),_param[2],_action[P.ALIVE_TIME],_param[4]));
+						// if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+					} else {
+						variable_instance_set(id,_param[1],_param[2]);
+					}
 				}
 				if _action[P.ALIVE_TIME] > _param[4] {
 		    		_action[@P.DIE] = true;
@@ -190,13 +199,21 @@ switch _action[P.LOAD][L.ACTION_TYPE] {
     	break;
     case ACT.SET_RELATIVE:
 	    switch _param[2] { //ease_type
+	    	case 1:
+	    		variable_instance_set(id,_param[1],_param[2]);
+	    		break;
 	    	default:
 	    		
 		    	with _action[P.REL_ID] {
 		    		if _action[P.ALIVE_TIME] == 1 variable_instance_set(id,"action_old_"+_param[0],variable_instance_get(id,_param[0]));
-					variable_instance_set(id,_param[0],ease_linear(variable_instance_get(id,"action_old_"+_param[0]),_param[1],_action[P.ALIVE_TIME],_param[3]));
-					// if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
-				}
+		    		if is_real(variable_instance_get(id,"action_old_"+_param[0])) {
+						variable_instance_set(id,_param[0],ease_linear(floor(variable_instance_get(id,"action_old_"+_param[0])),_param[1],_action[P.ALIVE_TIME],_param[3]));
+						// if other.debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
+		    		} else {
+		    			variable_instance_set(id,_param[0],_param[1]);
+		    		}
+		    			
+		    	}
 				if _action[P.ALIVE_TIME] > _param[3] {
 		    		_action[@P.DIE] = true;
 		    	}
@@ -372,6 +389,16 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     	var _param = new_action[P.LOAD][L.PARAM];
 		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] if variable_instance_get(id,_param[1]) == _param[2] _action[@P.DIE] = true;
     	break;
+    case ACT.DESPAWN:
+    	var _param = new_action[P.LOAD][L.PARAM];
+    	with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
+    		if num == 6 destroyed = true; //Enemies have their own distruction methods
+    		else if "state" in self state = 2; //state 2 is the destruction state
+    		else instance_destroy(self);
+    	}
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+		return true; //Never enters the queue
+    	break;
     case ACT.HITBOX:
 		var _param = new_action[P.LOAD][L.PARAM];
     	if _starting_id == id {
@@ -379,6 +406,7 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     	} else {
     		if debug print_debug("[AM] SPAWNING HITBOX...");
     		create_hitbox(_param[0],_param[1],_starting_id.x,_starting_id.y);
+    		print([_starting_id.x,_starting_id.y]);
     	}
     	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
 		return true; //Never enters the queue
@@ -404,7 +432,10 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     	break;
 	case ACT.SET:
 		var _param = new_action[P.LOAD][L.PARAM];
-		with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] variable_instance_set(id,_param[1],_param[2]);
+		if array_length_1d(_param) < 4 with obj_stage_article if "action_article_index" in self && action_article_index == _param[0] {
+			variable_instance_set(id,_param[1],_param[2]);
+		}
+		// if debug print_debug("[AM] SETTING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 		if debug print_debug("[AM] SETTING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 		if array_length_1d(_param) < 4 {
 			
@@ -413,37 +444,20 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
 		}
 		// if debug print_debug("[AM] EASING "+string(_param[0])+"."+string(_param[1])+" = "+string(_param[2]));
 		break;
-	case ACT.MUSIC:
-		var _param = new_action[P.LOAD][L.PARAM];
-    	switch _param[0] {
-    		case -1: //stop
-				music_stop();
-				break;
-    		case 0: //play music
-    			music_play_file(_param[1]);
-    			break;
-			case 1: //crossfade
-				music_crossfade(false,_param[2]);
-				break;
-			case 2: //fadeout
-				music_fade(_param[1],_param[2]);
-				break;
-			case 3: //volume
-				// sound_volume(_param[1]);
-				break;
-			case 4: //pitch
-				//sound_pitch(_param[1]);
-				break;
-    	}
-    	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
-		return true; //Never enters the queue
-	case ACT.SCENE:
+	case ACT.SCENE: //Switch Scene
 		var _param = new_action[P.LOAD][L.PARAM];
 		if !_param[0] {
 			change_scene(_param[1]);
 		} else {
 			change_scene(scene_id+_param[1]);
 		}
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+		return true; //Never enters the queue
+		break;
+	case ACT.PLAY_SOUND: //Play Sound
+		sound_play(sound_get(new_action[P.LOAD][L.PARAM][0]));
+		for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions
+		return true; //Never enters the queue
 		break;
 	case ACT.SUS: //:oO.Oo:
 		var _param = new_action[P.LOAD][L.PARAM];
@@ -555,13 +569,18 @@ switch new_action[P.LOAD][L.ACTION_TYPE] {
     			// print(quest_array[_param[0]][0]);
     			print(_param[2]);
     			quest_set(_param[0],quest_array[_param[0]][0]+_param[2]);
+    			sound_play(obj_stage_main.quest_prog_sound);
     			break;
     		case 1: //set, override
     			quest_set(_param[0],_param[2]);
+    			sound_play(obj_stage_main.quest_prog_sound);
     			break;
     		default: //set, do not go backwards
     			// print(quest_array[_param[0]][0][0]);
-    			if quest_array[_param[0]][0] == noone || quest_array[_param[0]][0] < _param[2] quest_set(_param[0],_param[2]);
+    			if quest_array[_param[0]][0] == noone || quest_array[_param[0]][0] < _param[2] {
+    				quest_set(_param[0],_param[2]);
+    				sound_play(obj_stage_main.quest_prog_sound);
+    			}
     			break;
     	}
     	for (var j = 0; j < array_length_1d(new_action[P.LOAD][L.ON_EXIT]); j++) start_action(room_id, new_action[P.SCENE_ID], new_action[P.LOAD][L.ON_EXIT][j],id); //Add Exit Actions

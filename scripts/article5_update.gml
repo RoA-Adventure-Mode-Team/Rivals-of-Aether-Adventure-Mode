@@ -183,7 +183,7 @@ return;
 //cam_state = -1;
 switch room_switch_type {
 	case 1: //Rectangle Slide
-		if room_switch_timer == floor(room_switch_time/2) {
+		if room_switch_timer == floor(room_switch_time/2)-1 {
 			// if switch_to_room != cur_room {
 			despawn_room();
 			room_render(cur_room);
@@ -199,7 +199,7 @@ switch room_switch_type {
 		}
 		break;
 	case 2: //Fade Out/In
-		if room_switch_timer == floor(room_switch_time/2) {
+		if room_switch_timer == floor(room_switch_time/2)-1 {
 			// if switch_to_room != cur_room {
 			despawn_room();
 			room_render(cur_room);
@@ -236,6 +236,10 @@ cam_smooth = obj_stage_main.cam_smooth;
 // 	if scene_id != 0 array_push(action_queue, [other.cur_room,scene_id,1]); //Start the first action of the room/scene
 // 	array_push(action_queue, [other.cur_room,0,1]); //Start the first action of ALL room/scene
 // }
+with oPlayer {
+	// set_state(PS_IDLE);
+	respawn_point = [x,y,other.cur_room]; //Reset respawn every room change ^^;
+}
 return true;
 #define room_render(_room_id) //Renders the current room. Runs on cell change, room transitions, and respawn usually.
 var articles_spawned = 0;
@@ -260,10 +264,10 @@ if _room_id < array_length_1d(array_room_data) {
                                 //obj_type = "obj_stage_article_platform";
                                 art = instance_create(floor(rel_pos[0]),floor(rel_pos[1]),"obj_stage_article_platform",cell_data[j][0]);
                                 break;
-                            case 0:
+                            default:
                                 //obj_type = "obj_stage_article";
                                 art = instance_create(floor(rel_pos[0]),floor(rel_pos[1]),"obj_stage_article",cell_data[j][0]);
-                            break;
+                            	break;
                         }
                         art.spawn_variables = cell_data[j][5];
                         art.depth = cell_data[j][4];
@@ -300,7 +304,9 @@ if _room_id < array_length_1d(array_room_data) {
 with action_manager {
 	room_id = other.cur_room;
 	if scene_id != 0 array_push(action_queue, [other.cur_room,scene_id,1]); //Start the first action of the room/scene
-	array_push(action_queue, [other.cur_room,0,1]); //Start the first action of ALL room/scene
+	array_push(action_queue, [0,0,1]); //Start the universal actions for ALL rooms
+	array_push(action_queue, [0,scene_id,1]); //Start the universal actions for this scenes
+	array_push(action_queue, [other.cur_room,0,1]); //Start the first actions for this room
 }
 
 #define real_to_grid(_pos) //Translate real coordinates into coordinates on the basegame grid 
@@ -350,7 +356,7 @@ for (var k = 0; k < array_length_1d(array_room_data[_room_id]); k++) {
         }
     }
 with obj_stage_article {
-	if num == 3 array_scene_ID = []; //Reset Scene Loads
+	// if num == 3 array_scene_ID = []; //Reset Scene Loads
 	if num != 3 && num != 5 && (!("keep" in id) || keep == false) {
 		instance_destroy(id);
 	}

@@ -63,7 +63,7 @@ if state == 0 && (active_scene == 0 || active_scene == room_manager.cur_scene){ 
         
         with obj_stage_main {
             cam_override_obj = noone;
-            cam_state = 0; //Controlled by Camera
+            cam_state = 0; //Controlled by the Room Manager
         }
     }
     exit; //Only run one state per loop, no need to check

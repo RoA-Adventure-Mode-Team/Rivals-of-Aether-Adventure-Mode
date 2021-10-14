@@ -142,7 +142,7 @@ if win_call == 1 with obj_stage_main { //Load Data
 	]);
 	
 	win_add(i++,[WIN.QUESTLIST, //5 //Expansive Custom Window, Shows Quest List
-		new_varcont([1,16,300,42,sprite_get("Quest Logo")]), //alpha, sep, w, sep_things
+		new_varcont([1,16,300,64,sprite_get("Quest Logo")]), //alpha, sep, w, sep_things
 		//new_sprite(sprite_get("gui_test"),0,0),
 		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
 		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
@@ -171,7 +171,7 @@ if win_call == 1 with obj_stage_main { //Load Data
 	var _rate = [0,10];
 	win_add(i++,[WIN.NOTE_SCROLL, //7 //Shows world notes
 		new_varcont([_sprite,_x,_y,_rate]), //sprite, x, y, rate
-		new_sprite(sprite_get("black"),-200,0,0.5),
+		new_sprite(sprite_get("black"),-200,0,0.75),
 		new_sprite(_sprite,_x,_y,1),
 		// new_textbox("QUEST_NAME",0,0,200,16,c_white,asset_get("fName")),
 		// new_textbox("QUEST_DESCRIPTION",0,16,200,16,c_white,asset_get("roaLBLFont")),
@@ -368,7 +368,12 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 			with oPlayer {
 				if _element[1][3] {
 					if free && state != PS_PRATFALL set_state(PS_PRATFALL); //If freeze players
-					else if !free && state != PS_SPAWN set_state(PS_SPAWN);
+					else if !free && state != PS_SPAWN {
+						set_state(PS_SPAWN);
+						//Bug where getting hit and setting to spawn doesn't reset hitstun or hitpause
+						hitstun = 0;
+						hitpause = 0;
+					}
 				}
 				if (attack_held == 1 || taunt_held == 1) {
 					// print("Upping text...");
@@ -579,7 +584,7 @@ for (var _i = 0; _i < array_length_1d(active_win); _i++) {
 				//_param[11] += _param[4];
 				draw_set_font(_param[10]);
 				//Command character flash text
-				if !(floor(alive_time/0.1) % 2) draw_text_drop(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,win_alpha);
+				if !(floor(alive_time) % 2) draw_text_drop(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,win_alpha);
 				else draw_text_drop(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,win_alpha);
 				// if !(floor(alive_time/_param[4]) % 2) draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11])),_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
 				// else draw_text_ext_transformed_color(_x+_param[5],_y+_param[6],string_copy(_param[1],0,floor(_param[11]))+_param[3],_param[8],_param[7],1,1,0,_param[9],_param[9],_param[9],_param[9],win_alpha);
@@ -965,13 +970,13 @@ with _with_obj {
 				cmd_print(_str_raw,"Debug toggled for selected...");
 			}
 			break;
-		case "diff":
+		case "dist":
 			var _output = "";
 			for (var _i = 1; _i < array_length(debug_point_array); _i++)
 			{
 				_output += "["+string(debug_point_array[_i].x-debug_point_array[_i-1].x) + "," + string(debug_point_array[_i].y-debug_point_array[_i-1].y)+"]"+" : ";
 			}
-			cmd_print(_str_raw,"Differences between sequential debug points:
+			cmd_print(_str_raw,"Distance between sequential debug points:
 " + _output);
 			break;
 		case "deselect":
@@ -1008,10 +1013,10 @@ with _with_obj {
 				_art_sv += "]";
 				//Replace misformatted into formatted
 				string_replace_all(_art_sv, "},  }","]");
-				string_replace_all(_art_sv, ",{ { ","]");
+				string_replace_all(_art_sv, ",{ {","]");
 				
 				var _art_pos = grid_to_cell([_art.x+64,_art.y+64]);
-				var _ret = get_string("(ctrl+A) Copy the below into the room ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script (user_event1)...",
+				var _ret = get_string("(ctrl+A) Copy the below into the room " +string(room_manager.cur_room)+" ["+string(_art_pos[1][0])+","+string(_art_pos[1][1])+"] load script (user_event1)...",
 				"["+string(_art.num)+","+string(_art_pos[0][0]/16)+","+string(_art_pos[0][1]/16)+","+string(_article_type)+","+string(_art.og_depth)+","+_art_sv+",[0,0]"+"], // Exported from Lucid Dream");
 			}
 			cmd_print(_str_raw,"Exporting Articles into ROOM Format...");
@@ -1120,6 +1125,38 @@ with _with_obj {
 			}
 			cmd_command(["spawn","1","1","9","r:'"+_str_a[1]+"'"],"",true);
 			cmd_print(_str_raw,"Spawned platform");
+			break;
+		case "qt":
+			if array_length_1d(_str_a) < 2 {
+				cmd_print(_str_raw,"Error: Collision Type Req.");
+				break;
+			}
+			
+			if array_length_1d(_str_a) < 3 {
+				cmd_print(_str_raw,"Error: Resource Name Req.");
+				break;
+			}
+			
+			if array_length_1d(_str_a) < 4 {
+				cmd_print(_str_raw,"Error: Anim Speed Req.");
+				break;
+			}
+			
+			cmd_command(["spawn","1",_str_a[1],"0","r:'"+_str_a[2]+"'","d:'"+_str_a[3]+"'"],"",true);
+			cmd_print(_str_raw,"Spawned a Quick Terrain article");
+			break;
+		case "room":
+			if array_length_1d(_str_a) < 1 {
+				cmd_print(_str_raw,"Error: Room Number Req.");
+				break;
+			}
+			with room_manager {
+	            switch_to_room_pos = [other.follow_player.x, other.follow_player.y];
+	            switch_to_room = real(_str_a[1]);
+	            room_switch_event = 0;
+	            switch_room = true;
+	        }
+	        cmd_print(_str_raw,"Spawned platform");
 			break;
 		case "s_state": //Save Player States
 			var _variable_names;
@@ -1330,7 +1367,7 @@ with _with_obj {
 			act_play
 			<selected> clone|c
 			<selected> debug_output
-			diff
+			dist
 			<selected> destroy|d
 			<selected> export
 			god

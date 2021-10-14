@@ -26,7 +26,7 @@ cam_x_r3 = 2*view_get_wview()/3;
 cam_width = view_get_wview(); //960
 cam_height = view_get_hview(); //540
 
-print([cam_width,cam_height]);
+// print([cam_width,cam_height]);
 
 cam_state = 0;
 cam_smooth = 5;
@@ -188,7 +188,7 @@ cmd_char = '>';
 cmd_output = "Type 'help' for command list.
 "; //Parsed string for storing command log
 cmd_save_output = false; // If the output is saved, or overwritten with every command (VERY LAGGY)
-cmd_title = "LUCID DREAM v0.6";
+cmd_title = "LUCID DREAM v0.7";
 cmd_freecam = false;
 
 
@@ -205,6 +205,8 @@ note_scroll = [10,10];
 
 win_call = 1;
 user_event(2);
+
+quest_prog_sound = asset_get("sfx_coin_collect");
 /*Good Sounds
 sfx_holy_tablet - Dialog Up
 sfx_propeller_dagger_loop - Dialog Flap?

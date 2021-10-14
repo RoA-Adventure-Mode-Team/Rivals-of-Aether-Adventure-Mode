@@ -8,9 +8,13 @@ if !_init {
     if spawn_variables[3] == -1 destroy_on_trigger = true;
     //trigger_obj_type = oPlayer;
     trigger_shape = spawn_variables[4];
-    if trigger_shape > 1 {
+    if trigger_shape > 1 { //If the variable looks to be an index, use it
+        // visible = false;
+        image_xscale = 2;
+        image_yscale = 2;
         sprite_index = trigger_shape;
-        mask_index = trigger_shape; //If the variable looks to be an index, use it
+        sprite_index = asset_get("empty_sprite");
+        mask_index = trigger_shape; 
     }
     trigger_w = spawn_variables[5];
     trigger_h = spawn_variables[6];
@@ -37,8 +41,6 @@ if !_init {
         // case 2: //Stage Article
         //     trigger_obj_type = obj_stage_article;
         //     break;
-        // default:
-        //     break;
     }
     visible = true;
     _init = 1;
@@ -58,20 +60,23 @@ switch trigger_shape {
         break;
 }
 if collis_obj != noone && (!(req_item_id == 0 || (("num" in collis_obj && collis_obj.num == 10 && collis_obj.item_id == req_item_id[0])))
-                        || (!hold_up || collis_obj.up_down)) && (active_scene == 0 || cur_scene == active_scene) {
+|| (!hold_up || collis_obj.up_down)) && (active_scene == 0 || (active_scene > 0 && cur_scene >= active_scene) || (active_scene < 0 && cur_scene <= abs(active_scene))) {
     if trigger_cooldown == 0 {
         if check_visibility != 0 {
             var _cont = 1;
            with obj_stage_article {
                if num != 1 || depth > other.collis_obj.depth continue; //only care about visible sprites via article1, and also only those sprites in front of the check.
-               if place_meeting(x,y,other.collis_obj) _cont = 0; //If there's something in the way, then don't trigger
+               if place_meeting(x,y,other.collis_obj) {
+                   _cont = 0; //If there's something in the way, then don't trigger
+                //   print("[TZ] ARTICLE IN FRONT: "+string(num)+":"+string(depth));
+               }
                
            }
            if !_cont exit;
         }
         trigger_cooldown = trigger_cooldown_max;
         if debug print_debug("[TZ] TRIGGERED ACTION "+string(action_manager.room_id)+":"+string(active_scene)+":"+string(action_id));
-        if trigger_relative with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.id]);
+        if trigger_relative with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.collis_obj]);
         else  with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);
         // with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.id]);
         if req_item_id != 0 with collis_obj { //Remove Item

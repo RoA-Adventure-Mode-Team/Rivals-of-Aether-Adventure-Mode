@@ -41,6 +41,7 @@ enum EN {
     GUARD, //8
     SUPPLIER, //9
     NGUARD, //10
+    MAGE, //11
     RYKEN = 100 //100
 };
 // with oPlayer if state == PS_RESPAWN print("[ue6] started check");
@@ -201,7 +202,7 @@ switch (enem_id) {
                 //Attacking
                 attacks = [AT_JAB];
                 
-                ai_attack_frequency = 20; //How often to attack.
+                ai_attack_frequency = 10; //How often to attack.
                 ai_attack_cooldown = 0;
                 ai_attack_counter = 0;
                 
@@ -2963,7 +2964,7 @@ switch (enem_id) {
 	            	];
             } else {
             	attached_articles = [
-	            	[4,-1,-4,0,0,[3,0,0,1,0,180,100,[0,0,1,1]],[0,0]],
+	            	[4,-1,-5,0,0,[3,0,0,1,0,180,100,[0,0,1,1]],[0,0]],
 	            	// [4,-1,-4,0,0,[3,0,0,1,sprite_get("enemy_10_vision"),128,64,[0,0,1,1]],[0,0]],
 	            	[12, 0, 0, 0, -20, [sprite_get("enemy_10_vision"), 20, 0, 1, 0, 0, 0, 0], [0,0]],
 	            	];
@@ -2978,8 +2979,11 @@ switch (enem_id) {
             ai_range_far = 64; //The preferred maximum range
             ai_move_frequency = 300;
             
-            ai_move_timer = random_func(id % 50, ai_move_frequency, true); //Randomize movement
+            // ai_move_timer = random_func(id % 50, ai_move_frequency, true); //Randomize movement
+            ai_move_timer = 20; //Randomize movement
             
+            var _a = random_func(id % 50, 1, true);
+            spr_dir = (_a == 1)-(_a == 0);
             init_x = x;
             //Init AI target random movement
             if team == 1 {
@@ -3478,6 +3482,9 @@ switch (enem_id) {
     		case EN_EVENT.ATTACK_UPDATE:
     		break;
     		case EN_EVENT.GOT_HIT:
+    			if hit_player_id != noone {
+    				team = 0; //If hit, chase after the player!
+    			}
     		break;
     		case EN_EVENT.GOT_PARRIED:
     		break;
@@ -3487,7 +3494,7 @@ switch (enem_id) {
     		break;
     	}
     	break;
-    	case EN.SUPPLIER:
+    case EN.SUPPLIER:
     	switch(art_event) {
     		case EN_EVENT.INIT:
     		//Initializations Here
@@ -3666,7 +3673,261 @@ switch (enem_id) {
     		case EN_EVENT.PARRY:
     		break;
     	}
-    break;
+    	break;
+    case EN.MAGE:
+    	switch(art_event) {
+    		case EN_EVENT.INIT:
+    		//Initializations Here
+            
+            sprite_name = "Mage";
+            //player_controller = 1;
+            hitpoints_max = 55;
+            
+            collision_box = asset_get("ex_guy_hurt_box");
+            mask_index =  collision_box; // Collision Mask
+            colis_width = bbox_right - bbox_left;
+            colis_height = bbox_bottom - bbox_top;
+           
+            //AI Behavior
+            ai_attack_timer = 0;
+            ai_move_timer = 0;
+            ai_jump_timer = 0;
+            ai_moving_right = false;
+            ai_moving_left = false;
+            ai_decision_time = 10;
+            
+            invincible = -1;
+            
+            //NPC Varaibles
+            char_name = "Mage";
+            show_healthbar = false;
+            team = 1;
+            patrol_type = 0;
+            waypoint_index = -1;
+            spr_dir = -1;
+            // waypoints = [{x: 0, y: 0}];
+            
+            //AI Behavior Variables
+            //Movement
+            ai_range_low = 32; //The preferred minimum range
+            ai_range_far = 200; //The preferred maximum range
+            ai_move_frequency = 20;
+            
+            //Jumping
+            ai_jump_back_frequency = 0; //How often the AI should jump back randomly.
+            ai_jump_up_frequency = 0; //How often the AI should jump up randomly.
+            ai_jump_fwd_frequency = 0; //How often the AI should jump forwards randomly.
+            ai_jump_range_low = 0; //The preferred minimum range to jump.
+            
+            //Attacking
+            attacks = [AT_NSPECIAL];
+            
+            ai_attack_frequency = 20; //How often to attack.
+            ai_attack_cooldown = 0;
+            ai_attack_counter = 0;
+            
+            able_to_crouch = false;
+            able_to_shield = false;
+            able_to_jump = false;
+            able_to_dash = false;
+            
+            //Enemy Specific
+            ai_hit_absorption = 0;
+            ai_hit_percent = 0;
+                    
+            //Animation Actions
+            char_height = 40;
+            char_arrow = sprite_get("char_arrow");
+            anim_speed = .02;
+            idle_anim_speed = .07;
+            crouch_anim_speed = .1;
+            walk_anim_speed = .25;
+            dash_anim_speed = .2;
+            pratfall_anim_speed = .25;
+            full_time = 20;
+            anim_type = 0; //0 is cycle; 1 is once per state
+            
+            //Movement Variables
+            walk_speed = 6.5;
+            walk_accel = 1;
+            walk_turn_time = 6;
+            initial_dash_time = 10;
+            initial_dash_speed = 6.5;
+            dash_speed = 6;
+            dash_turn_time = 10;
+            dash_turn_accel = 2;
+            dash_stop_time = 4;
+            dash_stop_percent = .35; //the value to multiply your hsp by when going into idle from dash or dashstop
+            ground_friction = .5;
+            moonwalk_accel = 1.4;
+            
+            jump_start_time = 5;
+            jump_speed = 12;
+            short_hop_speed = 8;
+            djump_speed = 10;
+            leave_ground_max = 6; //the maximum hsp you can have when you go from grounded to aerial without jumping
+            max_jump_hsp = 6; //the maximum hsp you can have when jumping from the ground
+            air_max_speed = 6; //the maximum hsp you can accelerate to when in a normal aerial state
+            jump_change = 3; //maximum hsp when double jumping. If already going faster, it will not slow you down
+            air_accel = 1;
+            prat_fall_accel = 1; //multiplier of air_accel while in pratfall
+            air_friction = .03;
+            max_djumps = 1;
+            double_jump_time = 32; //the number of frames to play the djump animation. Can't be less than 31.
+            
+            max_fall = 9; //maximum fall speed without fastfalling
+            fast_fall = 11; //fast fall speed
+            gravity_speed = .5;
+            hitstun_grav = .5;
+            knockback_adj = 1; //the multiplier to KB dealt to you. 1 = default, >1 = lighter, <1 = heavier
+            
+            land_time = 4; //normal landing frames
+            prat_land_time = 20;
+            wave_land_time = 15;
+            wave_land_adj = 1.5; //the multiplier to your initial hsp when wavelanding. Usually greater than 1
+            wave_friction = .04; //grounded deceleration when wavelanding
+            
+            //parry animation frames
+            dodge_startup_frames = 1;
+            dodge_active_frames = 1;
+            dodge_recovery_frames = 4;
+            
+            //tech animation frames
+            tech_active_frames = 3;
+            tech_recovery_frames = 1;
+            
+            //tech roll animation frames
+            techroll_startup_frames = 2;
+            techroll_active_frames = 2;
+            techroll_recovery_frames = 2;
+            techroll_speed = 10;
+            
+            //airdodge animation frames
+            air_dodge_startup_frames = 1;
+            air_dodge_active_frames = 3;
+            air_dodge_recovery_frames = 3;
+            air_dodge_speed = 7.5;
+            
+            
+            //roll animation frames
+            roll_forward_startup_frames = 2;
+            roll_forward_active_frames = 2;
+            roll_forward_recovery_frames = 2;
+            roll_back_startup_frames = 2;
+            roll_back_active_frames = 2;
+            roll_back_recovery_frames = 2;
+            roll_forward_max = 9; //roll speed
+            roll_backward_max = 9;
+            
+            
+            land_sound = asset_get("sfx_land_heavy");
+            landing_lag_sound = asset_get("sfx_land_heavy");
+            waveland_sound = asset_get("sfx_waveland_syl");
+            jump_sound = asset_get("sfx_jumpground");
+            djump_sound = asset_get("sfx_jumpair");
+            air_dodge_sound = asset_get("sfx_quick_dodge");
+            death_sound = asset_get("sfx_death2");
+            fx_enemy_abyssdeath = hit_fx_create(sprite_get("fx_enemy_abyssdeath"), 16);
+            fx_enemy_abyssdeath2 = hit_fx_create(sprite_get("fx_enemy_abyssdeath2"), 16);
+    		break;
+    		case EN_EVENT.ANIMATION:
+    		break;
+    		case EN_EVENT.PRE_DRAW:
+    		break;
+    		case EN_EVENT.POST_DRAW:
+    		break;
+    		case EN_EVENT.UPDATE:
+    			// if art_state != PS_ATTACK_GROUND && art_state != PS_ATTACK_AIR next_attack = AT_NSPECIAL;
+
+    			// if team == 1 target_behavior = TR.WAYPOINT;
+    			// else target_behavior = TR.NEAR;
+    			// //AI Routine
+	      //      if (player_controller == 0 && hitstun <= 0) {
+	      //          right_down = ai_moving_right;
+	      //          left_down = ai_moving_left;
+	      //          jump_down = art_state == PS_JUMPSQUAT;
+	      //          left_hard_pressed = false;
+	      //          right_hard_pressed = false;
+	      //          down_hard_pressed = false;
+	      //          var decision_random = 0;
+	                
+	      //          //This enemy can't go off ledges
+	      //          // if (!is_free && hsp != 0) {
+	      //          //     var off_r = !position_meet(bbox_right + 2, bbox_bottom + 4);
+	      //          //     var off_l = !position_meet(bbox_left - 2, bbox_bottom + 4);
+	                    
+	      //          //     if ((off_r && hsp > 0) || (off_l && hsp < 0)) {
+	      //          //         x -= hsp;
+	      //          //     }
+	      //          // }
+	                
+	      //          //Moving
+	      //          if ai_target == noone {
+	      //          	ai_moving_right = false;
+	      //          	ai_moving_left = false;
+	      //          	break;
+	      //          }
+	      //          if (ai_target.x > x) {
+       //                 ai_moving_right = true;
+       //                 ai_moving_left = false;
+       //             } 
+       //             if (ai_target.x < x) {
+       //                 ai_moving_right = false;
+       //                 ai_moving_left = true;
+       //             } 
+                    
+	      //          if x_dist < waypoint_r && y_dist < waypoint_r {
+	      //          	ai_moving_right = false;
+	      //          	ai_moving_left = false;
+	      //          	break;
+	      //          }
+	      //      }
+    			break;
+    		case EN_EVENT.DEATH:
+    			instance_destroy();
+    			exit;
+    		break;
+    		case EN_EVENT.SET_ATTACK: //MAKE SURE ATTACKS ARE BEING SET ON THE MAIN STAGE OBJECT
+    			with (obj_stage_main) {
+                    switch (other.attack) {
+                    	case AT_NSPECIAL:
+							set_attack_value(AT_NSPECIAL, AG_CATEGORY, 2);
+				            set_attack_value(AT_NSPECIAL, AG_SPRITE, sprite_get("enemy_11_nspecial"));
+				            set_attack_value(AT_NSPECIAL, AG_NUM_WINDOWS, 2);
+				            set_attack_value(AT_NSPECIAL, AG_HAS_LANDING_LAG, 1);
+				            set_attack_value(AT_NSPECIAL, AG_LANDING_LAG, 4);
+				            set_attack_value(AT_NSPECIAL, AG_HURTBOX_SPRITE, sprite_get("enemy_11_nspecial"));
+				            
+				            set_window_value(AT_NSPECIAL, 1, AG_WINDOW_LENGTH, 60);
+				            set_window_value(AT_NSPECIAL, 1, AG_WINDOW_ANIM_FRAMES, 10);
+				            // set_window_value(AT_NSPECIAL, 1, AG_WINDOW_HAS_SFX, 1);
+				            // set_window_value(AT_NSPECIAL, 1, AG_WINDOW_SFX, asset_get("sfx_boss_shine"));
+				            // set_window_value(AT_NSPECIAL, 1, AG_WINDOW_SFX_FRAME, 4);
+				            break;
+                    }
+    			}
+    		break;
+    		case EN_EVENT.ATTACK_UPDATE:
+    			//Smoek poof!
+    			if attack == AT_NSPECIAL && window_timer == 59 {
+    				// visible = false;
+    				destroyed = true;
+    				instance_destroy();
+    				exit;
+    			}
+    		break;
+    		case EN_EVENT.GOT_HIT:
+    			// waypoint_index += 1;
+    			// waypoint_index = waypoint_index % array_length(waypoints);
+    		break;
+    		case EN_EVENT.GOT_PARRIED:
+    		break;
+    		case EN_EVENT.HIT_PLAYER:
+    		break;
+    		case EN_EVENT.PARRY:
+    		break;
+    	}
+    	break;
    // case EN.RYKEN: //Moved to user_event7
    // break;
 }

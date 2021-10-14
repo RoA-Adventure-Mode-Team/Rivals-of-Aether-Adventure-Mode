@@ -2,7 +2,7 @@
 
 if debug {
     depth = -100;
-    if (active_scene == 0 || cur_scene == active_scene) draw_set_alpha(1);
+    if (active_scene == 0 || (active_scene > 0 && cur_scene >= active_scene) || (active_scene < 0 && cur_scene <= abs(active_scene))) draw_set_alpha(1);
     else draw_set_alpha(.2);
     switch trigger_shape {
         case 0:
@@ -22,7 +22,8 @@ if debug {
 }
 draw_set_alpha(1);
 
-if hold_up with collis_obj {
+if collis_obj != noone && (item_needed == 0 || (collis_obj.item_id != noone && collis_obj.item_id.item_id != noone && item_needed == collis_obj.item_id.item_id))
+    && (active_scene == 0 || (active_scene > 0 && cur_scene >= active_scene) || (active_scene < 0 && cur_scene <= abs(active_scene))) with collis_obj {
     //draw_debug_text(x,y,"TESTING PROMPT");
     draw_sprite(asset_get("lead_arrow_spr"),0,x,y+10);
 }

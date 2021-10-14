@@ -31,7 +31,9 @@ if in_render {
         draw_debug_text(x-100,y,string(jump_down));
         draw_debug_text(x-100,y-32,string(shield_down));
         draw_debug_text(x,y-32,string(get_state_name(art_state)));
-        //draw_debug_text(x-64,y+32,string(get_attack_name(attack)));
+        draw_debug_text(x-64,y+32,string(get_attack_name(attack)));
+        draw_debug_text(x-64,y+48,string(window));
+        draw_debug_text(x-64,y+64,string(window_timer));
         //if instance_exists(last_hitbox) draw_debug_text(x-64,y+32,string(last_hitbox.hbox_group));
         //if instance_exists(hit_id) draw_debug_text(x-64,y+32,string(hit_id.hbox_group));
         draw_debug_text(x+32,y,string(kb_angle));

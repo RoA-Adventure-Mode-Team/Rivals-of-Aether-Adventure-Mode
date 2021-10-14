@@ -1,4 +1,4 @@
-//article17_init, Note
+//article17_init, Note - DEPRECATED - Using windows
 sprite_index = sprite_get("empty_sprite");
 _init = 0;
 state = 0;

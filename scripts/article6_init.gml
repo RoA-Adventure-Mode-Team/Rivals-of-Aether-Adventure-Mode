@@ -240,14 +240,18 @@ plat_drop = 0;
 to_dir = 0;
 walk_turn_timer = 0;
 can_fallthrough = 0;
+can_fast_fall = true;
 
 //Attack Variables
 attack_fresh = true;
 attack = 0;
+process_attack = -1;
 next_attack = -1;
 last_attack = -1;
 super_armor = false;
 was_parried = false;
+
+
 
 window = 0;
 window_timer = 0;
@@ -276,7 +280,10 @@ ag_window_hspeed[100] = 0;
 ag_window_hspeed_type[100] = 0;
 ag_window_vspeed[100] = 0;
 ag_window_vspeed_type[100] = 0;
-ag_window_custom_gravity[100] = 0;
+ag_window_custom_gravity[100] = 1;
+with obj_stage_main {
+	for (var i; i < 100;i++) other.ag_window_custom_gravity[i] = 1;
+}
 ag_window_wifflag[100] = 0;
 ag_window_has_custom_friction[100] = 0;
 ag_window_air_friction[100] = 0;
@@ -295,6 +302,9 @@ hitb = noone;
 hitb_pos = [0,0];
 
 has_hit_player = false;
+
+hit_count = 0;
+di_angle_max = 13;
 
 //Input Variables
 joy_dir = 0;

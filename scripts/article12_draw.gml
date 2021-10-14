@@ -6,7 +6,7 @@ if(!cant_root && draw)
     draw_set_alpha(0);
     draw_rectangle_color(0,0, room_width,room_height, c_white, c_white, c_white, c_white, false);
     
-    draw_set_alpha(1);
+    draw_set_alpha(0.25);
     gpu_set_blendenable(true);
     gpu_set_blendmode(bm_add);
     with (obj_stage_article) {
@@ -33,5 +33,6 @@ if(!cant_root && draw)
     }
     gpu_set_blendmode(bm_normal);
     gpu_set_alphatestenable(false);
+    draw_set_alpha(1);
     draw = true;
 }

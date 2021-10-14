@@ -2,11 +2,10 @@
 /*with obj_stage_article if num == 3 && (other.active_scene == 0 || cur_scene == other.active_scene) {
     draw_set_alpha(1);
 } draw_set_alpha(.2);*/
-draw_set_alpha(1);
+// draw_set_alpha(1);
 if debug {
     depth = -100;
-    if (active_scene == 0 || cur_scene == active_scene) draw_set_alpha(1);
-    else draw_set_alpha(.2);
+    if !(active_scene == 0 || (active_scene > 0 && cur_scene >= active_scene) || (active_scene < 0 && cur_scene <= abs(active_scene))) draw_set_alpha(.2);
     switch trigger_shape {
         case 0:
             draw_rectangle_color(x,y,x+trigger_w*spr_dir,y+trigger_h,debug_color,debug_color,debug_color,debug_color,c_black);
@@ -14,8 +13,9 @@ if debug {
         case 1:
             draw_circle_color(x,y,trigger_w*spr_dir,debug_color,debug_color,c_black);
             break;
-        case 2:
-            visible = debug;
+        default:
+        	draw_set_alpha(0.8);
+            draw_sprite_ext(mask_index,image_index, x, y, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
             break;
     }
     draw_set_alpha(1);

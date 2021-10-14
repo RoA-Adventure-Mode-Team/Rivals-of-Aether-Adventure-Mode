@@ -50,6 +50,9 @@ switch (enem_id) {
     	switch(art_event) {
     		case EN_EVENT.INIT:
     		//Initializations Here
+    		
+    		debug = true;
+    		debug_info = true;
                 
             sprite_name = "ryken";
             //player_controller = 1;
@@ -68,41 +71,43 @@ switch (enem_id) {
             ai_moving_right = false;
             ai_moving_left = false;
             ai_decision_time = 10;
+            short_hop = 0;
             
             //NPC Varaibles
             char_name = "Rykenburn";
-            show_healthbar = true;
-            is_boss = true;
-            team = 0;
+            show_healthbar = false;
+            is_boss = false;
+            team = 1;
             patrol_type = 0;
             
             //AI Behavior Variables
             //Movement
-            ai_range_low = 32; //The preferred minimum range
-            ai_range_far = 200; //The preferred maximum range
-            ai_move_frequency = 0;
+            ai_range_low = 16; //The preferred minimum range
+            ai_range_far = 64; //The preferred maximum range
+            ai_move_frequency = 50;
             
             //Jumping
-            ai_jump_back_frequency = 0; //How often the AI should jump back randomly.
-            ai_jump_up_frequency = 0; //How often the AI should jump up randomly.
-            ai_jump_fwd_frequency = 0; //How often the AI should jump forwards randomly.
-            ai_jump_range_low = 0; //The preferred minimum range to jump.
+            ai_jump_back_frequency = 1; //How often the AI should jump back randomly.
+            ai_jump_up_frequency = 1; //How often the AI should jump up randomly.
+            ai_jump_fwd_frequency = 1; //How often the AI should jump forwards randomly.
+            ai_jump_range_low = 64; //The preferred minimum range to jump.
             
             //Attacking
             attacks = [AT_NSPECIAL_AIR];
             
-            ai_attack_frequency = 20; //How often to attack.
+            ai_attack_frequency = 1; //How often to attack.
             ai_attack_cooldown = 0;
             ai_attack_counter = 0;
             
             able_to_crouch = false;
-            able_to_shield = false;
-            able_to_jump = false;
-            able_to_dash = false;
+            able_to_shield = true;
+            able_to_jump = true;
+            able_to_dash = true;
             
             //Enemy Specific
             ai_hit_absorption = 0;
             ai_hit_percent = 0;
+            percent = 20; //Assume early percent values?
                     
             //Animation Actions
             char_height = 40;
@@ -225,6 +230,17 @@ switch (enem_id) {
 			air_max_speed_def = air_max_speed;
 			smokeconsume_fx_bot = hit_fx_create(asset_get("fire_consume_top_spr"), 18);
 			smokeconsume_fx_top = hit_fx_create(asset_get("fire_consume_bot_spr"), 18);
+			
+			//AM-specific variables
+			hit_count_max = 5;
+			hit_count_max_range = 4;
+			hit_count_max_avg= 5;
+			//Keep-'em on stage :P
+			stage_l = 10106;
+			stage_r = 10635;
+			stage_y = 10330;
+			
+			
     		break;
     		case EN_EVENT.ANIMATION:
     		break;
@@ -234,10 +250,282 @@ switch (enem_id) {
     		break;
     		case EN_EVENT.UPDATE:
     		    //AI Code
-    			if (art_state != PS_ATTACK_GROUND && art_state != PS_ATTACK_AIR && !is_free && state_timer > 5) {
-    				if sign(ai_target.x-x) != 0 spr_dir = sign(ai_target.x-x);
-    				next_attack = AT_NSPECIAL;
-    			}
+    			// if (art_state != PS_ATTACK_GROUND && art_state != PS_ATTACK_AIR && !is_free && state_timer > 5) {
+    			// 	if sign(ai_target.x-x) != 0 spr_dir = sign(ai_target.x-x);
+    			// 	next_attack = AT_NSPECIAL;
+    			// }
+                if team == 0 {
+                	
+	    			if (player_controller == 0 && hitstun <= 0) {
+	                    var t_dist = point_distance(x, y, ai_target.x, ai_target.y);
+	                    var t_xd = abs(ai_target.x - x);
+	                    var t_yd = abs(ai_target.y - y);
+	                    var rel_y = ai_target.y - y;
+	                    
+	                    //Set After Team Change
+	                    show_healthbar = true;
+            			is_boss = true;
+            			
+	                    right_down = ai_moving_right;
+	                    left_down = ai_moving_left;
+	                    // jump_down = art_state == PS_JUMPSQUAT;
+	                    if art_state == PS_JUMPSQUAT {
+	                    	if short_hop {
+	                    		jump_down = false;
+	                    	}
+	                    	short_hop = false;
+	                    } else if short_hop {
+	                    	jump_down = true;
+	                    }
+	                    left_hard_pressed = false;
+	                    right_hard_pressed = false;
+	                    down_hard_pressed = false;
+	                    
+	                    if can_fast_fall down_hard_pressed = true;
+	                    var decision_random = 0;
+	                    
+	                    if hit_count >= hit_count_max && art_state != PS_ATTACK_GROUND && art_state != PS_ATTACK_AIR {
+	                    	next_attack = AT_DSPECIAL;
+	                    	hit_count = 0;
+	                    	hit_count_max = hit_count_max_avg + random_func(id % 200,hit_count_max_range,true);
+	                    	ai_attack_cooldown = 20;
+	                    }
+	                    
+	                    //Moving
+	                    ai_move_timer++;
+	                    
+	                    
+	                    
+	                    // if team == 1 {
+	                    // 	var _colis_check = instance_position(x+32*sign(ai_target.x - x),y-2, obj_stage_article_solid);
+	                    // 	if _colis_check != noone {
+	                    // 		ai_move_timer = ai_move_frequency;
+	                    // 		ai_target.x = 2*x-ai_target.x; //Flip to other size
+	                    // 	}
+	                    // }
+	                    
+	                    if (ai_move_timer % ai_move_frequency == 0 && !committed) {
+	         //           	if team == 1 {
+			    			// 	ai_target = {
+			    			// 		x: init_x+random_func(id % 50, 600, true)-300,
+			    			// 		y: y
+			    			// 	};
+			    			// }
+	                    	ai_move_timer = random_func(id % 50, ai_move_frequency, true); //Randomize movement
+	                        if (t_xd >= ai_range_low) {
+	                            if (t_xd >= ai_range_far) { //If agro'd
+	                                if (ai_target.x > x) right_hard_pressed = true;
+	                                if (ai_target.x < x) left_hard_pressed = true;
+	                            }
+	                            if (ai_target.x > x) {
+	                                ai_moving_right = true;
+	                                ai_moving_left = false;
+	                            } 
+	                            if (ai_target.x < x) {
+	                                ai_moving_right = false;
+	                                ai_moving_left = true;
+	                            } 
+	                        }
+	                        else {
+	                            ai_moving_right = false;
+	                            ai_moving_left = false;
+	                            if (ai_target.x > x && spr_dir == -1) {
+	                                right_down = true;
+	                                left_down = false; 
+	                            }
+	                            if (ai_target.x < x && spr_dir == 1) {
+	                                right_down = false;
+	                                left_down = true; 
+	                            }
+	                        }
+	                        if art_state == PS_DASH {
+	                            if (right_down && ai_target.x < x) {
+	                                ai_moving_right = false;
+	                                ai_moving_left = false;
+	                                if (ai_target.x > x && spr_dir == -1) {
+	                                    right_down = true;
+	                                    left_down = false; 
+	                                }
+	                                if (ai_target.x < x && spr_dir == 1) {
+	                                    right_down = false;
+	                                    left_down = true; 
+	                                }
+	                            }
+	                            if (left_down && ai_target.x > x) {
+	                                ai_moving_right = false;
+	                                ai_moving_left = false;
+	                                if (ai_target.x > x && spr_dir == -1) {
+	                                    right_down = true;
+	                                    left_down = false; 
+	                                }
+	                                if (ai_target.x < x && spr_dir == 1) {
+	                                    right_down = false;
+	                                    left_down = true; 
+	                                }
+	                            }
+	                        }
+	                    }
+	                
+	                    //Jumping
+	                    ai_jump_timer ++;
+	                    decision_random = random_func(id % 50, round(ai_decision_time), true);
+	                    
+	                    // if team != 1 {
+	                    if (!is_free) {
+	                        if (!place_meet(x + 32 * spr_dir, y + 16)) {
+	                            jump_down = true;
+	                            if (spr_dir == 1) {
+	                                ai_moving_right = true;
+	                                ai_moving_left = false;
+	                            } 
+	                            if (spr_dir == -1) {
+	                                ai_moving_right = false;
+	                                ai_moving_left = true;
+	                            } 
+	                        }
+	                        if (decision_random == 0 && !committed) {
+	                            if (ai_target.y + 24 <= y) {
+	                                var jump_random = random_func(id % 50, 100, true);
+	                                if (jump_random <= 25) {
+	                                    var jump_random2 = random_func(id % 50, 100, true);
+	                                    if (ai_jump_timer % (ai_jump_fwd_frequency  + decision_random) == 0 && jump_random2 <= 33) {
+	                                        jump_down = true;
+	                                        if (ai_target.x > x) {
+	                                            ai_moving_right = true;
+	                                            ai_moving_left = false;
+	                                        } 
+	                                        if (ai_target.x < x) {
+	                                            ai_moving_right = false;
+	                                            ai_moving_left = true;
+	                                        } 
+	                                    }
+	                                    
+	                                    if (ai_jump_timer % (ai_jump_up_frequency + decision_random) == 0 && jump_random2 > 33 && jump_random2 <= 66) {
+	                                        jump_down = true;
+	                                        ai_moving_right = false;
+	                                        ai_moving_left = false;
+	                                    }
+	                                    
+	                                    if (ai_jump_timer % (ai_jump_back_frequency + decision_random) == 0 && jump_random2 > 66) {
+	                                        jump_down = true;
+	                                        if (ai_target.x > x) {
+	                                            ai_moving_right = false;
+	                                            ai_moving_left = true;
+	                                        } 
+	                                        if (ai_target.x < x) {
+	                                            ai_moving_right = true;
+	                                            ai_moving_left = false;
+	                                        } 
+	                                    }
+	                                }
+	                                else {
+	                                    if (ai_jump_timer % ai_decision_time == 0) {
+	                                        down_hard_pressed = true;
+	                                    }
+	                                }
+	                            }
+	                        }
+	                    }
+	                    else {
+	                        jump_down = vsp < 0;
+	                        if (able_to_djump) {
+	                             if (ai_jump_timer % (ai_decision_time + decision_random) == 0) {
+	                                 jump_down = true;
+	                                if (ai_target.x > x) {
+	                                    ai_moving_right = true;
+	                                    ai_moving_left = false;
+	                                } 
+	                                if (ai_target.x < x) {
+	                                    ai_moving_right = false;
+	                                    ai_moving_left = true;
+	                                } 
+	                             }
+	                        }
+	                    }
+	                    // }
+	                    
+	                    //Attacking
+	                    //KEEEL
+	                    if (ai_target.state == PS_HITSTUN) {
+	                    	ai_attack_timer = 20;
+	                    }
+	                    if (ai_attack_timer > 0) {
+	                    	ai_attack_timer --;
+	                    	if (art_state != PS_ATTACK_GROUND && art_state != PS_ATTACK_AIR) {
+	                    		if ((ai_target.x < x && spr_dir == 1) || (ai_target.x > x && spr_dir = -1)) {
+	                                spr_dir = -spr_dir;
+	                            }
+	                            var decision_random2 = random_func((id % 50) + 2, 100, true);
+	                            // if (rel_y <= -64) jump_down = true;
+	                            if (rel_y <= -96) jump_down = true;
+	                            else if (rel_y <= -64 && !is_free) short_hop = true;
+		                    	else {
+		                    		if t_xd <= 128 {
+			                    		if (t_yd >= 80 && decision_random2 <= 60) {
+			                    			if is_free next_attack = AT_UAIR;
+			                    			else {
+			                    				if decision_random2 <= 30 next_attack = AT_UTILT;
+			                    				else next_attack = AT_USPECIAL;
+			                    			}
+			                    		}
+			                    		// else if (t_xd <= 32) next_attack = AT_NSPECIAL;
+			                    		else {
+			                    			if (t_xd <= 96) {
+				                    			if is_free next_attack = AT_FAIR;
+				                    			else if (t_yd <= 20) next_attack = AT_DTILT;
+				                    			else next_attack = AT_DTILT;
+			                    			}
+			                    		}
+		                    		}
+		                    	}
+		                    }
+	                    }
+	                    
+	                    //Default behavior
+	                    if (ai_attack_timer == 0 && ai_attack_cooldown <= 0) {
+	                        decision_random = random_func(id % 50, round(ai_attack_frequency), true);
+	                        var decision_random2 = random_func((id % 50) + 2, 100, true);
+	                        if (decision_random == 0 && !committed) {
+	                        	if (t_xd <= 64 && t_yd <= 64) {
+	                        		if		decision_random2 <= 20 next_attack = AT_NSPECIAL;
+	                        		else if decision_random2 <= 40 next_attack = AT_JAB;
+	                        		else if decision_random2 <= 60 next_attack = AT_DTILT;
+	                        		else if decision_random2 <= 80 next_attack = AT_UTILT;
+	                        		else if decision_random2 <= 100 next_attack = AT_FTILT;
+	                        	}
+	                        	var player_dmg;
+	                        	with obj_stage_main player_dmg = get_player_damage(other.ai_target.player);
+	                            if (t_xd <= 300 && t_xd >= 64 && t_yd <= 80 && player_dmg >= 60) {
+	                                // if  player_dmg >= 60 next_attack = AT_FSPECIAL;
+	                                next_attack = AT_FSPECIAL;
+	                            }
+	                            if (t_xd <= 128 && rel_y <= -64 && rel_y >= -240) {
+	                                if  player_dmg >= 60 next_attack = AT_USPECIAL;
+	                                else if is_free next_attack = AT_UAIR;
+	                                else jump_down = true;
+	                            }
+	                            
+	                            if ((ai_target.x < x && spr_dir == 1) || (ai_target.x > x && spr_dir = -1)) {
+	                                spr_dir = -spr_dir;
+	                            }
+	                            ai_attack_cooldown = 20;
+	                        }
+	                       
+	                        
+	                    }
+	                    else {
+	                        // if (art_state != PS_ATTACK_GROUND && art_state != PS_ATTACK_AIR)
+	                       ai_attack_cooldown --;
+	                    }
+	                } else { //If in hitstun
+	                	if hit_count >= hit_count_max*1.5 { //Cheese protection :)
+	                    	next_attack = AT_DSPECIAL;
+	                    	hit_count = 0;
+	                    	hit_count_max = hit_count_max_avg + random_func(id % 200,hit_count_max_range,true);
+	                    	ai_attack_cooldown = 20;
+	                    }
+	                }
+                }
     			
     			//Character Code Execution
     			if (speedboost_timer > 0) {
@@ -309,9 +597,9 @@ switch (enem_id) {
 							set_hitbox_value(AT_JAB, 1, HG_PRIORITY, 6);
 							set_hitbox_value(AT_JAB, 1, HG_DAMAGE, 8);
 							set_hitbox_value(AT_JAB, 1, HG_ANGLE, 65);
-							set_hitbox_value(AT_JAB, 1, HG_BASE_KNOCKBACK, 5);
+							set_hitbox_value(AT_JAB, 1, HG_BASE_KNOCKBACK, 6);
 							set_hitbox_value(AT_JAB, 1, HG_KNOCKBACK_SCALING, 0.2);
-							set_hitbox_value(AT_JAB, 1, HG_BASE_HITPAUSE, 10);
+							set_hitbox_value(AT_JAB, 1, HG_BASE_HITPAUSE, 15);
 							set_hitbox_value(AT_JAB, 1, HG_HITPAUSE_SCALING, 0.15);
 							set_hitbox_value(AT_JAB, 1, HG_VISUAL_EFFECT, 301);
 							set_hitbox_value(AT_JAB, 1, HG_HIT_SFX, asset_get("sfx_blow_medium1"));
@@ -353,9 +641,9 @@ switch (enem_id) {
 							set_hitbox_value(AT_UTILT, 1, HG_ANGLE, 90);
 							set_hitbox_value(AT_UTILT, 1, HG_ANGLE_FLIPPER, 7);
 							set_hitbox_value(AT_UTILT, 1, HG_HITSTUN_MULTIPLIER, 1.2);
-							set_hitbox_value(AT_UTILT, 1, HG_BASE_KNOCKBACK, 8);
-							set_hitbox_value(AT_UTILT, 1, HG_KNOCKBACK_SCALING, 0.4);
-							set_hitbox_value(AT_UTILT, 1, HG_BASE_HITPAUSE, 10);
+							set_hitbox_value(AT_UTILT, 1, HG_BASE_KNOCKBACK, 9);
+							set_hitbox_value(AT_UTILT, 1, HG_KNOCKBACK_SCALING, 0.2);
+							set_hitbox_value(AT_UTILT, 1, HG_BASE_HITPAUSE, 15);
 							set_hitbox_value(AT_UTILT, 1, HG_VISUAL_EFFECT, 304);
 							set_hitbox_value(AT_UTILT, 1, HG_VISUAL_EFFECT_Y_OFFSET, -16);
 							set_hitbox_value(AT_UTILT, 1, HG_HIT_SFX, asset_get("sfx_blow_medium3"));
@@ -393,10 +681,10 @@ switch (enem_id) {
 							set_hitbox_value(AT_DTILT, 1, HG_SHAPE, 2);
 							set_hitbox_value(AT_DTILT, 1, HG_PRIORITY, 3);
 							set_hitbox_value(AT_DTILT, 1, HG_DAMAGE, 9);
-							set_hitbox_value(AT_DTILT, 1, HG_ANGLE, 75);
-							set_hitbox_value(AT_DTILT, 1, HG_BASE_KNOCKBACK, 6);
-							set_hitbox_value(AT_DTILT, 1, HG_KNOCKBACK_SCALING, 0.4);
-							set_hitbox_value(AT_DTILT, 1, HG_BASE_HITPAUSE, 7);
+							set_hitbox_value(AT_DTILT, 1, HG_ANGLE, 85);
+							set_hitbox_value(AT_DTILT, 1, HG_BASE_KNOCKBACK, 9);
+							set_hitbox_value(AT_DTILT, 1, HG_KNOCKBACK_SCALING, 0.2);
+							set_hitbox_value(AT_DTILT, 1, HG_BASE_HITPAUSE, 9);
 							set_hitbox_value(AT_DTILT, 1, HG_HITPAUSE_SCALING, 0.5);
 							set_hitbox_value(AT_DTILT, 1, HG_VISUAL_EFFECT, 301);
 							set_hitbox_value(AT_DTILT, 1, HG_ANGLE_FLIPPER, 7);
@@ -727,11 +1015,14 @@ switch (enem_id) {
 							set_attack_value(AT_FSPECIAL, AG_NUM_WINDOWS, 9);
 							
 							//Grabbing
-							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_LENGTH, 14);
+							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_LENGTH, 20);
 							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_ANIM_FRAMES, 5);
+							// set_window_value(AT_FSPECIAL, 1, AG_WINDOW_HAS_SFX, 1);
+							// set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX, asset_get("sfx_swipe_heavy2"));
+							// set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX_FRAME, 19);
 							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_HAS_SFX, 1);
-							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX, asset_get("sfx_swipe_heavy2"));
-							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX_FRAME, 12);
+							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX, asset_get("sfx_zetter_fireball_fire"));
+							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_SFX_FRAME, 1);
 							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_HSPEED_TYPE, 2);
 							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_VSPEED_TYPE, 2);
 							set_window_value(AT_FSPECIAL, 1, AG_WINDOW_CUSTOM_GRAVITY, 0.1);
@@ -739,7 +1030,10 @@ switch (enem_id) {
 							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_LENGTH, 12);
 							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_ANIM_FRAMES, 6);
 							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_ANIM_FRAME_START, 5);
-							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_HSPEED, 10);
+							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_HAS_SFX, 1);
+							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_SFX, asset_get("sfx_swipe_heavy2"));
+							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_SFX_FRAME, 1);
+							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_HSPEED, 15);
 							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_HSPEED_TYPE, 1);
 							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_HAS_CUSTOM_FRICTION, 1);
 							set_window_value(AT_FSPECIAL, 2, AG_WINDOW_CUSTOM_GRAVITY, 0.02);
@@ -924,8 +1218,8 @@ switch (enem_id) {
                             set_attack_value(AT_DSPECIAL, AG_AIR_SPRITE, sprite_get("enemy_100_dspecial_air"));
                             set_attack_value(AT_DSPECIAL, AG_HURTBOX_AIR_SPRITE, sprite_get("enemy_100_dspecial_air_hurt"));
                             set_attack_value(AT_DSPECIAL, AG_LANDING_LAG, 6);
-                            
                             set_attack_value(AT_DSPECIAL, AG_NUM_WINDOWS, 12);
+                            
                             set_window_value(AT_DSPECIAL, 1, AG_WINDOW_LENGTH, 14); //- (has_rune("F") * 10));
                             set_window_value(AT_DSPECIAL, 1, AG_WINDOW_ANIM_FRAMES, 3);
                             
@@ -1309,7 +1603,7 @@ switch (enem_id) {
 							set_window_value(AT_FAIR, 1, AG_WINDOW_ANIM_FRAMES, 3);
 							set_window_value(AT_FAIR, 1, AG_WINDOW_HAS_SFX, 1);
 							set_window_value(AT_FAIR, 1, AG_WINDOW_SFX, asset_get("sfx_swipe_heavy2"));
-							set_window_value(AT_FAIR, 1, AG_WINDOW_SFX_FRAME, 7);
+							set_window_value(AT_FAIR, 1, AG_WINDOW_SFX_FRAME, 10);
 							
 							set_window_value(AT_FAIR, 2, AG_WINDOW_LENGTH, 3);
 							set_window_value(AT_FAIR, 2, AG_WINDOW_ANIM_FRAMES, 1);
@@ -1434,6 +1728,7 @@ switch (enem_id) {
 							set_hitbox_value(AT_UAIR, 1, HG_ANGLE, 90);
 							set_hitbox_value(AT_UAIR, 1, HG_BASE_KNOCKBACK, 3);
 							set_hitbox_value(AT_UAIR, 1, HG_BASE_HITPAUSE, 8);
+							// set_hitbox_value(AT_UAIR, 1, HG_EXTRA_HITPAUSE, 15);
 							set_hitbox_value(AT_UAIR, 1, HG_HIT_SFX, asset_get("sfx_blow_heavy1"));
 							set_hitbox_value(AT_UAIR, 1, HG_IGNORES_PROJECTILES, 1);
 							set_hitbox_value(AT_UAIR, 1, HG_SDI_MULTIPLIER, 0);
@@ -1495,7 +1790,10 @@ switch (enem_id) {
 	    		if (attack == AT_NSPECIAL) {
 					if (window == 1) {
 					    super_armor = true; //Apply armor
-					    if window_timer == 1 grab_timer = 0;
+					    if window_timer == 1 {
+					    	grab_timer = 0;
+					    	grabbedid = noone;
+					    }
 					}
 				    if (window == 3 && grabbedid == noone) {
 				        if (window_timer >= _win_length) {
@@ -1550,15 +1848,17 @@ switch (enem_id) {
 				            var _rando = random_func(id % 50,3,true);
 			                if _rando > 1 {
 			        			set_attack(AT_UTHROW);
+			        			// next_attack = AT_UTHROW;
 			        // 			hurtboxID.sprite_index = get_attack_value(AT_UTHROW, AG_HURTBOX_SPRITE);
-			        			hurtbox_spr.sprite_index = sprite_get("enemy_100_uthrow_hurt");
+			        			// hurtbox_spr.sprite_index = sprite_get("enemy_100_uthrow_hurt");
 			        			grab_timer = 0;
 			    				djumps = 0;
 			        		}
 			        		else {
 			        			set_attack(AT_FTHROW);
+			        			// next_attack = AT_FTHROW;
 			        // 			hurtboxID.sprite_index = get_attack_value(AT_FTHROW, AG_HURTBOX_SPRITE);
-			        			hurtbox_spr.sprite_index = sprite_get("enemy_100_fthrow_hurt");
+			        			// hurtbox_spr.sprite_index = sprite_get("enemy_100_fthrow_hurt");
 			        			grab_timer = 0;
 			    				djumps = 0;
 			    				
@@ -1647,7 +1947,7 @@ switch (enem_id) {
 					        	window_timer = 0;
 					        }
 					        
-					        if (free) {
+					        if (is_free) {
 					        	window = 9;
 					        	window_timer = 0;
 					        }
@@ -1696,7 +1996,7 @@ switch (enem_id) {
 					        	window_timer = 0;
 					        }
 					        
-					        if (free) {
+					        if (is_free) {
 					        	window = 9;
 					        	window_timer = 0;
 					        }
@@ -1719,7 +2019,7 @@ switch (enem_id) {
 				                else vsp = -short_hop_speed;
 					        }
 					        
-					        if (free) {
+					        if (is_free) {
 					        	window = 9;
 					        	window_timer = 0;
 					        }
@@ -1755,7 +2055,7 @@ switch (enem_id) {
 					        	window_timer = 0;
 					        }
 					        
-					        if (!free) {
+					        if (!is_free) {
 					        	window = 10;
 					        	window_timer = 0;
 					        }
@@ -1765,7 +2065,7 @@ switch (enem_id) {
 					        grabbedid.x = x + spr_dir * 12;
 					        grabbedid.y = y - 54;
 					        
-					        if (!free) {
+					        if (!is_free) {
 					        	window = 10;
 					        	window_timer = 0;
 					        }
@@ -1780,7 +2080,7 @@ switch (enem_id) {
 					            window_timer = 0;
 					        }
 					        
-					        if (free) {
+					        if (!is_free) {
 					        	window = 9;
 					        	window_timer = 0;
 					        }
@@ -1931,10 +2231,15 @@ switch (enem_id) {
 				    }
 				}
 	    		
+	    		//Specials
 	    		if (attack == AT_FSPECIAL){
-	    			
+	    			if window == 1 {
+	    				super_armor = true;
+	    				if window_timer == 1 grabbedid = noone;
+	    			}
 					if (window == 3) {
 				        if (window_timer >= _win_length) {
+				        	// grabbedid = noone;
 				        	window = 25;
 				        	window_timer = 0;
 				        }
@@ -1942,6 +2247,7 @@ switch (enem_id) {
 				    
 					if (window == 7 || window == 9) {
 				        if (window_timer >= _win_length){
+				        	// grabbedid = noone;
 				        	window = 25;
 				        	window_timer = 0;
 				        }
@@ -1958,14 +2264,14 @@ switch (enem_id) {
 				        grabbedid.spr_dir = -spr_dir;
 				        grabbedid.depth = depth - 0.1;
 				    	
-				    	if (window == 5 && !free) {
-				    		max_fall = 99;
+				    	if (window == 5 && !is_free) {
+				    		// max_fall = 99;
 				    		//Always assuming smoked
 				    		// if (smoke_consumed != noone) {
-				    			window = 8;
-				    			window_timer = 0;
-				    			smoke_consumed = noone;
-				    			max_fall = max_fall_def;
+			    			window = 8;
+			    			window_timer = 0;
+			    			smoke_consumed = noone;
+			    			// max_fall = max_fall_def;
 				    		// }
 				    		// else {
 				    		// 	window = 6;
@@ -2060,10 +2366,14 @@ switch (enem_id) {
 				  can_fast_fall = false;
 				  can_move = false;
 				  can_wall_jump = true;
+				  if window == 1 && window_timer == 1 {
+					grabbedid = noone;
+				  }
 				    if (window == 4) {
 						grab_timer = 0;
 						can_move = true;
 				        if (window_timer >= _win_length) {
+				        	// grabbedid = noone;
 				        	set_state(PS_PRATFALL); //next_state = PS_PRATFALL;
 				        }
 				    }
@@ -2071,6 +2381,7 @@ switch (enem_id) {
 				    if (window == 8 || window == 11) {
 						can_move = true;
 				        if (window_timer >= _win_length) {
+				        	// grabbedid = noone;
 				        	window = 25;
 				        	window_timer = 0;
 				        }
@@ -2119,9 +2430,11 @@ switch (enem_id) {
 				
 				if (attack == AT_DSPECIAL){
 					if (window == 1) {
+						super_armor = true;
 						dspecial_charge = 0;
 					}
 				    if (window == 2){
+				    	super_armor = true;
 				    	dspecial_charge = ease_linear(100, 200, window_timer, _win_length) / 100;
 				    // 	if (!special_down) {
 				    // 		window = 3;
@@ -2149,7 +2462,7 @@ switch (enem_id) {
 				    }
 				    
 				    if (window == 5 && window_timer == 2) {
-				       create_smoke(x, y - 32, 24, 55, 0, 359, 4, 8 * dspecial_charge + (14), 0.18);
+				       create_smoke(x, y - 32, 24, 55, 0, 359, 4, 8 * dspecial_charge + (8), 0.18);
 				    }
 				    
 				    // if (window == 5 && has_hit_player) {
@@ -2166,6 +2479,75 @@ switch (enem_id) {
 				    can_move = false;
 				}
 				
+				//Aerials
+				if (attack == AT_UAIR){
+				    if (window == 3 && grabbedid == noone) {
+				        if (window_timer == _win_length) {
+				        	window = 25;
+				        	window_timer = 0;
+				        }
+				    }
+				    
+				    if (window == 4 && grabbedid != noone){
+					    grabbedid.ungrab = 0;
+				        grabbedid.x = x + spr_dir * 4;
+				        grabbedid.y = y - 80;
+				        grabbedid.spr_dir = -spr_dir;
+				        
+				        if (window_timer >= _win_length - 1) {
+				            window = 5;
+					    	grabbedid.ungrab = 0;
+				            window_timer = 0;
+				        }
+				            
+				    }
+				    
+				    if ((window == 5 || window == 7) && grabbedid != noone) {
+					    grabbedid.ungrab = 0;
+				        if (window_timer < 1) {
+					        grabbedid.ungrab = 0;
+				            grabbedid.x = x + spr_dir * 4;
+				            grabbedid.y = y - 80;
+				        }
+					        else if (window_timer >= 2 && window_timer < 4) {
+					        grabbedid.ungrab = 0;
+				            grabbedid.x = x + spr_dir * 12;
+				            grabbedid.y = y - 76;
+				        }
+				        else if (window_timer >= 4 && window_timer < 6) {
+					        grabbedid.ungrab = 0;
+				            grabbedid.x = x + spr_dir * 4;
+				            grabbedid.y = y - 32;
+				        }
+				        else {
+				            grabbedid.x = x - spr_dir * 12;
+				            grabbedid.y = y - 24;
+						    // grabbedid = noone;
+							grab_timer = 0;
+				        }
+				    }
+				    
+				    if (window == 1 && window_timer == 1) {
+				    		smoke_consumed = noone;
+				    		grabbedid = noone;
+					}
+					
+					if (window == 5) {
+						if (smoke_consumed != noone) {
+							window = 7;
+							window_timer = 0;
+							smoke_consumed = noone;
+						}
+					}
+					
+					if (window == 7 && window_timer == _win_length) {
+						window = 8;
+				    	window_timer = 0;
+				    	grabbedid = noone;
+					}
+					
+					can_fast_fall = window <= 3;
+				}
     		break;
     		case EN_EVENT.GOT_HIT:
     		break;
@@ -2179,7 +2561,7 @@ switch (enem_id) {
 					    grabbedid.ungrab = 0;
 					    window = 4;
 				        window_timer = 0;
-				        destroy_hitboxes();
+				        with obj_stage_main destroy_hitboxes();
 				    }
 				}
 				
@@ -2190,7 +2572,7 @@ switch (enem_id) {
 					    grabbedid.ungrab = 0;
 					    window = 4;
 				        window_timer = 0;
-				        destroy_hitboxes();
+				        with obj_stage_main destroy_hitboxes();
 				    }
 				}
 				
@@ -2201,7 +2583,7 @@ switch (enem_id) {
 					    grabbedid.ungrab = 0;
 					    window = 4;
 				        window_timer = 0;
-				        destroy_hitboxes();
+				        with obj_stage_main destroy_hitboxes();
 				        y -= 2;
 				    }
 				}
@@ -2213,7 +2595,7 @@ switch (enem_id) {
 					    grabbedid.ungrab = 0;
 					    window = 5;
 				        window_timer = 0;
-				        destroy_hitboxes();
+				        with obj_stage_main destroy_hitboxes();
 				    }
 				}
 				

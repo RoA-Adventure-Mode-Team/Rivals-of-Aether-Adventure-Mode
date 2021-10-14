@@ -38,8 +38,9 @@ switch item_id {
             case EVT.IDLE:
                 break;
             case EVT.USE:
-                with follow_player {
-                    take_damage(player,5,-10);
+                with oPlayer {
+                    if player != other.follow_player continue;
+                    take_damage(player,5,-35);
                     sound_play(asset_get("sfx_syl_fspecial_bite"));
                     spawn_hit_fx(x+spr_dir*32,y-32,148); //Spicy Burger
                 }
@@ -50,13 +51,31 @@ switch item_id {
     case 1: //Small Crate in Meadows
         switch event_flag {
             case EVT.GRAB:
-                // //Progress quest
-                // start_action(room_manager.cur_room, 0, 4, action_manager);
                 break;
             case EVT.IDLE:
                 break;
             case EVT.USE:
                 set_state(EVT.IDLE); //Keep the item
+                break;
+        }
+        break;
+    case 2: //Key to Sewers
+        switch event_flag {
+            case EVT.GRAB:
+                print("[ITEM] GRABBED");
+                break;
+            case EVT.IDLE:
+                break;
+            case EVT.USE:
+                set_state(EVT.IDLE); //Keep the item
+                break;
+        }
+        break;
+    case 3: //Full Heal
+        switch event_flag {
+            case EVT.GRAB:
+                take_damage(player,5,-999);
+                set_state(EVT.DESTROY); //Keep the item
                 break;
         }
         break;

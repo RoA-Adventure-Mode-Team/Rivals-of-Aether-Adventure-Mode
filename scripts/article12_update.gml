@@ -5,6 +5,7 @@ if _init == 0 {
     render_sprite = spawn_variables[0];
     anim_speed = spawn_variables[1]*.01;
     follow_object = spawn_variables[2];
+    cant_root = spawn_variables[3];
     if follow_object == 1 //Player
         with obj_stage_main other.follow_object = follow_player;
     visible = true;

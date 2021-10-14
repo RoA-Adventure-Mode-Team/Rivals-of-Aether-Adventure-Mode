@@ -37,18 +37,19 @@ if !_init {
     waypoint_index = spawn_variables[4];
     if array_length(waypoints) == 0 waypoint_index = -1;
     //player_controller = 1;
+    debug = false;
     if debug print_debug("[6:EN] Init Enemy: "+string(enem_id));
     art_event = EN_EVENT.INIT;
     user_event(6);
     sprite_index = enemy_sprite_get(enem_id,"idle");
     visible = true;
     //Spawn event
-    if (spawn_event > 0) {
-    	with obj_stage_article if num == 3 {
-    		event_id = other.spawn_event;
-    		event_triggered = true;
-    	}
-    }
+    // if (spawn_event > 0) {
+    // 	with obj_stage_article if num == 3 {
+    // 		event_id = other.spawn_event;
+    // 		event_triggered = true;
+    // 	}
+    // }
     
     for (var _i = 0; _i < array_length(attached_articles); _i++) {
         var art;
@@ -143,7 +144,8 @@ if !_init {
                 die = false;
                 
             if (die) {
-                with (obj_stage_main) ds_list_remove(active_bosses, other.id);
+                if is_boss with (obj_stage_main) ds_list_remove(active_bosses, other.id);
+                for (var _i = 0; _i < array_length_1d(loaded_articles); _i++) instance_destroy(loaded_articles[_i]);
                 instance_destroy();
                 exit;
             }
@@ -669,9 +671,13 @@ is_free = can_be_grounded ? (vsp < 0 || (!(place_meet_solid(x,y+2)) && !(place_m
 //Physics Friction
 
 if hitpause <=  0 {
-    if is_free {
-        if hitstun <= 0 vsp += gravity_speed;
-            else vsp += hitstun_grav;
+    if is_free { 
+        if hitstun <= 0 {
+        	if (art_state != PS_ATTACK_AIR && art_state != PS_ATTACK_GROUND) vsp += gravity_speed;
+        	else vsp += gravity_speed*ag_window_custom_gravity[window];
+        }
+        else vsp += hitstun_grav;
+    	
         if (art_state != PS_ATTACK_AIR && art_state != PS_ATTACK_GROUND) {
             if (enemy_class == 0) {
                 hsp *= 1-air_friction;
@@ -787,17 +793,17 @@ for (var _i = 0; _i < array_length(loaded_articles); _i++) {
     	_i--;
     	continue;
     }
-    loaded_articles[_i].x = x+loaded_articles[_i].rel_pos[0];
+    loaded_articles[_i].x = x+loaded_articles[_i].rel_pos[0]*spr_dir;
     loaded_articles[_i].y = y+loaded_articles[_i].rel_pos[1];
     loaded_articles[_i].spr_dir = spr_dir;
 }
 #define hitbox_update() //Update enemy hitboxes
 with pHitBox if "hit_owner" in self && hit_owner == other.id {
-    with (other) {
-        art_event = EN_EVENT.SET_ATTACK;
-        user_event(6); //Custom behavior
-        get_hitboxes(other.attack);
-    }
+    // with (other) {
+    //     art_event = EN_EVENT.SET_ATTACK;
+    //     user_event(6); //Custom behavior
+    //     get_hitboxes(other.attack);
+    // }
     with (oPlayer) {
         if (place_meeting(x, y, other)) {
             if (other.hit_owner.has_hit_en == 0) {
@@ -1084,6 +1090,7 @@ if (hitpause <= 0) {
         user_event(6); //Custom behavior
         get_hitboxes(attack);
         var hitb = create_hitbox(attack,j,round(x)+hg_x[j]*spr_dir,round(y)+hg_y[j]);
+        hitb.spr_dir = spr_dir;
         hitb.type = hg_type[j] == 0 ? 1 : hg_type[j];
         if not "hit_owner" in hitb hitb.hit_owner = id;
         if not "team" in hitb hitb.team = team;
@@ -1093,8 +1100,10 @@ if (hitpause <= 0) {
     
     art_event = EN_EVENT.ATTACK_UPDATE;
     user_event(6); //Custom behavior
+    if !instance_exists(self) exit; //Die when you are killed
     
-    if window >= ag_num_windows {
+    //End Attack
+    if window >= ag_num_windows && window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
         is_attacking = false;
         next_state = PS_IDLE;
         hurtbox_spr = collision_box;
@@ -1109,10 +1118,10 @@ if (hitpause <= 0) {
     }
     else {
     	if window_timer >= ag_window_length[window]*(1+.5*ag_window_wifflag[window]*(!has_hit_en)) {
-        if ag_window_type[window] != 9 &&  ag_window_type[window] != 8 {
-            window++;
-        }
-        window_timer = 0;
+	        if ag_window_type[window] != 9 &&  ag_window_type[window] != 8 {
+	            window++;
+	        }
+        	window_timer = 0;
     	}
     }
     
@@ -1169,6 +1178,7 @@ for (var i = 1; i <= ag_num_windows; i += 1) {
         other.ag_window_hspeed_type[i] = get_window_value(_attack,i,AG_WINDOW_HSPEED_TYPE);
         other.ag_window_vspeed[i] = get_window_value(_attack,i,AG_WINDOW_VSPEED);
         other.ag_window_vspeed_type[i] = get_window_value(_attack,i,AG_WINDOW_VSPEED_TYPE);
+        other.ag_window_custom_gravity[i] = get_window_value(_attack,i,AG_WINDOW_CUSTOM_GRAVITY);
         if (get_window_value(_attack,i,AG_WINDOW_HAS_CUSTOM_FRICTION)) {
             other.ag_window_has_custom_friction[i] = get_window_value(_attack,i,AG_WINDOW_HAS_CUSTOM_FRICTION);
             other.ag_window_custom_air_friction[i] = get_window_value(_attack,i,AG_WINDOW_CUSTOM_AIR_FRICTION);
@@ -1316,14 +1326,15 @@ switch _attack {
 
 #define reset_attack_grid(_attack)
 with obj_stage_main { //Main stage script object
-    for (var i = 0; i <= AG_USES_CUSTOM_GRAVITY; i++) {
+    for (var i = 0; i <= 60; i++) {
         set_attack_value(_attack, i, 0);
     }
     if (other.ag_num_windows > 0)
     for (var w = 1; w <= other.ag_num_windows; w++) {
-        for (var i = 0; i <= 59; i++) {
+        for (var i = 0; i <= 60; i++) {
             set_window_value(_attack, w, i, 0);
         }
+        set_window_value(_attack, w, AG_WINDOW_CUSTOM_GRAVITY, 1);
     }
 }
 
@@ -1481,19 +1492,23 @@ with _hbox {
 //Run hit_player_event for characters with compatability
 if _hbox.player_id != 0 with _hbox.player_id {
     if "hit_player_event" in self && hit_player_event != -1 {
-        hit_player_obj = other;
         hit_player = -1; //Not a player
-        my_hitboxID = _hbox;
+        hit_player_obj = other;
+		my_hitboxID = _hbox;
         user_event(hit_player_event);
-    }
+    } 
 }
-
+hit_count++;
+hit_player_id = _hbox.player_id;
 art_event = EN_EVENT.GOT_HIT;
 user_event(6); //Custom behavior
-kb_angle = get_hitbox_angle(_hbox);
+
+//DI's a bit, for fun!
+kb_angle = get_hitbox_angle(_hbox) + di_angle_max - random_func(x % 200, 2*di_angle_max ,true);
+
 if _hbox.player_id != 0 with _hbox.player_id {
     has_hit = 1;
-    has__hbox = other.id;
+    has_hbox = other.id;
     old_vsp = vsp;
     old_hsp = hsp;
     hitstop = other.hitpause;
@@ -1501,7 +1516,10 @@ if _hbox.player_id != 0 with _hbox.player_id {
     hsp = 0;
     vsp = 0;
 }
-hit_player_id = _hbox.player_id;
+
+
+
+
 if (!_hbox.fx_created && _hbox.hbox_group != -1) || _hbox.hbox_group == -1 {
     _hbox.fx_created = true;
     if (hit_visual >= 0)
