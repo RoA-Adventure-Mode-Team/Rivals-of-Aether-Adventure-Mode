@@ -163,14 +163,9 @@ Quick Terrain is the standard visual article - it will spawn in its position, di
 ### Article2 - UNUSED
 Article2 is left empty
 
-#### Arguments
-`...[], ...`
 
 ### Article3 - Action Manager
 The Action Manager is instanced once on startup, and only one can exist (singleton). It persists for the full duration of the level, and generally can be acecssed globally with `action_manager`. It is responsible for executing all the code related to AM actions.
-
-#### Arguments
-`...[], ...`
 
 ### Article4 - Detection Zones
 Detection Zones are areas that trigger an action when certain criteria are met.
@@ -202,9 +197,6 @@ Detection Zones are areas that trigger an action when certain criteria are met.
 
 ### Article5 - Room Manager
 The Room Manager is instanced once on startup, and only one can exist (singleton). It persists for the full duration of the level, and generally can be acecssed globally with `room_manager`. It is responsible for executing all the code related to AM rooms.
-
-#### Arguments
-`...[], ...`
 
 ### Article6 - Article NPC
 Article NPCs function a lot like player objects, except with slightly less overhead and a few simplified rules. Please see the dedicated section for initializing Article NPCs for setting up each NPC id right in the file structure and `user_event6`
