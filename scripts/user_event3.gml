@@ -1,4 +1,4 @@
-// Custom Events - Scene Manager
+// Custom Events - Scene Manager - DEPRECATED
 
 //Called upon when event_triggered = true, for event_id in the scene manager
 

@@ -7,7 +7,7 @@ if !_init {
     checkpoint_id = spawn_variables[3];
     stock_type = spawn_variables[4];
     stock_limit = spawn_variables[5];
-
+    visible = true;
 }
 state_timer++;
 
@@ -23,5 +23,5 @@ if state == 0 { //Normal Operations
             collis_obj  = instance_place(x,y,oPlayer);
             break;
     }
-    //if collis_obj != noone  with collis_obj respawn_point = [[other.init_pos[0]+other.trigger_w/2,other.init_pos[1]+other.trigger_h/2],other.cell_pos, other.room_manager.cur_room];
+    if collis_obj != noone  with collis_obj respawn_point = [other.x, other.y, room_manager.cur_room];
 }

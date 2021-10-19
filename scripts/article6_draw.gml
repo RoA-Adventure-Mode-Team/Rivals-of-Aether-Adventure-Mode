@@ -21,7 +21,7 @@ enum EN_EVENT {
 
 if !_init exit; //Only draw stuff after initializing
 if in_render {
-    if debug {
+    if debug_info {
         draw_sprite_ext(hurtbox_spr,-1,x,y,spr_dir,1,0,c_white,.6);
         draw_debug_text(x-128,y,string(attack_down));
         draw_debug_text(x-128,y+16,string(down_down));
@@ -31,7 +31,9 @@ if in_render {
         draw_debug_text(x-100,y,string(jump_down));
         draw_debug_text(x-100,y-32,string(shield_down));
         draw_debug_text(x,y-32,string(get_state_name(art_state)));
-        //draw_debug_text(x-64,y+32,string(get_attack_name(attack)));
+        draw_debug_text(x-64,y+32,string(get_attack_name(attack)));
+        draw_debug_text(x-64,y+48,string(window));
+        draw_debug_text(x-64,y+64,string(window_timer));
         //if instance_exists(last_hitbox) draw_debug_text(x-64,y+32,string(last_hitbox.hbox_group));
         //if instance_exists(hit_id) draw_debug_text(x-64,y+32,string(hit_id.hbox_group));
         draw_debug_text(x+32,y,string(kb_angle));
@@ -43,6 +45,9 @@ if in_render {
                       place_meeting(x,y+1,obj_stage_article_platform))));*/
         if array_length_1d(custom_args) > 1 && custom_args[1] != 0 {
         draw_sprite(custom_args[1],0,x,y);
+        draw_rectangle_color(x-sprite_get_xoffset(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2,
+                             x-sprite_get_xoffset(sprite_index)*2+sprite_get_width(sprite_index)*2,y-sprite_get_yoffset(sprite_index)*2+sprite_get_height(sprite_index)*2,
+                             c_fuchsia,c_fuchsia,c_fuchsia,c_fuchsia,true);
     }
     
     }
@@ -65,7 +70,8 @@ if in_render {
     
     
     //Contributed by Harbige
-    if (!is_boss) {
+    if (!is_boss && show_healthbar) {
+        // print_debug("[6:EN:D] Healthbar shown");
         if (hitpoints_max > 0) {
             if (char_healthbar != noone) {
                 var hbar_fill = lerp(1, 0, percent / hitpoints_max);

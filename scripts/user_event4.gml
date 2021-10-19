@@ -1,15 +1,9 @@
-//Custom Scene Triggers - Scene Manager
+//Custom Scene Events - DEPRECATED
 
-//Called upon when TG_CUSTOM is set for a scene.
-
-
-switch cur_room {
-    case 1:
-        switch cur_scene {
-            case 1:
-                break;
-        }
-    break;
+switch event_id {
+    case 0:
+        
+        break;
 }
 
 

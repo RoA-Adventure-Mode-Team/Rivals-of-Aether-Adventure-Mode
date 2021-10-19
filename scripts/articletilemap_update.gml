@@ -22,7 +22,7 @@ if !_init {
             tile_data[@i][@j] = check_neighbors(x+i*tmap_size+4,y+j*tmap_size+4);
         }
     }
-    print_debug(string(tile_data));
+    // print_debug(string(tile_data));
     _init = 1;
 } else {
     

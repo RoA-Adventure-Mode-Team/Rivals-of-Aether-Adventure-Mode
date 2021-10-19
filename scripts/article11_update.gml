@@ -29,6 +29,7 @@ if(_init)
         other.room_manager = id;
         other.init_cam_pos = init_cam_pos;
     }
+    visible = true;
     _init = 0;
 }
 

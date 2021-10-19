@@ -1,6 +1,5 @@
 //article6_init, Enemy
 //Rework done by Harbige12
-
 _init = 0;
 collision_box = asset_get("ex_guy_hurt_box");
 colis_width = sprite_get_width(collision_box);
@@ -9,7 +8,10 @@ sprite_index = sprite_get("ou_idle");
 mask_index =  collision_box; // Collision Mask
 hurtbox_spr = collision_box; //Hurtbox Sprite
 
-debug = false;
+small_sprites = 1;
+
+debug = true;
+debug_info = false;
 init_pos = [0,0];
 can_be_grounded = true;
 ignores_walls = false;
@@ -32,6 +34,9 @@ prev_state = 0;
 state_free = 1;
 test = noone;
 art_event = 0;
+freeze = 0;
+peace = 0;
+alive_time = 0;
 
 //Character Variables
 enem_id = spawn_variables[0];
@@ -51,7 +56,7 @@ destroyed = 0;
 //Boss variables
 is_boss = 0; //If this enemy's a boss, it will show the healthbar on the hud.
 boss_intro_mode = 0; //0 = no intro; 1 = has intro. Requires done_intro to be set to true to start the fight.
-show_healthbar = false; //Shows the healthbar;
+show_healthbar = true; //Shows the healthbar;
 done_intro = false; //Set this to true to start the fight.
 battle_state = 0; //0 = intro; 1 = fight; 2 = death
 boss_healthbar_timer = 0;
@@ -70,11 +75,26 @@ target_dir = 0;
 is_ai = (player_controller == 0);
 target_behavior = 0;
 pos_behavior = 0;
+team = 0;
 attacks = [AT_JAB];
 attack_time = 30;
 
 range_low = 32;
 range_far = 200;
+
+//NPC Variables
+patrol_type = 0; //0 is none, 1 is sequential
+waypoint_index = -1;
+waypoints = [[]];
+waypoint_r = 64; //When this close, has reached waypoint
+var target_waypoint = { //Similar enough to ai_target to work with the framework
+    x: 0,
+    y: 0
+};
+
+//Article Attachments - these articles spawn with the enemy and move with them.
+attached_articles = [];
+loaded_articles = [];
 
 //Contributed by Harbige
 able_to_crouch = true;
@@ -221,14 +241,18 @@ plat_drop = 0;
 to_dir = 0;
 walk_turn_timer = 0;
 can_fallthrough = 0;
+can_fast_fall = true;
 
 //Attack Variables
 attack_fresh = true;
 attack = 0;
+process_attack = -1;
 next_attack = -1;
 last_attack = -1;
 super_armor = false;
 was_parried = false;
+
+
 
 window = 0;
 window_timer = 0;
@@ -257,7 +281,10 @@ ag_window_hspeed[100] = 0;
 ag_window_hspeed_type[100] = 0;
 ag_window_vspeed[100] = 0;
 ag_window_vspeed_type[100] = 0;
-ag_window_custom_gravity[100] = 0;
+ag_window_custom_gravity[100] = 1;
+with obj_stage_main {
+	for (var i; i < 100;i++) other.ag_window_custom_gravity[i] = 1;
+}
 ag_window_wifflag[100] = 0;
 ag_window_has_custom_friction[100] = 0;
 ag_window_air_friction[100] = 0;
@@ -275,6 +302,12 @@ hg_shitp[100] = 0;
 hitb = noone;
 hitb_pos = [0,0];
 
+has_hit_player = false;
+
+
+hit_count = 0;
+di_angle_max = 13;
+percent_adj = 1;
 //Input Variables
 joy_dir = 0;
 joy_pad_idle = 0;

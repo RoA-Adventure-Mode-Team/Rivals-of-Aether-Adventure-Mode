@@ -4,6 +4,7 @@ sprite_index = asset_get("empty_sprite");
 mask_index = sprite_get("column_deco");
 transparency_timer = 0;
 debug = false;
+debug_info = false;
 
 _init = 1;
 dither_type = 0;
@@ -27,3 +28,6 @@ static = spawn_variables[7];
 
 room_manager = noone;
 init_cam_pos = [0,0];
+
+image_xscale = 2;
+image_yscale = 2;

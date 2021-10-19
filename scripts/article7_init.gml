@@ -1,13 +1,14 @@
 //article7_init, Camera Controller
 
 sprite_index = asset_get("empty_sprite");
-
+disable_movement = true;
 
 _init = 0;
 state = 0;
 state_old = 0;
 state_timer = 0;
 debug = false;
+debug_info = false;
 init_pos = [0,0];
 cell_pos = [0,0];
 
@@ -22,4 +23,5 @@ cam_lock_y = spawn_variables[5];
 active_scene = spawn_variables[6];
 
 collis_obj = noone;
+cam_smooth = 10;
 
