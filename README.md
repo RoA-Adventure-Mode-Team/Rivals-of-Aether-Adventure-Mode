@@ -65,9 +65,15 @@ Something to note is that the debug features are not optimized - you will get sl
 
 Anything we can't do in Workshop stage coding (file access/read/write, zoom, viewport changes, streaming assets, removing Sein, etc) is also not possible in AM.
 
+#### Workshop Character Limitations
+
+Due to how collision is coded with stage artices, base cast and custom character articles might behave weirdly. For character creators, this is a very simple fix - in collision detection scripts, you need to add a check for `obj_stage_article_solid` for solid collisions and `obj_stage_article_platform` for platforms.
+
+Another bit is on-hit effects by default do not work since we cannot call on hit from our article enemies. Thankfully, you can copy the on-hit code into a local user_event on your character and specify it's number via `hit_player_event` and AM will use that as a sudo-on-hit script for the enemies.
+
 #### Online Multiplayer Support?
 
-Online Multiplayer is something that was initially scoped in but with further changes to the online system on its way it's something we can't officially support fully at this time. We've made efforts to make sure that our gameplay code is client-independent however this does not preclude desyncs due to loading and lag and multiplayer may be very unstable. Feel free to submit bugs about this feature, just no promises it'll be 100% working at any time :P
+Online Multiplayer is something that was initially scoped in but with further changes to the online system on its way it's something we can't officially support fully at this time. We've made efforts to make sure that our gameplay code is client-independent - however this does not preclude desyncs due to loading and lag and multiplayer may be very unstable. Feel free to submit bugs about this feature, just no promises it'll get to be 100% working.
 
 ### Core Engine Changes
 
@@ -191,7 +197,7 @@ Detection Zones are areas that trigger an action when certain criteria are met.
 
 **hold_up** - (bool) if an up input is required to activate this box. It will spawn a prompt below the entity when colliding
 
-**trigger_relative** - (bool) do the actions get performed on the stage main object, or on the entity that detected it? Defaults to false
+**trigger_relative** - (bool) do the actions get performed on the stage main object, or on the entity that detected it? This is generally used in the case of hitrboxes which need to spawn relative to whatever triggered it, or particles Defaults to false
 
 **check_visibility** - (bool) does the box check to see that the entity is clearly visible (not depth behind any mask) before firing?
 
@@ -265,6 +271,9 @@ There are a plethora of basic actions which perform all sorts of tasks which all
 
 ### Default Action Types & Variables
 
+**ACT.CAMERA** - 
+
+
 ## Player/Character Options
 
 AM Features a few mostly lore options to make sure characters are properly addressed and to offer some customization to make stories make a bit more sense from a character's PoV.
@@ -324,15 +333,20 @@ Feel free to reach out and suggest additional options!
 
 The RoAAM team will continue to do our best optimizing the engine over time, however as stated in Limitations there is a lot of overhead to account for, and the mod will not run well on lower end computers. Here are a list of optimization strategies figured out during the development of Hallowflame to help lift the computational burden.
 
-1. Bundle as many articles into one as you can. This means all animated sprites of the about the same speed should be all on one sheet. Keep all solid, static collision bundled as one article per cell and define the bounding box as precise in load.gml.
-2. Break up rooms when appropriate, have smaller rooms instead of bundling many into one. If you have a small offshoot room make it it's own thing so that the room manager doesn't need to spawn everything else on room transfer.
-3. Keep heavily in mind the number of active enemies. Enemies in particular are VERY heavy, I would suggest limiting it to 3-4 on-screen enemies. Off-screen enemies on the other hand don't have much to process and have about as much overhead as any article. 
+### Article Bundling
+Bundle as many articles into one as you can. This means all animated sprites of the about the same speed should be all on one sheet. Keep all solid, static collision bundled as one article per cell and define the bounding box as precise in load.gml. How I did this for Hallowfame was I made a large sprite segmented into cell sizes and exported the collision, background, and forground groups in their own spritesheets. See Hallowflame's sprite folder for plenty of examples. This can also be done for animated articles and also detectors if you want to be very light-weight (they can take a sprite mask argument).
+
+### Room Shrinking
+Break up rooms when appropriate, have smaller rooms instead of bundling many into one. If you have a small offshoot room make it its own thing so that the room manager doesn't need to spawn everything else on room transfer.
+
+### Enemy Culling
+Keep heavily in mind the number of active enemies. Enemies in particular are VERY heavy, I would suggest limiting it to 3-4 on-screen enemies at max. Off-screen, enemies do not process and so have about as much overhead as any article. 
 
 ## Miscellaneous Tips & Publishing Guidelines
 
 The freedom to make anything a developer desires is a core philosophy of this tool. However, I hope to establish some guidelines in order to minimize confusion.
 
-- Please clearly label a stage made with AM - with an [AM] tag in the title and "Adventure Mode" in the description somewhere (so that it can be searched for on the workshop!)
+- Please clearly label a stage made with AM - with an [AM] tag and "Adventure Mode" in the description somewhere so that it can be searched for on the workshop!
 - Try to make situations which make some sense for a lot of characters. Keep in mind character-specific traits and create alternative options where it makes sense. Making a character-specific adventure is fine but keep in mind people will want to play the adventure with anyone on the workshop.
 - On a similar note speaking FOR the player character is an odd choice that should probably be avoided due to how many personalities exist in the workshopverse.
 - Comment your code thoroughly! This API certainly isn't immediately readable, clearly label the purpose of everything.
