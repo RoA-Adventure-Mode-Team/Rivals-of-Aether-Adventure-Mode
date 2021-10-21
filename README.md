@@ -1,8 +1,8 @@
 # Rivals of Aether Adventure Mode Documentation
 ## Introduction
 **Rivals of Aether Adventure Mode** is a fan-made API designed to extend RoA Workshop stages into fully-functional levels akin to *SSB Melee's Adventure Mode* and *SSB Brawl's Subspace*. 
-It has been written to be read in order, so if you are just starting out I recommend you read through this guide once. It is organized by reference, so feel free to skip around to what you want to read up on using Ctrl-F.
-It is a very heavy API built on top of a quirky engine, it has its fair share of performance issues if not set up optimally. I highly suggest reading the optimization section as it can easily dip below 60 fps if not careful and/or the player's machine isn't relatively powerful. **Adventure Mode: Hallowflame**, the example level released with the API, should serve as a good example of the detailed principles on how to organize and code each aspect to best avoid these issues.
+It has been written to be read in order, so if you are just starting out I recommend you read through this guide once. It is organized by reference, so you can skip around to what you want to read up on using Ctrl-F.
+It is a heavy API built on top of a quirky engine, it has its fair share of performance issues if not set up optimally. I highly suggest reading the optimization section as it can easily dip below 60 fps if not careful and/or the player's machine isn't capable. **Adventure Mode: Hallowflame**, the example level released with the API, should serve as a good example of the detailed principles on how to organize and code each aspect to best avoid these issues.
 
 ## Table of Contents
 
@@ -31,25 +31,27 @@ A **Window** is a collection of GUI elements per the Window API (user_event2). Y
 
 Most of a level's custom code will be within user_events - `user_event0`, `user_event1`, `user_event2`, `user_event6` and `user_event10`. You may edit any of the base code however you'd like, however we do recommend keeping out of the base files unless you know exactly what you're doing. If you are unsure about making a modification feel free to message our team and we'll be able to help. :)
 
-## Lucid Dream Development Console
+## Lucid Dream Development Console & Cursor
 
-Outside of the actual operating structure is **Lucid Dream**, the development console built in the Window API. It has a plethora of functions for creating, editing, and exporting articles. Open it with tilda (\`), type with the keyboard, enter is ?, backspace is \\. Currently, it defaults to strings for arguments but you can specify a few argument parameters to get the variable type needed.
+Outside of the actual operating structure is **Lucid Dream**, the development console & cursor system built in the Window API. It has a plethora of functions for creating, editing, and exporting articles. Open it with tilda (\`), type with the keyboard, enter is ?, backspace is \\. Currently, it defaults to strings for arguments but you can specify a few argument parameters to get the variable type needed.
 
-**r:'varname'** will get the resource of that specific name (similar format to sprite_get("varname")).
+**r:'varname'** will get the resource of that specific name (similar format to resource_get("varname")).
 
-**d:'varname'** will force the string into a real number. WARNING - missuse can crash the game! (This is a GameMaker 2 thing I can't fix it!)
+**d:'varname'** will force the string into a real number. WARNING - failiure to make varname into a real can crash the game! (This is a GameMaker 2 thing I can't fix it!)
 
 **v:'varname'** will get the value of the variable of the given name in the main stage object.
 
-Keep in mind you can **export** in-game adjustments using `export`. We cannot read real sprite names and certain variable types will be misformatted so double check the export and replace with the correct values/formatting.
+Keep in mind you can **export** in-game adjustments using `export`. Double check the export and replace with the correct values/formatting if needed.
 
 For a full list of commands, type the `help` command. If you need specific help with a function type `man <function name>`.
+
+Articles can be selected with left mouse, and moved around with right mouse. Selected articles can be acted upon via certain console commands. You can generally assume a non-global command will act in the selected articles' scope.
 
 ### World & Coordinate Systems
 
 The world by default is set to 20,000 units in each direction (10,000 pixels), with the centerpoint being [0,0] in cellspace. This is a tested value that maximizes size while limiting crashing upon startup. If you don't need this much room, I highly recommend lowering it even though it has minimal performance impacts as it makes AM more stable if there's less room size.
 
-Precise, **real coordinates** are the raw unit values from the top left of the stage (rivals stage start at [0,0] being the top corner o the blastzones). This coordinate system is used by checkpoints, room transitions/teleports. Coordinates that needs to be precise but isn't placed into the world will generally use this type.
+Precise, **real coordinates** are the raw unit values from the top left of the stage (rivals stage start at [0,0] being the top corner of the blastzones). This coordinate system is used by checkpoints, room transitions/teleports. Coordinates that need to be precise but aren't placed into the world will generally use this type.
 
 **Cell coordinates** break up the current room into cells, which are then subdivided into subcells of 16x16 pixels (32x32 units). The center cell is considered [0,0] and the coordinates radiate from the center. This is used by most things in the API such as article spawns.
 
@@ -82,22 +84,6 @@ There are a few miscellaneous engine changes implemented to make this all possib
 ## Structure & Use Cases
 ### Common Use Cases
 This API has tools for all sorts of applications, mainly medium to long form platforming stages. However it is definitely encouraged to add, remove, edit, or copy these tools into other stages and projects that require more/some/different functionality. Just remember to credit the AM team if you do!
- 
-## Lucid Dream Development Console
-
-Outside of the actual operating structure is **Lucid Dream**, the development console & cursor system built in the Window API. It has a plethora of functions for creating, editing, and exporting articles. Open it with tilda (\`), type with the keyboard, enter is ?, backspace is \\. Currently, it defaults to strings for arguments but you can specify a few argument parameters to get the variable type needed.
-
-**r:'varname'** will get the resource of that specific name (similar format to resource_get("varname")).
-
-**d:'varname'** will force the string into a real number. WARNING - failiure to make varname into a real can crash the game! (This is a GameMaker 2 thing I can't fix it!)
-
-**v:'varname'** will get the value of the variable of the given name in the main stage object.
-
-Keep in mind you can **export** in-game adjustments using `export`. Double check the export and replace with the correct values/formatting if needed.
-
-For a full list of commands, type the `help` command. If you need specific help with a function type `man <function name>`.
-
-Articles can be selected with left mouse, and moved around with right mouse. Selected articles can be acted upon via certain console commands.
 
 ## Room Manager and Loading Structure (article5, user_event1)
 The actual data for spawning articles in the right places is in *user_event1.gml*. This is run once on spawn to initialize all the data for the stage, and does get edited as the player plays the rooms and can effect them. Each Room is added via the following function:
@@ -253,6 +239,84 @@ Room Transition is a dedicated article to transfering players between rooms.
 
 **hold_up** - (bool) if an up input is required for the room transition to occur
 
+### Article9 - Checkpoint
+This sets where the player will respawn if whithin its radius.
+
+#### Arguments
+`...[trigger_shape, trigger_w, trigger_h, 0, 0, 0, 0, 0], ...`
+
+**trigger_shape** - (enum) the shape of the trigger zone. 0 is a rectangle, 1 is a circle, and any other value will have it use it's sprite mask
+
+**trigger_w** - (int) the width of the detection box (radius for a circle)
+
+**trigger_h** - (int) the height of the detection box (unused for a circle)
+
+### Article10 - Items
+This is the article dedicated to pickupable items! They by default will keep between room transitions. You can detail custom behaviors for them in `user_event10`for a variety of event cases.
+
+**EVT.GRAB** - while the item is on the floor, aka looking for someone to grab it
+**EVT.IDLE** - while the item is in the player's posession, by default following around the player
+**EVT.USE** - when a player presses attack with the item equipped
+**EVT.ALTUSE** - when a player presses special with the item equipped
+**EVT.DESTROY** - when the item is scheduled to be destroyed this frame
+ 
+#### Arguments
+`...[item_id, sprite_index, grav_radius, grav_accel, 0, item_name, 0, 0, 0], ...`
+
+**item_id** - (int) the type of item, what defines its behavior
+
+**sprite_index** - (sprite) the default sprite of the item
+
+**grav_radius** - (float) the radius where it will suction towards a player
+
+**grav_accel** - (float) the speed at which the item will go towards the player
+
+**item_name** - (string) The display name when the item gets picked up
+
+### Article11 - Dithering Article
+This article can dither out of existence as a player is drawn behind/in front of it.
+ 
+#### Arguments
+`...[sprite_index, dither_type, full_transparency, dither_time, collis_type, parallax_x, parallax_y, static], ...`
+
+**sprite_index** - (sprite) the default sprite of the item
+
+**dither_type** - (enum) 1 is a pixel dither, 2 is a brick dither, 3 is an instant transmission dither. Defaults to a gradual fade out
+
+**full_transparency** - (float) the final alpha value after dithering
+
+**dither_time** - (int) how long it takes for the article to fade out
+
+**collis_type** - (enum) 0 is a box collision, 1 is precise collision (NOTE: will need to set precise collision in load as well!)
+
+**parallax_x** - (float) the ammount of horizontal parallax (experimental)
+
+**parallax_y** - (float) the ammount of vertical parallax (experimental)
+
+**static** - (bool) Does this article stay in place or does it 
+
+### Article12 - Dynamic Lighting
+This article projects lighting into the scene
+ 
+#### Arguments
+`...[sprite_index, dither_type, full_transparency, dither_time, collis_type, parallax_x, parallax_y, static], ...`
+
+**sprite_index** - (sprite) the default sprite of the light, brightness correlates with brighter blending, alpha correlates with the ammount of blend
+
+**anim_speed** - (float) 1 is a pixel dither, 2 is a brick dither, 3 is an instant transmission dither. Defaults to a gradual fade out
+
+**follow_player** - (bool) does the light follow the player? (you can change the `follow_object` variable to set it to any object - however this must be done via actions at runtime)
+
+**dither_time** - (int) how long it takes for the article to fade out
+
+**collis_type** - (enum) 0 is a box collision, 1 is precise collision (NOTE: will need to set precise collision in load as well!)
+
+**parallax_x** - (float) the ammount of horizontal parallax (experimental)
+
+**parallax_y** - (float) the ammount of vertical parallax (experimental)
+
+**static** - (bool) Does this article stay in place or does it 
+
 ## Action Manager & Loading Structure (article3, user_event0)
 *Actions* are events which can manipulate the room and the GUI while it is loaded and running. They are loaded from *user_event0* whenever a scene or room changes, and follow a specific format:
 
@@ -271,7 +335,8 @@ There are a plethora of basic actions which perform all sorts of tasks which all
 
 ### Default Action Types & Variables
 
-**ACT.CAMERA** - 
+#### ACT.CAMERA
+
 
 
 ## Player/Character Options
@@ -342,11 +407,22 @@ Break up rooms when appropriate, have smaller rooms instead of bundling many int
 ### Enemy Culling
 Keep heavily in mind the number of active enemies. Enemies in particular are VERY heavy, I would suggest limiting it to 3-4 on-screen enemies at max. Off-screen, enemies do not process and so have about as much overhead as any article. 
 
+## Common Errors
+
+### My sprites' collision is off/a massive rectangle
+You need to properly set the collision to precise - Rivals defaults all collision to be imprecise unless otherwise specified. It's very simple to fix this, add this line to `load`: `sprite_change_collision_mask("sprite_name",true,0,0,0,0,0,0);`
+
+### \_param out of scope/expected an argument of type/index out of bounds
+This usually means something went wrong with your action arguments - You can get an idea of which action is causing the fault by seeing which part of the action switch statement the error is coming from.
+
+### spawn_variables out of scope/index out of bounds
+This usually means something went wrong with your article arguments - You can get an idea of which action is causing the fault by seeing which article file the error is coming from.
+
 ## Miscellaneous Tips & Publishing Guidelines
 
 The freedom to make anything a developer desires is a core philosophy of this tool. However, I hope to establish some guidelines in order to minimize confusion.
 
-- Please clearly label a stage made with AM - with an [AM] tag and "Adventure Mode" in the description somewhere so that it can be searched for on the workshop!
+- Please clearly label a stage made with AM - with an [AM] and "Adventure Mode" tag in the description somewhere so that it can be searched for on the workshop!
 - Try to make situations which make some sense for a lot of characters. Keep in mind character-specific traits and create alternative options where it makes sense. Making a character-specific adventure is fine but keep in mind people will want to play the adventure with anyone on the workshop.
 - On a similar note speaking FOR the player character is an odd choice that should probably be avoided due to how many personalities exist in the workshopverse.
-- Comment your code thoroughly! This API certainly isn't immediately readable, clearly label the purpose of everything.
+- Comment your code thoroughly! This API certainly isn't immediately readable, clearly label the purpose of everything and save future you some headaches.
