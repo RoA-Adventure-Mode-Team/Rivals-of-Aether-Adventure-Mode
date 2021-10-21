@@ -293,29 +293,55 @@ This article can dither out of existence as a player is drawn behind/in front of
 
 **parallax_y** - (float) the ammount of vertical parallax (experimental)
 
-**static** - (bool) Does this article stay in place or does it 
+**static** - (bool) Does this article stay in place (false), or does it follow the camera (true)
 
 ### Article12 - Dynamic Lighting
 This article projects lighting into the scene
  
 #### Arguments
-`...[sprite_index, dither_type, full_transparency, dither_time, collis_type, parallax_x, parallax_y, static], ...`
+`...[sprite_index, anim_speed, follow_player, cant_root, 0, 0, 0, 0], ...`
 
 **sprite_index** - (sprite) the default sprite of the light, brightness correlates with brighter blending, alpha correlates with the ammount of blend
 
-**anim_speed** - (float) 1 is a pixel dither, 2 is a brick dither, 3 is an instant transmission dither. Defaults to a gradual fade out
+**anim_speed** - (float) the speed of the animation, in .01 units
 
 **follow_player** - (bool) does the light follow the player? (you can change the `follow_object` variable to set it to any object - however this must be done via actions at runtime)
 
-**dither_time** - (int) how long it takes for the article to fade out
+**cant_root** - (bool) all drawing is done in the first instance of article12 - if this is true, this article instance will never be the one drawing
 
-**collis_type** - (enum) 0 is a box collision, 1 is precise collision (NOTE: will need to set precise collision in load as well!)
+### Article13 - Player Shadows
+This article displays player shadows when they are behind an object. These articles keep between room transitions naturally. For most applications, you should just copy these lines of article spawns to your initial room:
 
-**parallax_x** - (float) the ammount of horizontal parallax (experimental)
+```
+//Player Shadow
+[13, 0, 0, 0, -7, [0, 0, 0, 0, 0, 0, 0, 0], [0,0]],
+[13, 0, 0, 0, -15, [1, make_color_rgb(24, 32, 64), 0, 0, 0, 0, 0, 0], [0,0]],
+```
+ 
+#### Arguments
+`...[type, color, 0, 0, 0, 0, 0, 0], ...`
 
-**parallax_y** - (float) the ammount of vertical parallax (experimental)
+**type** - (enum) if the shadow is a mask (0) or drawn (1)
 
-**static** - (bool) Does this article stay in place or does it 
+**color** - (color) the color of this shadow
+
+### Article14 - Particle Emitter
+This article emits particles as long as the game is at 60 fps. It will cull them as the fps drops.
+ 
+#### Arguments
+`...[sprite_name, spawn_time, vfx_time, type, vel, alpha, 0, 0], ...`
+
+**sprite_name** - (string) the sprite name, we need to feed it the name so that sprite properties can be accurately obtained
+
+**spawn_time** - (float) the frequency of particles being emitted per frame
+
+**vfx_time** - (int) the amount of time the particle will be alive - the sprites will be divided between evenly
+
+**type** - (int) the particle type, there's two by default - still (0) and frictioned (1)
+
+**vel** - (float) the vertical velocity of the particle, and also gives some horizontal velocity
+
+**alpha** - (float) the alpha of the particles
 
 ## Action Manager & Loading Structure (article3, user_event0)
 *Actions* are events which can manipulate the room and the GUI while it is loaded and running. They are loaded from *user_event0* whenever a scene or room changes, and follow a specific format:
