@@ -279,7 +279,7 @@ This article can dither out of existence as a player is drawn behind/in front of
 #### Arguments
 `...[sprite_index, dither_type, full_transparency, dither_time, collis_type, parallax_x, parallax_y, static], ...`
 
-**sprite_index** - (sprite) the default sprite of the item
+**sprite_index** - (sprite) the default sprite of the article
 
 **dither_type** - (enum) 1 is a pixel dither, 2 is a brick dither, 3 is an instant transmission dither. Defaults to a gradual fade out
 
@@ -343,6 +343,25 @@ This article emits particles as long as the game is at 60 fps. It will cull them
 
 **alpha** - (float) the alpha of the particles
 
+### Article15 - Destructible Terrain
+This article can be removed via a hitbox hitting it.
+ 
+#### Arguments
+`...[sprite_index, anim_speed, 0, 0, dest_sfx, action_id, active_scene, alpha_time], ...`
+
+**sprite_index** - (sprite) the default sprite of the article
+
+**anim_speed** - (float) the speed of the animation, in .01 units
+
+**dest_sfx** - (sound) the sound effect to make when it gets hit
+
+**action_id** - (int) the action to trigger upon hitting
+
+**active_scene** - (int) the smallest scene where it is active - if it's negative, it will be active until this scene value
+
+**alpha_time** - (float) the time for the object to fade away
+
+
 ## Action Manager & Loading Structure (article3, user_event0)
 *Actions* are events which can manipulate the room and the GUI while it is loaded and running. They are loaded from *user_event0* whenever a scene or room changes, and follow a specific format:
 
@@ -355,7 +374,6 @@ This article emits particles as long as the game is at 60 fps. It will cull them
 **scene_id** - the room's scene the action will run on. If this is 0, it will always run
 
 **action_id** - the id for this action, used to be referenced to for starting other actions
-
 
 There are a plethora of basic actions which perform all sorts of tasks which allow for the full creation of a level. If you need to extend functionality you can add your own actions inside article3. There are plenty of types of actions: instant, conditional, perpetual, etc to show how to work with the system internally.
 
