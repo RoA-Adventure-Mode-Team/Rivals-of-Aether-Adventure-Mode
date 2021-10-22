@@ -191,7 +191,11 @@ Detection Zones are areas that trigger an action when certain criteria are met.
 The Room Manager is instanced once on startup, and only one can exist (singleton). It persists for the full duration of the level, and generally can be acecssed globally with `room_manager`. It is responsible for executing all the code related to AM rooms.
 
 ### Article6 - Article NPC
-Article NPCs function a lot like player objects, except with slightly less overhead and a few simplified rules. Please see the dedicated section for initializing Article NPCs for setting up each NPC id right in the file structure and `user_event6`
+Article NPCs function a lot like player objects, except with slightly less overhead and a few simplified rules. They have a specific file structure and `user_event6` to add things. They are set up pretty similarly to players, so you can copy/paste player code for the most part into each of their events. 
+A few caveats: 
+1. You need to use any of the default attack/hitbox index functions inside the `obj_stage_main` scope 
+2. Character's `hit_player` script will not run - creators will need to copy the code over to a `user_event` and set `hit_player_event` in `other_init` in order for AM to be able to call it
+3. `state` is renamed to `art_state`, and `free` is renamed to `is_free` (this is due to them being default variables that change outside of the article's control)
 
 #### Arguments
 `...[enem_id, 0, 0, waypoints, 0, 0, 0], ...`
