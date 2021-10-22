@@ -7,7 +7,7 @@ It is a heavy API built on top of a quirky engine, it has its fair share of perf
 ## Table of Contents
 
  1. General Structure & Development
- 2. Lucid Dream
+ 2. Lucid Dream Development Console & Cursor
  3. Room Manager
  4. Articles
  5. Action Manager
@@ -29,7 +29,7 @@ An **Article** is exactly as it sounds - it's a stage article object! AM forces 
 
 A **Window** is a collection of GUI elements per the Window API (user_event2). You can define custom windows at the top using GUI elements, and you can define custom game frame and draw frame logic inside the respective functions. Windows and GUI Components have custom logic code as well as draw code that draws relative to the screen position.
 
-Most of a level's custom code will be within user_events - `user_event0`, `user_event1`, `user_event2`, `user_event6` and `user_event10`. You may edit any of the base code however you'd like, however we do recommend keeping out of the base files unless you know exactly what you're doing. If you are unsure about making a modification feel free to message our team and we'll be able to help. :)
+Most of a level's custom code will be within user_events - `user_event0`, `user_event1`, `user_event2`, `user_event3`, `user_event6` and `user_event10`. You may edit any of the base code however you'd like, however we do recommend keeping out of the base files unless you know exactly what you're doing. If you are unsure about making a modification feel free to message our team and we'll be able to help. :)
 
 ## Lucid Dream Development Console & Cursor
 
