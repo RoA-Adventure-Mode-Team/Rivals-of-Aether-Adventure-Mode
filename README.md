@@ -379,13 +379,20 @@ This article can be removed via a hitbox hitting it.
 
 **act_end** - the actions to start at the end of these current ones
 
+Actions are kept track of globally, but only actions of the current room in the current scene are processed (this includes actions in the global room 0, and the current room's global scene 0). When a room transitions these actions stop ticking and stop effecting the game state until the room is returned to, where they will continue from where they left off.
 
-There are a plethora of basic actions which perform all sorts of tasks which allow for the full creation of a level. If you need to extend functionality you can add your own actions inside article3. There are plenty of types of actions: instant, conditional, perpetual, etc to show how to work with the system internally.
+There are a plethora of basic actions which perform all sorts of tasks which allow for the full creation of a level. If you need to extend functionality you can add your own actions inside user_event3. There are plenty of types of actions: 
+
+*Instant* - An action that will immediately execute and end on the same frame
+
+*Conditional* - An action that checks against a condition every frame; when it's true, it will end. They generally are more logic operators than actors.
+
+*Perpetual* - An action that continues until it is called to stop - generally, these types manage other objects and are called to end when they do.
 
 ## Default Action Types & Variables
 
 ### ACT.WINDOW
-Display a new Window API instance
+*Perpetual* Display a new Window API instance. Exits upon the window exiting.
 
 #### Arguments
 `[window_num, x, y, [contentoverride]],`
@@ -399,7 +406,7 @@ Display a new Window API instance
 **contentoverride** - (array[array]) the contents of the window to override - formatted as a nested array like [element1, element2, element3]
 
 ### ACT.CONTROL
-Take manual control over players (experimental, results may vary)
+*Instant* Take manual control over players (experimental, results may vary).
 
 #### Arguments
 `[player_id, life_time, state_override],`
@@ -411,16 +418,58 @@ Take manual control over players (experimental, results may vary)
 **state_override** - (enum) the PS_STATE to override the current player state
 
 ### ACT.WAIT
-Take manual control over players (experimental, results may vary)
+*Conditional* Wait a given frame count, then end the action.
 
 #### Arguments
-`[player_id, life_time, state_override],`
+`[frames],`
 
-**player_id** - (oPlayer) the player to take control over
+**frame** - (int) the frame count to - get this - *wait* before ending the action. Yes, very complex - give it a moment to sink in.
 
-**life_time** - (int) the frame count this action will be active for
+### ACT.PLAY_SOUND
+*Instant* Play a sound.
 
-**state_override** - (enum) the PS_STATE to override the current player state
+#### Arguments
+`[sound],`
+
+**sound** - (sound) the sound
+
+### ACT.SET
+*Perpetual/Instant* Set a varaible inside an article group.
+
+#### Arguments
+`[article_group, variable, value, ease_type, ease_length],`
+
+**article_group** - (int) the article group to apply this SET to
+
+**variable** - (string) the variable name in the above named article group to set
+
+**value** - (var) the value to apply to the above named variable in the above above named article group
+
+**ease_type** - (enum) (0) will linearly ease the variable to the value in ease length time (1) will set in the next frame
+
+(optional) **ease_length** - (int) if included, the action will ease for the time given. if not, it will set the value *instant*-ly
+
+### ACT.ON_INPUT
+*Conditional* Exit upon detecting an input of a type from a(ny) player
+
+#### Arguments
+`[player?, input_type],`
+
+**player?** - (oPlayer) (0) any player - otherwise, only that player_id (MAKE SURE YOUR METHOD OF GETTING PLAYER IDS IS DESYNC-SAFE)
+
+**input_type** - (enum) the `PC_PRESSED` to look for to exit
+
+### ACT.SW_ROOM
+*Instant* Switch the room using a room transition. WARNING - any actions started after this will NOT run until the room is returned to (unless they are global)!
+
+#### Arguments
+`[to_room, type, to_coords],`
+
+**to_room** - (int) the room to go to
+
+**type** - (int) the variable name in the above named article group to set
+
+**to_coords** - (array[x,y]) the real coordinates of where in the next room to place the player
 
 ## Player/Character Options
 
