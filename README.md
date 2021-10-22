@@ -367,7 +367,7 @@ This article can be removed via a hitbox hitting it.
 
     action_add(room_id, scene_id, action_id, action_type,
     [act_args],
-    [act_starts]);
+    [act_end]);
 
 **room_id** - the room the action belongs to. It will only run when the current room is this room
 
@@ -375,13 +375,52 @@ This article can be removed via a hitbox hitting it.
 
 **action_id** - the id for this action, used to be referenced to for starting other actions
 
+**act_args** - the arguments for a given action
+
+**act_end** - the actions to start at the end of these current ones
+
+
 There are a plethora of basic actions which perform all sorts of tasks which allow for the full creation of a level. If you need to extend functionality you can add your own actions inside article3. There are plenty of types of actions: instant, conditional, perpetual, etc to show how to work with the system internally.
 
-### Default Action Types & Variables
+## Default Action Types & Variables
 
-#### ACT.CAMERA
+### ACT.WINDOW
+Display a new Window API instance
 
+#### Arguments
+`[window_num, x, y, [contentoverride]],`
 
+**window_num** - (int) the Window API number to display
+
+**x** - (int) the screen-space x coordinate of the new window
+
+**y** - (int) the screen-space y coordinate of the new window
+
+**contentoverride** - (array[array]) the contents of the window to override - formatted as a nested array like [element1, element2, element3]
+
+### ACT.CONTROL
+Take manual control over players (experimental, results may vary)
+
+#### Arguments
+`[player_id, life_time, state_override],`
+
+**player_id** - (oPlayer) the player to take control over
+
+**life_time** - (int) the frame count this action will be active for
+
+**state_override** - (enum) the PS_STATE to override the current player state
+
+### ACT.WAIT
+Take manual control over players (experimental, results may vary)
+
+#### Arguments
+`[player_id, life_time, state_override],`
+
+**player_id** - (oPlayer) the player to take control over
+
+**life_time** - (int) the frame count this action will be active for
+
+**state_override** - (enum) the PS_STATE to override the current player state
 
 ## Player/Character Options
 
