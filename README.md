@@ -13,6 +13,7 @@ It is a heavy API built on top of a quirky engine, it has its fair share of perf
  5. Action Manager
  6. Window API
  7. Recommended Optimizations & Workflow
+ 8. Miscellaneous Tips & Publishing Guidelines
 
 ## General Structure
 Adventure Mode's data flow is set up as article-oriented. Everything besides the base stage script the API interacts with is an article or array of some kind - this is to allow maximum flexibility with moderately low performance costs.
@@ -701,9 +702,40 @@ There are a plethora of basic actions which perform all sorts of tasks which all
 #### Arguments
 `[],`
 
-## Misc Additions
-### Dialog
-Dialog is read by the 
+## Window API
+The Window API (user_event2) looks daunting at first, but it is in essence a few basic functions:
+1. Loading the default data for each window id, made of components (win_call == 1)
+2. Running the logic for each active window and their components (logic_window())
+3. Drawing each active window and their components (draw_window())
+
+A window defined here is a set of default values for a collection of elements. They have their own logic that runs specifically for the window as a whole. Elements are structured data types with specific arguments for specific use cases. They have their own default logic and draw code in the respective functions. You can see the list of them in user_event2 and looking for the `new_` prefix. Feel free to add your own as you see fit.
+
+The default values in each window/element can overwritten when instancing them via `ACT.WINDOW` - this makes them flexible GUI templates for use and reuse throughout a level. There's a lot of complexity that's best explored by studying what each window does and the logic to obtain it. The big things to keep in mind are: 
+1. A window as a data type is just an array with it's template id given at index 0, then every entry from there is an element. 
+2. A element has it's template id at index 0, with every entry afterwards being data related to that element.
+3. Element placements are relative to the window's position.
+
+There are plenty of various implementations in Hallowflame to illustrate how to use this system:
+
+### WIN.NOTE_SCROLL
+
+This window displays a png image over a transparent black background. When the player pressess attack or shield, it closes the window.
+
+### WIN.AREAFADE
+
+This window displays the area title cards for a time where it appears slowly, and ends when it fades to transparency.
+
+### WIN.QUESTLIST
+
+Quests is the global quest popup that shows in the bottom left of the screen throughout the level. It has functionality for displaying in-progress quests, as well as a little jingle and visual for when quests are complete.
+
+### WIN.DIALOG_DEFAULT
+
+Dialog Default is the dialog box used to display character chats 0 it reads a data structure implemented in user_event0 for it's given dialog_index
+
+### WIN.POPUP_DIALOG
+
+Popup Dialog reads the same strcuture as WIN.DIALOG_DEFAULT in user_event0 for it's given dialog_index, but it displays the dialog in the world as opposed to on the GUI space
 
 ## Player/Character Options
 
