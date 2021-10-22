@@ -8,7 +8,7 @@ It is a heavy API built on top of a quirky engine, it has its fair share of perf
 
  1. General Structure & Development
  2. Lucid Dream Development Console & Cursor
- 3. Room Manager
+ 3. Room Manager and Loading Structure
  4. Articles
  5. Action Manager
  6. Window API
@@ -30,28 +30,6 @@ An **Article** is exactly as it sounds - it's a stage article object! AM forces 
 A **Window** is a collection of GUI elements per the Window API (user_event2). You can define custom windows at the top using GUI elements, and you can define custom game frame and draw frame logic inside the respective functions. Windows and GUI Components have custom logic code as well as draw code that draws relative to the screen position.
 
 Most of a level's custom code will be within user_events - `user_event0`, `user_event1`, `user_event2`, `user_event3`, `user_event6` and `user_event10`. You may edit any of the base code however you'd like, however we do recommend keeping out of the base files unless you know exactly what you're doing. If you are unsure about making a modification feel free to message our team and we'll be able to help. :)
-
-## Lucid Dream Development Console & Cursor
-
-Outside of the actual operating structure is **Lucid Dream**, the development console & cursor system built in the Window API. It has a plethora of functions for creating, editing, and exporting articles. Open it with tilda (\`), type with the keyboard, enter is ?, backspace is \\. Currently, it defaults to strings for arguments but you can specify a few argument parameters to get the variable type needed.
-
-**r:'varname'** will get the resource of that specific name (similar format to resource_get("varname")).
-
-**d:'varname'** will force the string into a real number. WARNING - failiure to make varname into a real can crash the game! (This is a GameMaker 2 thing I can't fix it!)
-
-**v:'varname'** will get the value of the variable of the given name in the main stage object.
-
-Keep in mind you can **export** in-game adjustments using `export`. Double check the export and replace with the correct values/formatting if needed.
-
-
-
-Articles can be selected with left mouse, and moved around with right mouse. Selected articles can be acted upon via certain console commands. You can generally assume a non-global command will act in the selected articles' scope.
-
-For a full list of commands, type the `help` command. You can reference each of their functions bellow:
-
-### Lucid Dream Commands
-
-
 
 ### World & Coordinate Systems
 
@@ -81,11 +59,65 @@ Another bit is on-hit effects by default do not work since we cannot call on hit
 
 #### Online Multiplayer Support?
 
-Online Multiplayer is something that was initially scoped in but with further changes to the online system on its way it's something we can't officially support fully at this time. We've made efforts to make sure that our gameplay code is client-independent - however this does not preclude desyncs due to loading and lag and multiplayer may be very unstable. Feel free to submit bugs about this feature, just no promises it'll get to be 100% working.
+Online Multiplayer is something that was initially scoped in but with further changes to the online system on its way and focusing on polishing up the local experience it's something we can't officially support fully at this time. We've made efforts to make sure that our gameplay code is client-independent - however this does not preclude desyncs due to loading and lag and multiplayer may be very unstable. Feel free to submit bugs about this feature, just no promises it'll get to be 100% working.
 
 ### Core Engine Changes
 
 There are a few miscellaneous engine changes implemented to make this all possible and also to remove some tedium from running the stages. The big gameplay change is that if you hold the same direction off a ledge and onto ground below, you will go back into dash immediately. Collision detection changes for walljumps are added for precise collisions.
+
+## Lucid Dream Development Console & Cursor
+
+Outside of the actual operating structure is **Lucid Dream**, the development console & cursor system built in the Window API. It has a plethora of functions for creating, editing, and exporting articles. Open it with tilda (\`), type with the keyboard, enter is ?, backspace is \\. Currently, it defaults to strings for arguments but you can specify a few argument parameters to get the data type needed.
+
+**r:'varname'** will get the resource of that specific name (similar format to resource_get("varname")).
+
+**d:'varname'** will force the string into a real number. WARNING - failiure to make varname into a real can crash the game! (This is a GameMaker 2 thing I can't fix it!)
+
+**v:'varname'** will get the value of the variable of the given name in the main stage object.
+
+Keep in mind you can **export** in-game adjustments using `export`. Double check the export and replace with the correct values/formatting as needed (for example we cannot grab resource true names, so you will need to replace odd numbers with their correct resource gets).
+
+Articles can be selected with left mouse, and moved around with right mouse. Selected articles can be acted upon via certain console commands. You can generally assume a non-global command will act in the selected articles' scope.
+
+Left mouse when not on an article will make a debug point which will give you the room/cell coordinates of the point as well as the true x,y values.
+
+For a full list of commands, type the `help` command. You can reference each of their functions bellow:
+
+### Lucid Dream Commands
+
+`acts` - print the running actions
+
+`act_play d:id` - execute an action with id `id`
+
+`<s> attack d:attack_id` - cause all selected enemies to perform the specified attack
+
+`lucid` - toggle debug mode - this brings up the cursor for selecting, resource monitor, and other misc debug info
+
+`freeze` - toggles whether enemies process their inputs or not
+
+`clone`:`c` - clones all selected articles at their positions
+
+`destroy`:`d` - destroys all selected articles
+
+`clear` - clears the console and removes all debug points
+
+`debug_ouput` - toggles whether articles output to the rivals print log
+
+`dist` - gives the distance between debug points, in sequential order
+
+`deselect`:`ds` - deselects all selected articles
+
+`export` - probably the MOST IMPORTANT function to know - it compiles each selected article into the room article format and gives you instructions on how to import it. Double check the export and replace with the correct values/formatting as needed (for example we cannot grab resource true names, so you will need to replace odd numbers with their correct resource gets)
+
+`get variable_name` - gets the values of a variable for the selected articles. If there's nothing selected, it will attempt to get a value from the main stage object
+
+`god` - toggle god mode for the player
+
+`kill` - cause all players to die who haven't been killed
+
+`last d:num_back`:`l d:num_back` - repeat the last command - if `num_back`is specified will repeat the command from `num_back` commands ago
+
+
 
 ## Structure & Use Cases
 ### Common Use Cases
