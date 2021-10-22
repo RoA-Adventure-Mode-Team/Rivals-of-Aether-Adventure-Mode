@@ -471,6 +471,19 @@ There are a plethora of basic actions which perform all sorts of tasks which all
 
 **to_coords** - (array[x,y]) the real coordinates of where in the next room to place the player
 
+### ACT.QUEST_PROG
+*Instant* Set the progress of a quest
+
+#### Arguments
+`[quest_id, action_type, amount],`
+
+**quest_id** - (int) the quest id getting edited
+
+**action_type** - (enum) (0) set the quest progress forward to the value, (1) set the quest progress to the value - overriding the previous, (2) add or subtract from the quest progress
+
+**amount** - (int) the value to apply to the above named variable in the above above named article group
+
+
 ## Player/Character Options
 
 AM Features a few mostly lore options to make sure characters are properly addressed and to offer some customization to make stories make a bit more sense from a character's PoV.
