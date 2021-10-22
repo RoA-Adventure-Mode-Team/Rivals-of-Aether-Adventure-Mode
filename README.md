@@ -37,7 +37,11 @@ The world by default is set to 20,000 units in each direction (10,000 pixels), w
 
 Precise, **real coordinates** are the raw unit values from the top left of the stage (rivals stage start at [0,0] being the top corner of the blastzones). This coordinate system is used by checkpoints, room transitions/teleports. Coordinates that need to be precise but aren't placed into the world will generally use this type.
 
-**Cell coordinates** break up the current room into cells, which are then subdivided into subcells of 16x16 pixels (32x32 units). The center cell is considered [0,0] and the coordinates radiate from the center. This is used by most things in the API such as article spawns.
+**Cell coordinates** break up the current room into cells, which are then subdivided into subcells of 16x16 pixels (32x32 units). The center cell is considered [0,0] and the coordinates radiate from the center. This is used by most things in the API such as article spawns. 
+
+#### Why Two Coordinate Systems?
+
+The simple reason is it's easier to place things precisely on a smaller grid and get a better idea of relative distances for smaller numbers. Developers shouldn't need to worry about exact coordinates outside of precision you'd use the debug points for.
 
 As a reminder, Rivals pixels are 2 units long.
 
@@ -151,7 +155,7 @@ The actual data for spawning articles in the right places is in *user_event1.gml
 **room_index** - the index value of the room, the identifier that is used to determine what articles to spawn.
 **room_data** - the array which holds the data of all the articles in the room, organized by cell. It has this format:
 
-    [ //Room X
+    room_add(room_index,[ //Room X
     	[ //Cell 1
     		[cell_x,cell_y],
     		[
@@ -175,7 +179,7 @@ The actual data for spawning articles in the right places is in *user_event1.gml
     	.
     	.
     	.
-    ]
+    ]);
 **cell_x** - the cell's x coordinate on the cell grid (cells are 163x85 subcells large, or 2608x1360 units)
 
 **cell_y** - the cell's x coordinate on the cell grid (cells are 163x85 subcells large, or 2608x1360 units)
