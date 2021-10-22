@@ -555,6 +555,86 @@ There are a plethora of basic actions which perform all sorts of tasks which all
  
 **scene_id** - (int) the scene id to change to/add
 
+### ACT.RANDOM
+*Instant* On exit picks ONE of the exit actions and execute it.
+
+#### Arguments
+`[seed],`
+
+**seed** - (int) the seed to use for the random outcome
+
+### ACT.SET_RELATIVE
+*Perpetual/Instant* Set a varaible inside the relative id that gets passed to this action - generally, the relative id is passed from detection boxes as the object that triggered them.
+
+#### Arguments
+`[variable, value, ease_type, ease_length],`
+
+**variable** - (string) the variable name in the above named article group to set
+
+**value** - (var) the value to apply to the above named variable in the above above named article group
+
+**ease_type** - (enum) (0) will linearly ease the variable to the value in ease length time (1) will set in the next frame
+
+(optional) **ease_length** - (int) if included, the action will ease for the time given. if not, it will set the value *instant*-ly
+
+### ACT.HITBOX
+*Instant* Spawn a hitbox using the stage data at the relative id's location
+
+#### Arguments
+`[attack_id, hitbox_num],`
+
+**attack_id** - (int) the attack id to grab from
+
+**hitbox_num** - (int) the hitbox num to grab
+
+### ACT.KILLBOX
+*Instant* Spawn a killbox using the stage data at the relative id's location
+
+#### Arguments
+`[background],`
+
+**background** - (enum) the background type - see the Roa Workshop Documentation for the killbox background types.
+
+### ACT.TRANS_MUSIC
+"*Instant*" Transition the current music track to the given one
+
+#### Arguments
+`[to_music_index],`
+
+**to_music_index** - (sound) the music to transition to
+
+### ACT.DESPAWN
+*Instant*  Kindly asks an article group to despawn
+
+#### Arguments
+`[article_group],`
+
+**article_group** - (int) the article group to despawn
+
+### ACT.EMIT_PARTICLE
+*Perpetual*  Like the particle article except via actions. One instance of ACT.EMIT_PARTICLE acts as the temporary particle manager, any more than one add to the manager's array. These aren't GPU particles or anything nearly optimal. Do use sparingly.
+
+#### Arguments
+`[x,y, sprite, vfx_time, disable_movement, alpha],`
+
+**x** - (int) the screen-space x coordinate of the new window
+
+**y** - (int) the screen-space y coordinate of the new window
+
+**sprite** - (sprite) the particle's sprite to draw
+
+**vfx_time** - (int) the full time the particle will be alive
+
+**disable_movement** - (bool) if the particle doesn't move, enable this for efficient processing
+
+**alpha** - (float) the alpha value of the partile's sprite
+
+### ACT.END_GAME
+*Instant*  calls `end_match()`
+
+#### Arguments
+`[],`
+
 ## Misc Additions
 ### Dialog
 Dialog is read by the 
