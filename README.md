@@ -49,6 +49,8 @@ RoA Adventure Mode is an API built on top of Rivals Workshop on top of Rivals. W
 
 Something to note is that the debug features are not optimized - you will get slightly worse performance with them on.
 
+At a certain point, the poject might get too big and it becomes inaccessable in the stage editor due to size (it will crash when trying to load) - getting used to editing from practice mode is a suggestion.
+
 Anything we can't do in Workshop stage coding (file access/read/write, zoom, viewport changes, streaming assets, removing Sein, etc) is also not possible in AM.
 
 #### Workshop Character Limitations
@@ -87,9 +89,9 @@ For a full list of commands, type the `help` command. You can reference each of 
 
 `acts` - print the running actions
 
-`act_play d:id` - execute an action with id `id`
+`act_play d:action_id` - execute an action with id `id`
 
-`<s> attack d:attack_id` - cause all selected enemies to perform the specified attack
+`attack d:attack_id` - cause all selected enemies to perform the specified attack
 
 `lucid` - toggle debug mode - this brings up the cursor for selecting, resource monitor, and other misc debug info
 
@@ -115,9 +117,27 @@ For a full list of commands, type the `help` command. You can reference each of 
 
 `kill` - cause all players to die who haven't been killed
 
-`last d:num_back`:`l d:num_back` - repeat the last command - if `num_back`is specified will repeat the command from `num_back` commands ago
+`last <d:num_back>`:`l <d:num_back>` - repeat the last command - if `num_back`is specified will repeat the command from `num_back` commands ago
 
+`list <d:num>` - lists all article ids with an article `num` - if nothing is specified, it will return the ids of all selected articles
 
+`peace` - toggle if enemies will attack (useful for debugging movement alone)
+
+`plat sprite_name` - spawns a platform article at the standard platform depth using the specified sprite
+
+`qt d:collision_type r:resource d:anim_speed` - spawns a terrain article with the specified items. NOTE: `collision_type` is the same numbers as in the stage editor
+
+`room d:room_id` - force a room transition to the specified id
+
+`s_state` - save the current game state of the players (very very experimental and laggy - really shouldn't be used for much)
+
+`l_state` - load the current game state of the players (very very experimental and laggy - really shouldn't be used for much)
+
+`select d:object_id` - select an object of the given id. NOTE: the `select` functionality is built around articles, so some functions may behave weirdly or not at all on selected non-stage articles
+
+`set variable_name value`:`s variable_name value` - set the variable in selected to a value. If there's nothing selected, it will attempt to set a variable from the main stage object to the value
+
+`spawn d:article_num d:collision_type d:depth <spawn_variables..>` - spawn an article at the cursor with the given number, collision type, depth, and spawn variables
 
 ## Structure & Use Cases
 ### Common Use Cases
