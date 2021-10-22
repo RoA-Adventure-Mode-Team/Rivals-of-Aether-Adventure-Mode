@@ -43,9 +43,15 @@ Outside of the actual operating structure is **Lucid Dream**, the development co
 
 Keep in mind you can **export** in-game adjustments using `export`. Double check the export and replace with the correct values/formatting if needed.
 
-For a full list of commands, type the `help` command. If you need specific help with a function type `man <function name>`.
+
 
 Articles can be selected with left mouse, and moved around with right mouse. Selected articles can be acted upon via certain console commands. You can generally assume a non-global command will act in the selected articles' scope.
+
+For a full list of commands, type the `help` command. You can reference each of their functions bellow:
+
+### Lucid Dream Commands
+
+
 
 ### World & Coordinate Systems
 
