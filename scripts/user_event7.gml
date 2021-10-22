@@ -56,7 +56,7 @@ switch (enem_id) {
                 
             sprite_name = "ryken";
             //player_controller = 1;
-            hitpoints_max = 200;
+            hitpoints_max = 150;
             
             
             collision_box = asset_get("ex_guy_hurt_box");
@@ -79,6 +79,7 @@ switch (enem_id) {
             is_boss = false;
             team = 1;
             patrol_type = 0;
+            battle_music_override = true;
             
             //AI Behavior Variables
             //Movement
@@ -598,15 +599,18 @@ switch (enem_id) {
     			// print("IS DEAD");
     			sprite_index = enemy_sprite_get(enem_id,"spinhurt");
     			invincible = 100;
-    			if state_timer == 1 || hitpause > 1 {
+    			if state_timer == 1 {
     				death_x = x;
     				death_y = y;
-    				hitpause = 0;
+    				hsp = 0;
+    				vsp = 0;
     			}
     			
     			if state_timer > 30 && state_timer < 240 {
     				x = death_x + death_shake_max - random_func(id % 50, death_shake_max , true);
     				y = death_y + death_shake_max - random_func(id % 50+1, death_shake_max , true);
+    				
+    				music_set_volume((240-state_timer)/240);
     			}
     			if state_timer > 240 {
     				image_index += 0.35;
@@ -619,7 +623,7 @@ switch (enem_id) {
                     hsp = kb_power*dcos(kb_angle);
                     if hsp != 0 spr_dir = -sign(hsp);
                 }
-                if hit_wall && !ingores_walls hsp = -hsp*.7;
+                if hit_wall && !ignores_walls hsp = -hsp*.7;
                 if (state_timer % 8 == 0) {
                     var test = spawn_hit_fx(round(x), round(y - char_height/2),  fx_enemy_abyssdeath);
                     test.depth = depth + 1;
@@ -1037,7 +1041,7 @@ switch (enem_id) {
                             set_attack_value(AT_NSPECIAL, AG_NUM_WINDOWS, 11);
                             
                             //Grab windows
-                            set_window_value(AT_NSPECIAL, 1, AG_WINDOW_LENGTH, 12);
+                            set_window_value(AT_NSPECIAL, 1, AG_WINDOW_LENGTH, 9);
                             set_window_value(AT_NSPECIAL, 1, AG_WINDOW_ANIM_FRAMES, 3);
                             set_window_value(AT_NSPECIAL, 1, AG_WINDOW_HAS_SFX, 1);
                             set_window_value(AT_NSPECIAL, 1, AG_WINDOW_SFX, asset_get("sfx_swipe_medium1"));
@@ -1136,7 +1140,7 @@ switch (enem_id) {
                             set_hitbox_value(AT_NSPECIAL, 1, HG_ANGLE, 90);
                             set_hitbox_value(AT_NSPECIAL, 1, HG_BASE_KNOCKBACK, 3);
                             set_hitbox_value(AT_NSPECIAL, 1, HG_BASE_HITPAUSE, 10);
-                            set_hitbox_value(AT_NSPECIAL, 1, HG_EXTRA_HITPAUSE, 20);
+                            set_hitbox_value(AT_NSPECIAL, 1, HG_EXTRA_HITPAUSE, 30);
                             set_hitbox_value(AT_NSPECIAL, 1, HG_HITSTUN_MULTIPLIER, 1.6);
                             set_hitbox_value(AT_NSPECIAL, 1, HG_HIT_SFX, asset_get("sfx_blow_heavy1"));
                             set_hitbox_value(AT_NSPECIAL, 1, HG_IGNORES_PROJECTILES, 1);
@@ -1888,7 +1892,7 @@ switch (enem_id) {
 							set_hitbox_value(AT_UAIR, 2, HG_PRIORITY, 1);
 							set_hitbox_value(AT_UAIR, 2, HG_DAMAGE, 6);
 							set_hitbox_value(AT_UAIR, 2, HG_ANGLE, 125);
-							set_hitbox_value(AT_UAIR, 2, HG_BASE_KNOCKBACK, 6);
+							set_hitbox_value(AT_UAIR, 2, HG_BASE_KNOCKBACK, 7);
 							set_hitbox_value(AT_UAIR, 2, HG_KNOCKBACK_SCALING, 0.2);
 							set_hitbox_value(AT_UAIR, 2, HG_BASE_HITPAUSE, 8);
 							set_hitbox_value(AT_UAIR, 2, HG_HITPAUSE_SCALING, 0.2);
@@ -1929,6 +1933,7 @@ switch (enem_id) {
     			var _win_length;
 	    		with obj_stage_main _win_length = get_window_value(other.attack, other.window, AG_WINDOW_LENGTH);
 	    		
+	    		if (instance_exists(grabbedid) && grabbedid.invincible > 0) grabbedid = noone;
 	    		if (attack == AT_NSPECIAL) {
 					if (window == 1) {
 					    // super_armor = true; //Apply armor

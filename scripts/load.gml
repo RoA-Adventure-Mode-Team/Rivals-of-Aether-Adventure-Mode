@@ -5,8 +5,8 @@ sprite_change_offset("char_arrow",0,0);
 sprite_change_offset( "boss_hp_back", 320, 0);
 sprite_change_offset( "boss_hp_bar", 320, 0);
 
-sprite_change_offset("bg2",240, 135+2);
-sprite_change_offset("bg3",240, 135+2);
+sprite_change_offset("bg2",240, 135+4);
+sprite_change_offset("bg3",240, 135+4);
 
 sprite_change_offset("column_deco",210, 310);
 sprite_change_offset("column_deco_black",210, 310);
@@ -131,6 +131,7 @@ sprite_change_offset("steam_lantern",5, 43);
 sprite_change_offset("steam_vfx",32, 32);
 
 sprite_change_offset("small_crate",25, 22);
+sprite_change_offset("puff", 5, 60);
 
 //Enemy Declarations - Harbidge
 sprite_change_offset("char_arrow",0,0);
@@ -214,6 +215,7 @@ sprite_change_offset("enemy_4_nspecial_back",74, 88);
 sprite_change_offset("enemy_bird_laser",24, 5);
 
 sprite_change_offset("enemy_7_idle",30, 70);
+sprite_change_offset("enemy_7_land",30, 70);
 sprite_change_offset("enemy_7_walk",36, 62);
 
 sprite_change_offset("enemy_8_idle",104, 144);
@@ -232,6 +234,7 @@ sprite_change_offset("enemy_8_fspecial_air",104, 144);
 sprite_change_offset("enemy_9_idle",32, 70);
 
 sprite_change_offset("enemy_11_idle",66, 110);
+sprite_change_offset("enemy_11_land",66, 110);
 sprite_change_offset("enemy_11_walk",66, 110);
 sprite_change_offset("enemy_11_nspecial",66, 110);
 

@@ -38,8 +38,6 @@ item_id = noone;
 
 rel_pos = [x-view_get_xview(),y-view_get_yview()];
 
-print_debug(player_name);
-
 //Which user_event to run for hitpause
 if !("hit_player_event" in self) hit_player_event = -1;
 

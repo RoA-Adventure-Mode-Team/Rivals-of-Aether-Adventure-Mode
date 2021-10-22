@@ -49,14 +49,14 @@ if !dither_type exit;
 if((collis_type == 0 && collision_rectangle(bbox_left, bbox_bottom, bbox_right, bbox_top, asset_get("oPlayer"), false, true) != noone) ||
     collis_type == 1 && instance_place(x,y,oPlayer) != noone)
 {
-    if(transparency_timer == 0 && dither_type == 3)
-        sound_play(sound_get("vanish_out"));
+    // if(transparency_timer == 0 && dither_type == 3)
+    //     sound_play(sound_get("vanish_out"));
    transparency_timer++; 
 }
 else
 {
-    if(transparency_timer == dither_time && dither_type == 3)
-        sound_play(sound_get("vanish_in"));
+    // if(transparency_timer == dither_time && dither_type == 3)
+    //     sound_play(sound_get("vanish_in"));
     transparency_timer--;
 }
 

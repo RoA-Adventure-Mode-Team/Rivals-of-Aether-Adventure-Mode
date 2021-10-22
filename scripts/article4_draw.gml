@@ -25,6 +25,10 @@ if debug {
 if hold_up with collis_obj {
     //draw_debug_text(x,y,"TESTING PROMPT");
     draw_sprite(asset_get("lead_arrow_spr"),0,x,y+10);
+    // draw_sprite(other.dir_arrow,0,x,y-char_height-50);
+    // draw_sprite_ext(other.dir_arrow,0,x-64,y-char_height/2,1,1,90,c_white,0.2);
+    // draw_sprite_ext(other.dir_arrow,0,x,y+20,1,1,180,c_white,0.2);
+    // draw_sprite_ext(other.dir_arrow,0,x+64,y-char_height/2,1,1,270,c_white,0.2);
 }
 
 

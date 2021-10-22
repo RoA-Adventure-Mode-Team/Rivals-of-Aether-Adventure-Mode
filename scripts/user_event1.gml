@@ -65,6 +65,9 @@ room_add(1, [ //Outside Left
             //Room Transition To Sewer
             // [8, 40, 34, 0, 0, [0, 0, 64, 64, 7, [2,15534,10477], 1, 0, 0], [0,0]],
             
+            //Room Transition To Sewer Burg
+            // [8,40, 34,0,0,[0,0,96,96,15,[2,11370,10416],1,0,0,],[0,0]],
+            
             //Room Transition To Sewer2
             // [8, 40, 34, 0, 0, [0, 0, 64, 64, 8, [2,8166,9164], 1, 0, 0], [0,0]],
             
@@ -75,7 +78,7 @@ room_add(1, [ //Outside Left
             // [8, 40, 34, 0, 0, [0, 0, 96, 96, 10, [2,8254,10598], 1, 0, 0], [0,0]],
             
             //RT to Boss Room
-            [8, 40, 34, 0, 0, [0, 0, 96, 96, 17, [2,10191,10326], 1, 0, 0], [0,0]],
+            // [8, 40, 34, 0, 0, [0, 0, 96, 96, 17, [2,10191,10326], 1, 0, 0], [0,0]],
             
             //RT to Sewer Entrance
             // [8, 40, 34, 0, 0, [0, 0, 64, 96, 13, [2,10083,10575], 1, 0, 0], [0,0]],
@@ -107,7 +110,7 @@ room_add(1, [ //Outside Left
             [1, 0, 0, 0, 29, [sprite_get("bg3"), 0, 0, 0, true, 0, 0, 0], [0,0]],
             
             //Player Shadow
-            [13, 0, 0, 0, -6, [0, 0, 0, 0, 0, 0, 0, 0], [0,2]],
+            [13, 0, 0, 0, -7, [0, 0, 0, 0, 0, 0, 0, 0], [0,0]],
             [13, 0, 0, 0, -15, [1, make_color_rgb(24, 32, 64), 0, 0, 0, 0, 0, 0], [0,0]],
             
             
@@ -119,7 +122,13 @@ room_add(1, [ //Outside Left
     [ //Each Cell - has [cell coordinates, cell data]
         [-3,-1], //Cell Coordinates
         [
-            [1, 0, 0, 2, 1, [sprite_get("[-3,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            [1, 0, 0, 2, 1, [sprite_get("1[-3,-1]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            ]
+        ],
+    [ //Each Cell - has [cell coordinates, cell data]
+        [-4,0], //Cell Coordinates
+        [
+            [1, 0, 0, 2, 1, [sprite_get("1[-4,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
             ]
         ],
     [ //Each Cell - has [cell coordinates, cell data]
@@ -156,7 +165,7 @@ room_add(1, [ //Outside Left
             
             //Room Transition to Hallowflame
             // [8, 20, 40, 0, 0, [0, 0, 64, 64, 2, [2,7328,10551], 1, 0, 0], [0,0]],
-            [8,155,39.88,0,0,[0,0,64,64,2,[2,7328,10551],1,0,0,],[0,0]], // Exported from Lucid Dream
+            [8,155,39.88,0,0,[0,0,64,64,2,[2,7328,10551],0,0,0,],[0,0]], // Exported from Lucid Dream
             
             ]
         ],
@@ -210,6 +219,8 @@ room_add(2, [ //Town
             [1, 0, 0, 0, 1, [sprite_get("2[-1,0]bfluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             [1, 0, 0, 0, -8, [sprite_get("2[-1,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             
+            // [1,55.13,32.25,0,-20,[sprite_get("mark"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
             //Platforms
             //Perfect House
             [1,49,36,1,9,[sprite_get("m_p_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
@@ -238,18 +249,18 @@ room_add(2, [ //Town
             // [6, 140, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
             [6, 110, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,4]],
             // [6, 70, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,0]],
-            [6, 10, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,4]],
+            [6, 20, 43.94, 0, -5, [8, 0, 0, [], 0, 0, 0, 0], [0,4]],
             
             //End Quest - To Town
             // [4, 20, 38, 0, 0, [2, 1, 0, -1, 0, 300, 200, 0], [0,0]], //See [-2,0]
             
             
             //Room Transition To Shrine Inside
-            [8,31,36.38,0,0,[0,0,64,120,6, [2,9794,9975],1,0,0,],[0,0]], // Exported from Lucid Dream
+            [8,31,36.38,0,0,[0,0,64,120,6, [2,9840,10030],1,0,0,],[0,0]], // Exported from Lucid Dream
             // [8, 30, 38, 0, 0, [0, 0, 64, 120, 6, [2,9794,9975], 1, 0, 0], [0,0]],
             
             //Room Transition To House Inside
-            [8,54.13,36.38,0,0,[0,0,64,120,12, [2,9800,10067], 1,0,0,],[0,0]], // Exported from Lucid Dream
+            [8,54.13,36.38,0,0,[5,0,64,120,12, [2,9800,10067], 1,0,0,],[0,0]], // Exported from Lucid Dream
             
             //Room Transition To Temple Inside
             [8, 154, 34, 0, 0, [0, 0, 156, 156, 3, [2,9851,10185], 1, 0, 0], [0,0]],
@@ -268,10 +279,10 @@ room_add(2, [ //Town
             [1, 0, 0, 0, -8, [sprite_get("2[0,0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             
             //Room Transition To Mage House
-            [8, 95, 29, 0, 0, [4, 0, 64, 80, 11, [2, 9826,10074], 1, 0, 0], [0,0]],
+            [8, 95, 29, 0, 0, [4, 0, 64, 80, 11, [2, 9830,10074], 1, 0, 0], [0,0]],
             
             //Room Transition To Outside Right
-            [8, 156, 37, 0, 0, [0, 0, 64, 120, 5, [2,9847,10544], 1, 0, 0], [0,0]],
+            [8, 156, 37, 0, 0, [0, 0, 64, 120, 5, [2,9847,10544], 0, 0, 0], [0,0]],
             
             [1,95.13,24,1,9,[sprite_get("m_f_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
             [1,92.13,24.88,1,9,[sprite_get("m_f_plat1"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
@@ -329,7 +340,7 @@ room_add(3, [ //Temple Inside
             [7, 0, 0, 0, 0, [0, 640, 358, 0, 0, 0, 0, 0], [0,0]],
             
             //Room Transition To Town
-            [8, 0, 14, 0, 0, [0, 0, 16, 110, 2, [2,9774,10547], 1, 0, 0], [0,0]],
+            [8, 0, 14, 0, 0, [0, 0, 16, 110, 2, [2,9774,10547], 0, 0, 0], [0,0]],
             
             //Kei Spawn, Temple
             [6,9.38,22.19,0,-5,[7,0,0,0,0,0,0,0,],[0,5]], // Exported from Lucid Dream
@@ -368,7 +379,7 @@ room_add(4, [ //Temple Basement
             [6, 100, 38, 0, 0, [10, 0, 0, [], 0, 0, 0, 0], [0,0]],
 
             //Note Key
-            [4,16.75,19.38,0,-6,[5,0,0,0,0,64,64,[0,1,0,0]],[0,0]], // Exported from Lucid Dream
+            [4,16.75,19.38,0,-6,[5,0,0,-1,0,64,64,[0,1,0,0]],[0,0]], // Exported from Lucid Dream
             
             //Note Exp5
             [4,40.88,35.25,0,-6,[4,0,0,0,0,64,64,[0,1,0,0]],[0,0]], // Exported from Lucid Dream
@@ -408,6 +419,9 @@ room_add(5, [ //Outside Right - Meadows
         [
             //Static Sprites
             [1, 0, 0, 2, 1, [sprite_get("5[-1,0]ground"), 0, 0, 1, false, 0, 0, 0], [0,0]],
+            
+            //Light/Shade - for shading to be applied
+            [12, 60.38-0.25,44.38+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
             ]
         ],
     [ //Each Cell - has [cell position, cell data]
@@ -444,7 +458,7 @@ room_add(5, [ //Outside Right - Meadows
             [1,109.88,37.75,1,9,[sprite_get("rock_plat7"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
             
             //Room Transition To Town
-            [8, 0, 37, 0, 0, [0, 0, 32, 110, 2, [2,12265,10549], 1, 0, 0], [0,0]],
+            [8, 0, 37, 0, 0, [0, 0, 32, 110, 2, [2,12200,10549], 0, 0, 0], [0,0]],
             
             //Enemy Spawns
             //Brawler
@@ -528,22 +542,24 @@ room_add(6, [ //Shrine Inside
             [1, 0, 0, 0, -8, [sprite_get("6[F0]ffluff"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             
             [1, 0, 0, 0, 1, [sprite_get("6[F0]webs"), 0, 0, 0, false, 0, 0, 0], [0,0]],
+            
+            [1,7.38,6.13,0,0,[sprite_get("candle"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
             // [1, 0, 0, 0, 1, [sprite_get("6[F0]sign"), 0, 0, 0, false, 0, 0, 0], [0,1]],
             
             //Camera Centering
             [7, 0, 0, 0, 0, [0, 260, 180, 0, 0, 0, 0, 0], [0,0]],
             
             //Room Transition To Town
-            [8, 0, 6, 0, 0, [0, 0, 32, 72, 2, [2,7765,10529], 1, 0, 0], [0,0]],
+            [8, 0, 6, 0, 0, [0, 0, 32, 72, 2, [2,7765,10529], 0, 0, 0], [0,0]],
             
             //Destruct
-            [15, 6.88,9, 0, -1, [sprite_get("wood_plack"), 0, 0, sound_get("sfx_fade"), 0, 5, 0, 0.5], [0,0]],
+            [15, 6.75,9, 0, -1, [sprite_get("wood_plack"), 0, 0, sound_get("sfx_fade"), 0, 5, 0, 0.5], [0,0]],
             
             //Note Wood
-            [4, 6, 7, 0, -6, [6, 0, 0, 1, 0, 32, 64, [0,1,0,0]], [0,2]],
+            [4, 6, 7, 0, -6, [6, 0, 0, 1, 0, 64, 64, [0,1,0,0]], [0,2]],
             
             //Note Marble
-            [4, 6, 7, 0, -6, [7, 0, 0, 1, 0, 32, 64, [0,1,0,0]], [0,0]],
+            [4, 6, 7, 0, -6, [7, 0, 0, 1, 0, 64, 64, [0,1,0,0]], [0,0]],
             ]
         ],
     ]);
@@ -856,8 +872,8 @@ room_add(9, [ //Sewer3
             [8, 111, 51, 0, 0, [0, 0, 96, 96, 8, [2,12420,10055], 1, 0, 0], [0,0]],
             
             //Pipe Go Up - Hitbox
-            [4,73.13,53.88,0,-6,[2,0,0,1,0,64,32,[0,0,2,0]],[0,0]], // Exported from Lucid Dream
-            [4,114.13,6.25,0,-6,[2,0,0,1,0,64,32,[0,0,2,0]],[0,0]], // Exported from Lucid Dream
+            [4,73.13,53.88,0,-6,[2,0,0,1,0,64,32,[0,0,1,0]],[0,0]], // Exported from Lucid Dream
+            [4,114.13,6.25,0,-6,[2,0,0,1,0,64,32,[0,0,1,0]],[0,0]], // Exported from Lucid Dream
             
             //Torches
             [1,76.75,9.25 ,0,0,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
@@ -879,6 +895,8 @@ room_add(9, [ //Sewer3
             
             //LsBird
             [6, 100, 10, 0, -5, [4, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            
+            
             
             ]
         ],
@@ -970,7 +988,7 @@ room_add(9, [ //Sewer3
             // [1, 0, 0, 0, -8, [sprite_get("8[0,-1]fg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             
             //Pipe Go Up - Hitbox
-            [4,133,70.75,0,-6,[2,0,0,1,0,64,32,[0,0,2,0]],[0,0]], // Exported from Lucid Dream
+            [4,133,70.75,0,-6,[2,0,0,1,0,64,32,[0,0,1,0]],[0,0]], // Exported from Lucid Dream
             
             //Torches
             [1,117.25,74.38,0,0,[sprite_get("torch"),7,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
@@ -992,8 +1010,14 @@ room_add(9, [ //Sewer3
             //Platforms
             [1,150.25,63,1,9,[sprite_get("sewer_plat2"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
             
+            //Potion item
+            [10,72.38,58.88,0,0,[5,sprite_get("potion_item"),25,0.5,0,"Elixir",0,0,],[0,0]], // Exported from Lucid Dream
+            
             //Brawler
             [6, 148, 23, 0, -5, [1, 0, 0, [], 0, 0, 0, 0], [0,0]],
+            
+            //Note Monster
+            [4,40.4,49,0,-6,[3,0,0,0,0,64,64,[0,1,0,0]],[0,0]], // Exported from Lucid Dream
             ]
         ],
     [ //Each Cell - has [cell position, cell data]
@@ -1005,7 +1029,7 @@ room_add(9, [ //Sewer3
             // [1, 0, 0, 0, -8, [sprite_get("8[-1,-1]fg"), 0, 0, 0, false, 0, 0, 0], [0,0]],
             
             //Water Hitbox
-            [4,0,0,0,0,[2,0,0,2,sprite_get("sewer3_water_hitbox"),0,0,[0,0,2,0]],[0,0]],
+            [4,0,0,0,0,[7,0,0,2,sprite_get("sewer3_water_hitbox"),0,0,[0,0,2,0]],[0,0]],
             
             ]
         ],
@@ -1021,6 +1045,8 @@ room_add(10, [ //Final Staging
             
             //Note Worry
             [4, 115, 30, 0, -6, [2, 0, 0, 1, 0, 32, 64, [0,1,0,0]], [0,0]],
+            
+            
             
             // //Room Transition To Hunter Room? -> Boss area
             // [8, 0, 9, 0, 0, [0, 0, 32, 72, 14, [2,13365,10599], 1, 0, 0], [0,0]],
@@ -1049,6 +1075,9 @@ room_add(10, [ //Final Staging
             
             //To Boss Room!
             [8,62.75,41,0,0,[0,0,96,96,17,[2,10191,10326],1,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Light for shading to occur
+            [12, 146, 50, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
             ]
         ],
     ]);
@@ -1068,7 +1097,7 @@ room_add(11, [ //Mage House
             [7,2.88,1.38,0,0,[0,367,207,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
             
             //Room Transition To Town
-            [8, 0, 9, 0, 0, [0, 0, 32, 72, 2, [2,11326,10389], 1, 0, 0], [0,0]],
+            [8, 0, 9, 0, 0, [0, 0, 32, 72, 2, [2,11332,10389], 0, 0, 0], [0,0]],
             ]
         ],
     ]);
@@ -1087,6 +1116,9 @@ room_add(12, [ //Lacuna House
             
             //Note Test
             [4, 3.13,1.88, 0, -6, [2, 0, 0, 1, 0, 32, 64, [0,1,0,0]], [0,0]],
+            
+            //Note Glow
+            [1,3.13,4.75,0,-20,[sprite_get("scroll"),0,0,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
             
             //Room Transition To Town
             [8, 0, 9, 0, 0, [0, 0, 32, 72, 2, [2,8123,10546], 1, 0, 0], [0,0]],
@@ -1184,7 +1216,7 @@ room_add(15, [ //Sewer Side Room1
             [12, 92.38-0.25     ,30.13+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
             
             //Burger
-            [10, 59, 24, 0, 0, [0, sprite_get("borgar"), 32, 0.3, 0, "Burger", 0, 0], [0,0]],
+            [10, 59,23.38, 0, 0, [0, sprite_get("borgar"), 32, 0.3, 0, "Burger", 0, 0], [0,0]],
             ]
         ],
     ]);
@@ -1205,6 +1237,12 @@ room_add(16, [ //Sewer Side Room2
             
             //Camera Centering
             [7,14.88,14.88,0,0,[0,720,412,0,0,0,0,0,],[0,0]], // Exported from Lucid Dream
+            
+            //Note Monster
+            [4,43,24,0,-6,[3,0,0,0,0,64,64,[0,1,0,0]],[0,0]], // Exported from Lucid Dream
+            
+            //Lights
+            [12, 100-0.25     ,70+1.25, 0, -20, [sprite_get("light"), 20, 0, 0, 0, 0, 0, 0], [0,2]],
             ]
         ],
     ]);

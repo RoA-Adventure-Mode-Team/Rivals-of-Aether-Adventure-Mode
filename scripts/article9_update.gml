@@ -4,10 +4,10 @@ if !_init {
     trigger_shape = spawn_variables[0];
     trigger_w = spawn_variables[1];
     trigger_h = spawn_variables[2];
-    checkpoint_id = spawn_variables[3];
-    stock_type = spawn_variables[4];
-    stock_limit = spawn_variables[5];
-    visible = true;
+    // checkpoint_id = spawn_variables[3];
+    // stock_type = spawn_variables[4];
+    // stock_limit = spawn_variables[5];
+    // visible = true;
 }
 state_timer++;
 

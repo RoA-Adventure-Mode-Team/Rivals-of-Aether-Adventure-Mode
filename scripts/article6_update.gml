@@ -42,7 +42,7 @@ if !_init {
     art_event = EN_EVENT.INIT;
     user_event(6);
     sprite_index = enemy_sprite_get(enem_id,"idle");
-    visible = true;
+    
     
     //Spawn attached articles
     for (var _i = 0; _i < array_length(attached_articles); _i++) {
@@ -82,14 +82,14 @@ if !_init {
     exit;
     //print_debug(get_attack_name(attacks[0]));
 } else {
-	if debug with pHitBox visible = true;
     with oPlayer {
         //print(other.in_render);
         other.in_render = other.physics_range == -1 || (point_distance(other.x,other.y,x,y) < other.physics_range);
     }
     // in_render = physics_range == -1 || (point_distance(x,y,view_get_xview()+view_get_wview()/2,view_get_yview()+view_get_hview()/2) < physics_range); Breaks on Multiplayer
     if in_render {
-    	if team != 1 && !is_boss room_manager.enemy_in_range = true; //If not on the player's team
+    	visible = true;
+    	if team != 1 && !battle_music_override room_manager.enemy_in_range = true; //If not on the player's team
         if (!destroyed) {
             if hitpause <= 1 { 
                 if (hitstun <= 0) {
@@ -148,8 +148,9 @@ if !_init {
         alive_time++;
     }
     else {
-        hsp = 0;
-        vsp = 0;
+    	visible = false;
+        // hsp = 0;
+        // vsp = 0;
     }
     // with oPlayer if state == PS_RESPAWN print("[art6:update] completed check");
 }

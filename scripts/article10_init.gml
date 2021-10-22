@@ -13,8 +13,7 @@ debug_color = c_gray;
 
 event_flag = 0;
 
-pickup_cooldown = 0;
-pickup_cooldown_max = 60;
+pickup_cooldown = 60;
 
 
 custom_args = array_create(0);

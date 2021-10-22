@@ -32,18 +32,21 @@ if state == 0 { //trigger active
     && (active_scene == 0 || (active_scene > 0 && cur_scene >= active_scene) || (active_scene < 0 && cur_scene <= abs(active_scene))) {
         
         with room_manager {
-            switch_to_room_pos = [other.extra_room_vars[1], other.extra_room_vars[2]];
-            room_switch_type = other.extra_room_vars[0];
-            switch_to_room = other.to_room;
-            // room_switch_event = other.action_id;
-            switch_room = true;
+            if !switch_room { //If not already transitioning rooms
+                switch_to_room_pos = [other.extra_room_vars[1], other.extra_room_vars[2]];
+                room_switch_type = other.extra_room_vars[0];
+                switch_to_room = other.to_room;
+                // room_switch_event = other.action_id;
+                switch_room = true;
+            }
         }
         
         if action_id != 0 {
             with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);
         }
         state = 2;
-        if collis_obj.item_id != noone && item_needed == collis_obj.item_id.item_id {
+        if instance_exists(collis_obj.item_id) && item_needed == collis_obj.item_id.item_id {
+            collis_obj.item_id.state = 4;
             instance_destroy(collis_obj.item_id);
         }
         

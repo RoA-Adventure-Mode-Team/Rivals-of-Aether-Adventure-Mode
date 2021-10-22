@@ -1,4 +1,4 @@
-//article15_update, Destructable Terrain
+//article15_update, Destructible Terrain
 
 if !_init {
     // if spawn_variables[0] < 1000 sprite_index = sprite_get("article1_"+string(spawn_variables[0]));
@@ -6,7 +6,7 @@ if !_init {
     spr_name = sprite_get_name(sprite_index);
     spr_ = sprite_index;
     mask_index = sprite_index;
-    if spawn_variables[4] != 0 sprite_change_collision_mask(sprite_get_name(sprite_index),true, 0, 0, 0, 0, 0, 0);
+    // if spawn_variables[4] != 0 sprite_change_collision_mask(sprite_get_name(sprite_index),true, 0, 0, 0, 0, 0, 0);
     anim_speed = spawn_variables[1]*.01;
     group = spawn_variables[2];
     dest_sfx = spawn_variables[3];
@@ -40,14 +40,14 @@ if !_init {
         with collis {
             sound_play(sound_effect);
             spawn_hit_fx(x+hit_effect_x,y+hit_effect_y,hit_effect);
-            // with player_id {
-            //     old_hsp = hsp;
-            //     old_vsp = vsp;
+            with player_id {
+                old_hsp = hsp;
+                old_vsp = vsp;
                 
-            //     has_hit = true;
-            //     hitstop = other.hitpause+other.damage*other.hitpause_growth*.05-2;
-            //     hitpause = true;
-            // }
+                has_hit = true;
+                hitstop = other.hitpause+other.damage*other.hitpause_growth*.05-2;
+                hitpause = true;
+            }
         }
         destroyed = true;
     }

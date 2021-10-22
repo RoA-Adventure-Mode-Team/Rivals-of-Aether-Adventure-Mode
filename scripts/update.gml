@@ -110,6 +110,8 @@ if !_init {
 			visible = false;
 			image_xscale = 0;
 			image_yscale = 0;
+			x = 200;
+			y = 200;
 			set_state(PS_SPAWN);
 			// clear_button_buffer(PC_LEFT_HARD_PRESSED);
 			// clear_button_buffer(PC_RIGHT_HARD_PRESSED);
@@ -165,14 +167,14 @@ if !_init {
 			state == PS_WAVELAND || shield_pressed {
 				keep_dash = false;
 			}
-			if !free && state != PS_JUMPSQUAT && state != PS_WAVELAND && state != PS_DASH_START {
+			if !free && state != PS_JUMPSQUAT && state != PS_WAVELAND && state != PS_DASH_START && (state != PS_TECH_GROUND && state != PS_TECH_FORWARD && state != PS_TECH_BACKWARD) {
 				if ((left_held != 0) || (right_held != 0)) {
 					set_state(PS_DASH_START);
 					spr_dir = (right_held > 0) - (left_held > 0);
 				}
 				//state_timer = 0;
 				keep_dash = false;
-			}
+			} else if (!free) keep_dash = false;
 		}
 		// if state == PS_AIR_DODGE && old_pos[1] - y > 16 { //SNAPPING GRRR
 		// 	y = old_pos[1];

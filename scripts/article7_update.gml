@@ -33,31 +33,11 @@ if state == 0 && (active_scene == 0 || active_scene == room_manager.cur_scene){ 
             collis_obj  = instance_place(x,y,oPlayer);
             break;
     }
-    if collis_obj != noone && collis_obj == follow_player {
+    if collis_obj != noone && collis_obj == follow_player && room_manager.cur_room_time > 30 {
         with obj_stage_main {
             cam_override_obj = other;
             cam_state = 2; //Controlled by Camera
         }
-        // with room_manager {
-        //     switch other.lock_type {
-        //         case 0:
-        //             scroll_horiz = false;
-        //             scroll_vert = false;
-        //             break;
-        //         case 1:
-        //             scroll_horiz = false;
-        //             scroll_vert = true;
-        //             break;
-        //         case 2:
-        //             scroll_horiz = true;
-        //             scroll_vert = false;
-        //             break;
-        //     }
-        //     cam_override_obj = other;
-        //     //cam_override_offset = [cam_lock_x,cam_lock_y];
-            
-        // }
-        
     }
     if collis_obj == noone && obj_stage_main.cam_override_obj == self {
         

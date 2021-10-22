@@ -26,3 +26,5 @@ room_switch_type = spawn_variables[5];
 hold_up = spawn_variables[6];
 event_id = spawn_variables[7];
 item_needed = 0;
+
+dir_arrow = asset_get("lead_arrow_spr");

@@ -16,8 +16,8 @@ custom_args = array_create(0);
 trigger_shape = spawn_variables[0];
 trigger_w = spawn_variables[1];
 trigger_h = spawn_variables[2];
-checkpoint_id = spawn_variables[3];
-stock_type = spawn_variables[4];
-stock_limit = spawn_variables[5];
+// checkpoint_id = spawn_variables[3];
+// stock_type = spawn_variables[4];
+// stock_limit = spawn_variables[5];
 
 collis_obj = noone;

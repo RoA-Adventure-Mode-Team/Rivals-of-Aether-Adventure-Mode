@@ -384,7 +384,7 @@ switch (enem_id) {
                 
                     //Jumping
                     ai_jump_timer ++;
-                    decision_random = random_func(id % 50, round(ai_decision_time), true);
+                    decision_random = random_func(x % 24, round(ai_decision_time), true);
                     
                     if (!is_free) {
                         if (!place_meet(x + 32 * spr_dir, y + 16)) {
@@ -406,9 +406,9 @@ switch (enem_id) {
                             	down_down = true;
                             }
                             if (t_yd >= 24) {
-                                var jump_random = random_func(id % 50, 100, true);
+                                var jump_random = random_func(x % 24, 100, true);
                                 if (jump_random <= 25) {
-                                    var jump_random2 = random_func(id % 50, 100, true);
+                                    var jump_random2 = random_func(x % 24, 100, true);
                                     if (ai_jump_timer % (ai_jump_fwd_frequency  + decision_random) == 0 && jump_random2 <= 33) {
                                         jump_down = true;
                                         if (ai_target.x > x) {
@@ -467,7 +467,7 @@ switch (enem_id) {
                     //Attacking
                     if (ai_attack_cooldown <= 0) {
                         ai_attack_timer ++;
-                        decision_random = random_func(id % 50, round(ai_attack_frequency), true);
+                        decision_random = random_func(x % 24, round(ai_attack_frequency), true);
                         if (decision_random == 0 && !committed) {
                             var decision_random2 = random_func((id % 50) + 2, 100, true);
                             if (t_xd <= 136 && t_yd <= 64 && !is_free) {
@@ -488,7 +488,7 @@ switch (enem_id) {
                         && art_state != PS_HITSTUN_LAND
                         && art_state != PS_TUMBLE) {
                             if (ai_hit_absorption >= 8 && !committed) {
-                                decision_random = random_func(id % 50, 100, true);
+                                decision_random = random_func(x % 24, 100, true);
                                 if (decision_random < 50) {
                                     if (!is_free) {
                                         next_attack = AT_NSPECIAL;
@@ -501,7 +501,7 @@ switch (enem_id) {
                         }
                         
                         //Dash Attacks are more frequent.
-                        decision_random = random_func(id % 50, round(ai_attack_frequency / 2), true);
+                        decision_random = random_func(x % 24, round(ai_attack_frequency / 2), true);
                         if (decision_random == 0 && !committed && art_state == PS_DASH) {
                             if (t_xd <= 160 && t_yd <= 64 && !is_free) {
                                 next_attack = AT_DATTACK;
@@ -987,7 +987,7 @@ switch (enem_id) {
                 anim_type = 0; //0 is cycle; 1 is once per state
                 
                 //Movement Variables
-                walk_speed = 7;
+                walk_speed = 6.5;
                 walk_accel = 0.3;
                 walk_turn_time = 6;
                 initial_dash_time = 10;
@@ -1081,7 +1081,7 @@ switch (enem_id) {
                             ai_fly_timer ++;
                             
                             if (ai_fly_timer % 60 == 0) {
-                                ai_fly_direction = -256 + random_func(id % 50, 512, true);
+                                ai_fly_direction = -256 + random_func(x % 24, 512, true);
                             }
                             
                             if ((ai_target.x < x && spr_dir == 1) || (ai_target.x > x && spr_dir = -1)) && art_state != PS_WALK_TURN {
@@ -1096,7 +1096,7 @@ switch (enem_id) {
                             
                             if (ai_attack_cooldown <= 0) {
                                 ai_attack_timer ++;
-                                var decision_random = random_func(id % 50, round(ai_attack_frequency), true);
+                                var decision_random = random_func(x % 24, round(ai_attack_frequency), true);
                                 if (decision_random == 0 && !committed) {
                                      if ((ai_target.x < x && spr_dir == 1) || (ai_target.x > x && spr_dir = -1)) {
                                         spr_dir = -spr_dir;
@@ -1302,11 +1302,12 @@ switch (enem_id) {
                             set_window_value(AT_FAIR, 3, AG_WINDOW_HAS_CUSTOM_FRICTION, 1);
                             set_window_value(AT_FAIR, 3, AG_WINDOW_CUSTOM_AIR_FRICTION, 0.6);
                             
-                            set_window_value(AT_FAIR, 3, AG_WINDOW_LENGTH, 20);
+                            set_window_value(AT_FAIR, 3, AG_WINDOW_LENGTH, 15);
                             set_window_value(AT_FAIR, 3, AG_WINDOW_ANIM_FRAMES, 3);
                             set_window_value(AT_FAIR, 3, AG_WINDOW_ANIM_FRAME_START, 6);
                             set_window_value(AT_FAIR, 3, AG_WINDOW_HAS_CUSTOM_FRICTION, 1);
                             set_window_value(AT_FAIR, 3, AG_WINDOW_CUSTOM_AIR_FRICTION, 0.4);
+                            set_window_value(AT_FAIR, 3, AG_WINDOW_HAS_WHIFFLAG, 1);
                             
                             
                             set_num_hitboxes(AT_FAIR, 1);
@@ -1571,12 +1572,12 @@ switch (enem_id) {
                             else {
                                 ai_move_cooldown ++;
                                 if (ai_move_cooldown == 1) {
-                                    ai_move_cooldown_full = 5 + random_func(id % 50, 25, true);
+                                    ai_move_cooldown_full = 5 + random_func(x % 24, 25, true);
                                 }
                                 if (ai_move_cooldown >= ai_move_cooldown_full) {
                                     ai_stop_timer = 0;
                                     ai_move_cooldown = 0;
-                                    ai_stop_full = 60 + random_func(id % 50, 240, true);
+                                    ai_stop_full = 60 + random_func(x % 24, 240, true);
                                 }
                                 
                                 ai_moving_right = false;
@@ -1608,7 +1609,7 @@ switch (enem_id) {
                     //Attacking
                     if (ai_attack_cooldown <= 0) {
                         ai_attack_timer ++;
-                        decision_random = random_func(id % 50, round(ai_attack_frequency), true);
+                        decision_random = random_func(x % 24, round(ai_attack_frequency), true);
                         if (decision_random == 0 && !committed) {
                             //The jab
                             if (x_dist <= 144 && y_dist <= 64 && !is_free) {
@@ -1630,7 +1631,7 @@ switch (enem_id) {
                                 ai_attack_cooldown = 50;
                             }
                             
-                            decision_random = random_func(id % 50, round(ai_attack_frequency * 4), true);
+                            decision_random = random_func(x % 24, round(ai_attack_frequency * 4), true);
                             if (decision_random == 0 && !is_free) {
                                 if (x_dist > 320 && x_dist <= 400) {
                                     next_attack = AT_UTILT;
@@ -2942,13 +2943,13 @@ switch (enem_id) {
             	enem_type = EN.NGUARD;
             	enem_id = EN.GUARD; //Use GUARD sprites
             	sprite_name = "nguard";
-            	hitpoints_max = 200;
+            	hitpoints_max = 120;
             	char_name = "Night Guard";
             }
             else {
             	enem_type = EN.GUARD;
             	sprite_name = "guard";
-            	hitpoints_max = 50;
+            	hitpoints_max = 60;
             	char_name = "Guard";
             }
             
@@ -2975,8 +2976,9 @@ switch (enem_id) {
             
             if enem_type == EN.GUARD {
 	            attached_articles = [
-	            	[4,-1,-4,0,0,[2,0,0,120,0,32,64,[0,1,1,0]],[0,0]]
+	            	[4,-1,-4,0,0,[2,0,0,144,0,32,64,[0,1,1,0]],[0,0]]
 	            	];
+	            	// ai_move_timer = 120+random_func(x % 24, ai_move_frequency, true); //Randomize movement start
             } else {
             	attached_articles = [
 	            	[4,-1,-5,0,0,[3,0,0,1,0,180,100,[0,0,1,1]],[0,0]],
@@ -2986,6 +2988,7 @@ switch (enem_id) {
 	            	//Night guards always in front
 	            	og_depth = -9;
             		depth = -9;
+            		// ai_move_timer = 120+random_func(x % 24, ai_move_frequency, true); //Randomize movement start
             }
             
             //AI Behavior Variables
@@ -2994,16 +2997,16 @@ switch (enem_id) {
             ai_range_far = 64; //The preferred maximum range
             ai_move_frequency = 300;
             
-            ai_move_timer = random_func(id % 50, ai_move_frequency, true); //Randomize movement
-            // ai_move_timer = 20; //Randomize movement
             
-            var _a = random_func(id % 50, 1, true);
-            spr_dir = (_a == 1)-(_a == 0);
+            ai_move_timer = ai_move_frequency - 10; //Randomize movement
+            
+            // var _a = random_func((x) % 24, 1, true);
+            // spr_dir = (_a == 1)-(_a == 0);
             init_x = x;
             //Init AI target random movement
             if team == 1 {
             	ai_target = {
-					x: init_x+random_func(id % 50, 600, true)-300,
+					x: init_x+random_func((x) % 24, 600, true)-300,
 					y: y
 				};
             }
@@ -3136,6 +3139,9 @@ switch (enem_id) {
                     case PS_DASH_TURN:
                         sprite_index = enemy_sprite_get(enem_id,"walk");
                         break;
+                    // case PS_HITSTUN:
+                    // 	sprite_index = enemy_sprite_get(enem_id,"hurt");
+                    // 	break;
                 }
     		break;
     		case EN_EVENT.PRE_DRAW:
@@ -3149,12 +3155,7 @@ switch (enem_id) {
     			} else {
     				ai_move_frequency = 300;
     			}
-    			// if team == 1 {
-    			// 	ai_target = {
-    			// 		x: x+random_func(id % 50, 600, true)-300,
-    			// 		y: y
-    			// 	};
-    			// }
+    			
     			//AI Routine
                 if (player_controller == 0 && hitstun <= 0) {
                     var t_dist = point_distance(x, y, ai_target.x, ai_target.y);
@@ -3186,11 +3187,11 @@ switch (enem_id) {
                     if (ai_move_timer % ai_move_frequency == 0 && !committed) {
                     	if team == 1 {
 		    				ai_target = {
-		    					x: init_x+random_func(id % 50, 600, true)-300,
+		    					x: init_x+random_func(x % 24, 600, true)-300,
 		    					y: y
 		    				};
 		    			}
-                    	ai_move_timer = random_func(id % 50, ai_move_frequency-60, true)+60; //Randomize movement, with a base of 60 frames between spins
+                    	ai_move_timer = random_func(x % 24, ai_move_frequency-60, true); //Randomize movement, with a base of 60 frames between spins
                         if (t_xd >= ai_range_low) {
                             if (team != 1 && t_xd >= ai_range_far) { //If agro'd
                                 if (ai_target.x > x) right_hard_pressed = true;
@@ -3247,7 +3248,7 @@ switch (enem_id) {
                 
                     //Jumping
                     ai_jump_timer ++;
-                    decision_random = random_func(id % 50, round(ai_decision_time), true);
+                    decision_random = random_func(x % 24, round(ai_decision_time), true);
                     
                     if team != 1 {
 	                    if (!is_free) {
@@ -3264,9 +3265,9 @@ switch (enem_id) {
 	                        }
 	                        if (decision_random == 0 && !committed) {
 	                            if (ai_target.y + 24 <= y) {
-	                                var jump_random = random_func(id % 50, 100, true);
+	                                var jump_random = random_func(x % 24, 100, true);
 	                                if (jump_random <= 25) {
-	                                    var jump_random2 = random_func(id % 50, 100, true);
+	                                    var jump_random2 = random_func(x % 24, 100, true);
 	                                    if (ai_jump_timer % (ai_jump_fwd_frequency  + decision_random) == 0 && jump_random2 <= 33) {
 	                                        jump_down = true;
 	                                        if (ai_target.x > x) {
@@ -3326,7 +3327,7 @@ switch (enem_id) {
                     //Attacking
                     if (team != 1 && ai_attack_cooldown <= 0) {
                         ai_attack_timer ++;
-                        decision_random = random_func(id % 50, round(ai_attack_frequency), true);
+                        decision_random = random_func(floor(x) % 24, round(ai_attack_frequency), true);
                         if (decision_random == 0 && !committed) {
                             if (t_xd <= 136 && t_yd <= 64) {
                                 if !is_free next_attack = AT_FSPECIAL;
@@ -3345,6 +3346,14 @@ switch (enem_id) {
                             ai_attack_cooldown --;
                     }
                 }
+                
+                
+    			if alive_time == 1 {
+    				var _a = random_func_2(floor(x) % 200, 10, true);
+    				print(_a);
+            		left_down = (_a < 5);
+            		right_down = (_a >= 5);
+    			}
                 
 	            // if (player_controller == 0 && hitstun <= 0) {
 	            //     right_down = ai_moving_right;
@@ -3390,6 +3399,37 @@ switch (enem_id) {
 	            // }
     		break;
     		case EN_EVENT.DEATH:
+    			invincible = 100;
+                sprite_index = enemy_sprite_get(enem_id,"hurt");
+                if hitpause > 1 {
+                    state_timer = 0;
+                } else {
+                    image_index += 0.35;
+                    if (state_timer == 2) {
+                        kb_power *= 1.25;
+                        if !is_free && kb_angle > 3.14159 && kb_angle < 3.14159*2 vsp = kb_power*sin(kb_angle);
+                        else if !is_free vsp = -abs(kb_power*dsin(kb_angle));
+                        else vsp = -kb_power*dsin(kb_angle);
+                        hsp = kb_power*dcos(kb_angle);
+                        if hsp != 0 spr_dir = -sign(hsp);
+                    }
+                    if hit_wall && !ingores_walls hsp = -hsp*.7;
+                    if (state_timer % 8 == 0) {
+                        // var test = spawn_hit_fx(round(x), round(y - char_height/2),  fx_enemy_abyssdeath);
+                        test.depth = depth + 1;
+                    }
+                    old_hsp = hsp;
+                    old_vsp = vsp;
+                    //hitstun--;
+                    if !is_free vsp = -8 * knockback_adj;
+                    if (place_meet_solid(x + (hsp), y)) hsp = -hsp;
+                    if state_timer >= 20 {
+                        sound_play(sound_get("sfx_enemy_hit"));
+                        spawn_hit_fx(round(x), round(y - char_height/2), fx_enemy_abyssdeath2);
+                        
+                        destroyed = true;
+                    }
+                }
     		break;
     		case EN_EVENT.SET_ATTACK:
     			with (obj_stage_main) {

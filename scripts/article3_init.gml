@@ -1,7 +1,8 @@
 //article3_init, action manager
 action_article_index = -1; //Put nessessary functioning articles here
 sprite_index = asset_get("empty_sprite");
-depth = -120;
+depth = -1;
+// depth = 120;
 disable_movement = true;
 visible = false;
 debug = false;
@@ -67,6 +68,14 @@ hdialog_y = 32;
 cur_music_id = -1;
 music_array = [];
 
+//Particles
+active_particles = [];
+
+//Custom Actions
+custom_flag = 0;
+event_flag = 0;
+custom_action = [];
+perpetual = false;
 // quest_add(3,1,"Test Quest","This is a test quest!");
 // quest_add(3,2,"Test Quest","This is a test quest! Part 2!");
 // quest_add(3,3,"Dfferent Title!","Completely different text!");

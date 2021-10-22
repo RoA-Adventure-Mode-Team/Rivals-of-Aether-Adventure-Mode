@@ -85,8 +85,14 @@ if collis_obj != noone && (req_item_id == 0 || (collis_obj.item_id != noone && r
         }
         trigger_cooldown = trigger_cooldown_max;
         if debug print_debug("[TZ] TRIGGERED ACTION "+string(action_manager.room_id)+":"+string(active_scene)+":"+string(action_id));
-        if trigger_relative == 1 with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.id]);
-        if trigger_relative == 2 with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.collis_obj]);
+        if trigger_relative == 1 {
+            if debug print_debug("[TZ] RELATIVE TO BOX");
+            with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.id]);
+        }
+        if trigger_relative == 2 {
+            if debug print_debug("[TZ] RELATIVE TO ARTICLE TRIGGERING");
+            with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.collis_obj]);
+        }
         else  with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id]);
         // with action_manager array_push(action_queue, [room_id, other.active_scene, other.action_id, other.id]);
         if req_item_id != 0 with collis_obj { //Remove Item

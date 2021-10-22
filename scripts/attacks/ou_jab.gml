@@ -72,7 +72,7 @@ set_hitbox_value(AT_JAB, 2, HG_HITBOX_GROUP, -1);
 set_hitbox_value(AT_JAB, 2, HG_VISUAL_EFFECT, 0);
 set_hitbox_value(AT_JAB, 2, HG_HIT_SFX, asset_get("sfx_blow_heavy1"));
 set_hitbox_value(AT_JAB, 2, HG_EXTRA_CAMERA_SHAKE, 1);
-set_hitbox_value(AT_JAB, 2, HG_EXTRA_HITPAUSE, 999);
+// set_hitbox_value(AT_JAB, 2, HG_EXTRA_HITPAUSE, 999);
 
 
 

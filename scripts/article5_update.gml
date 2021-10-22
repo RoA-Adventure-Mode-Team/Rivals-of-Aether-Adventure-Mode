@@ -21,7 +21,6 @@ if get_gameplay_time() == 2 { //Initialize things on the first gameplay frame
     last_pos[1] = follow_player.y;
     with obj_stage_main g_cam_pos = [other.follow_point.x,other.follow_point.y];
     visible = true;
-    smoothing = 1/5;
 }
 
 //if get_gameplay_time() == 3 { //Move the cam to position
@@ -122,6 +121,7 @@ music_fade_timer = 0;
 music_fade_timer++;
 if music_to != noone {
 	music_set_volume(abs(music_fade_timer*2-music_fade_time)/music_fade_time);
+	if music_fade_timer == floor(music_fade_time/2) - 1 music_set_volume(0);
 	if music_fade_timer == floor(music_fade_time/2) {
 		music_set_volume(0);
 		music_play_file(music_to); 
@@ -280,7 +280,7 @@ room_switch_timer++;
 room_switch_type = 0;
 room_switch_on = false;
 cam_state = 0;
-cam_smooth = obj_stage_main.cam_smooth;
+// cam_smooth = obj_stage_main.cam_smooth;
 //---Moved Elsewhere
 // with action_manager {
 // 	room_id = other.cur_room;

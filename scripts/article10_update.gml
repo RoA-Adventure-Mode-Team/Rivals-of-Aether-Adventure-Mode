@@ -8,12 +8,13 @@ if !_init {
     // use_type = spawn_variables[4];
     use_type = spawn_variables[4];
     item_name = spawn_variables[5];
-    name_width = string_width(item_name);
+    name_width = string_width(string(item_name));
     //prite_index = item_sprite_get(item_id,"idle");
     
     visible = true;
+    // keep = true;
     _init = 1;
-    
+    pickup_cooldown = 0;
 }
 
 enum EVT {
@@ -28,8 +29,9 @@ enum EVT {
 state_timer++;
 
 if state == EVT.GRAB { //Normal Operations
-    collis_obj = collision_circle(x,y,grav_radius,oPlayer,true,true);
-    if collis_obj != noone  && collis_obj.item_id == noone {
+    if state_timer > pickup_cooldown collis_obj = collision_circle(x,y,grav_radius,oPlayer,true,true);
+    else collis_obj = noone;
+    if collis_obj != noone  && !instance_exists(collis_obj.item_id) {
         vsp += grav_accel*-dsin(point_direction(x,y,collis_obj.x,collis_obj.y-collis_obj.char_height/2));//(point_distance(x,y,collis_obj.x,collis_obj.y+collis_obj.char_height/2));
         hsp += grav_accel*dcos(point_direction(x,y,collis_obj.x,collis_obj.y-collis_obj.char_height/2));//(point_distance(x,y,collis_obj.x,collis_obj.y+collis_obj.char_height/2));
         if collision_circle(x,y,32,collis_obj,true,true) != noone {
@@ -71,20 +73,22 @@ if state == EVT.IDLE { //Following a Player
 }
 
 if state == EVT.USE { //Used
+    pickup_cooldown = 30;
     event_flag = EVT.USE;
     user_event(10); //Item Custom Behavior
     
 }
 
 if state == EVT.ALTUSE { //Rejection & Cooldown
+    pickup_cooldown = 30;
     event_flag = EVT.ALTUSE;
     user_event(10); //Item Custom Behavior
 }
 // with oPlayer if state == PS_RESPAWN print("[art10:update] completed check");
 if state == EVT.DESTROY {
-    event_flag = EVT.DESTROY;
     keep = false;
     if follow_player != noone follow_player.item_id = noone; //Remove the item from the follow variable if it is filled
+    event_flag = EVT.DESTROY;
     user_event(10); //Item Custom Behavior
     if debug print("[ITEM] Destroyed "+string(item_id));
     instance_destroy();

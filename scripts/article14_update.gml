@@ -4,7 +4,7 @@ if _init == 0 {
     spr_name = spawn_variables[0];
     spawn_time = spawn_variables[1];
     vfx_time = spawn_variables[2];
-    anim_speed = spawn_variables[3];
+    // anim_speed = spawn_variables[3];
     type = spawn_variables[4];
     vel = spawn_variables[5];
     alpha_ = spawn_variables[6];
@@ -23,7 +23,6 @@ if _init == 0 {
             image_number: sprite_get_number(spr_name),
             vfx_time: vfx_time,
             alive_time: 0,
-            anim_speed: anim_speed,
             type: type,
             hsp: 0,
             vsp: 0,

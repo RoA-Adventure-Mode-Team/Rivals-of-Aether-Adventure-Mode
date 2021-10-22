@@ -22,18 +22,16 @@ enum LWO {
 }
 
 enum ACT {
-    CAMERA, //Sets the camera to a specific point
-    //action_time, x, y, focus_type, smooth 
+    // CAMERA, //Sets the camera to a specific point
+    // //action_time, x, y, focus_type, smooth 
     WINDOW, //Makes a hud window
     //window_num, x, y, [contentoverride]
     CONTROL, //Controls players
     //player_id, life_time, state_override, input_array
-    SPRITE,
-    
     WAIT, //waits
     //frames
     PLAY_SOUND,
-    //sound_name
+    //sound
     SET, //Set data
     //article_id, variable, value, ease_type, ease_length
     ON_INPUT, //Do a thing when a player presses a button
@@ -70,6 +68,8 @@ enum ACT {
     //to_music_index, fade_time
     DESPAWN, //Article group to despawn/remove 
     //article_id
+    EMIT_PARTICLE, //Emit a particle, generally at a relative location
+    //x,y, sprite, vfx_time, disable_movement, alpha
     END_GAME, //Calls end_match
 }
 
@@ -134,15 +134,15 @@ action_add(1, 0, 2, ACT.WINDOW,
 []); //Actions to start on exit
 
 //DEBUG - To Sewer Scene
-action_add(1, 0, 6, ACT.SCENE, 
-// [0, 7], //[0:set,1:add, scene id]
-[0, 3], //[0:set,1:add, scene id]
-[]); //Actions to start on exit
+// action_add(1, 0, 6, ACT.SCENE, 
+// // [0, 7], //[0:set,1:add, scene id]
+// [0, 5], //[0:set,1:add, scene id]
+// []); //Actions to start on exit
 
 //DEBUG - Get A Key
-action_add(1, 0, 4, ACT.SPAWN_ART,
-[[-3,0],[10,34,42,0,-6,[2,sprite_get("item_2"),1000,1,0,"Aqueduct Key",0,0],[0,0]]], //cell, [room_format]
-[]); //Actions to start on exit
+// action_add(1, 0, 4, ACT.SPAWN_ART,
+// [[-3,0],[10,34,42,0,-6,[2,sprite_get("item_2"),1000,1,0,"Aqueduct Key",0,0],[0,0]]], //cell, [room_format]
+// []); //Actions to start on exit
 
 action_add(1, 1, 1, ACT.WAIT,   //room_id, scene_id, action_id, action_type
 [1],                          //Action arguments
@@ -412,11 +412,6 @@ action_add(2, 4, 1, ACT.TRANS_MUSIC,
 ["Hallowflame_Calm"], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
 
-action_add(2, 5, 1, ACT.TRANS_MUSIC, 
-["Hallowflame_Night"], //music_name
-// [3,6]); //Actions to start on exit //DEBUG Events
-[]); //Actions to start on exit
-
 //Scene 5: Night Lacuna search
 
 //Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
@@ -430,7 +425,7 @@ action_add(2, 5, 2, ACT.SET,
 
 //Spawn 1 Night Guard
 action_add(2, 5, 3, ACT.SPAWN_ART,
-[[-1,0],[6, 30, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+[[-1,0],[6, 15, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
 [4]); //Actions to start on exit
 
 //Spawn 1 Night Guard
@@ -441,21 +436,27 @@ action_add(2, 5, 4, ACT.SPAWN_ART,
 //Spawn 1 Night Guard
 action_add(2, 5, 5, ACT.SPAWN_ART,
 [[0,0],[6, 70, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+// [6]); //Actions to start on exit
 [6]); //Actions to start on exit
 
-//Spawn 1 Night Guard
+// //Spawn 1 Night Guard
 action_add(2, 5, 6, ACT.SPAWN_ART,
-[[-1,0],[6, 110, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
-[7]); //Actions to start on exit
+[[-1,0],[6, 90, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+[]); //Actions to start on exit
 
 //Spawn 1 Night Guard
-action_add(2, 5, 7, ACT.SPAWN_ART,
-[[-1,0],[6, 158, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
-[]); //Actions to start on exit
+// action_add(2, 5, 7, ACT.SPAWN_ART,
+// [[-1,0],[6, 130, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+// []); //Actions to start on exit
 
 action_add(2, 5, 8, ACT.TRANS_MUSIC, 
 ["Hallowflame_Night"], //music_name
 // [3,6]); //Actions to start on exit //DEBUG Events
+[9]); //Actions to start on exit
+
+//Spawn A mark on lacuna's house
+action_add(2, 5, 9, ACT.SPAWN_ART,
+[[-1,0],[1,55.13,32.25,0,-20,[sprite_get("mark"),0,0,0,0,0,0,0,],[0,0]]], //cell, [room_format]
 []); //Actions to start on exit
 
 //Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
@@ -469,7 +470,7 @@ action_add(2, 6, 2, ACT.SET,
 
 //Spawn 1 Night Guard
 action_add(2, 6, 3, ACT.SPAWN_ART,
-[[-1,0],[6, 30, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+[[-1,0],[6, 20, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
 [4]); //Actions to start on exit
 
 //Spawn 1 Night Guard
@@ -480,21 +481,27 @@ action_add(2, 6, 4, ACT.SPAWN_ART,
 //Spawn 1 Night Guard
 action_add(2, 6, 5, ACT.SPAWN_ART,
 [[0,0],[6, 70, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+// [6]); //Actions to start on exit
 [6]); //Actions to start on exit
 
-//Spawn 1 Night Guard
+// //Spawn 1 Night Guard
 action_add(2, 6, 6, ACT.SPAWN_ART,
-[[-1,0],[6, 110, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
-[7]); //Actions to start on exit
+[[-1,0],[6, 90, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+[]); //Actions to start on exit
 
 //Spawn 1 Night Guard
-action_add(2, 6, 7, ACT.SPAWN_ART,
-[[-1,0],[6, 158, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
-[]); //Actions to start on exit
+// action_add(2, 6, 7, ACT.SPAWN_ART,
+// [[-1,0],[6, 130, 43.94, 0, -5, [10, 0, 0, [], 0, 0, 0, 0], [0,4]],], //cell, [room_format]
+// []); //Actions to start on exit
 
 action_add(2, 6, 8, ACT.TRANS_MUSIC, 
 ["Hallowflame_Night"], //music_name
 // [3,6]); //Actions to start on exit //DEBUG Events
+[9]); //Actions to start on exit
+
+//Spawn A mark on lacuna's house
+action_add(2, 6, 9, ACT.SPAWN_ART,
+[[-1,0],[1,55.25,32.38,0,0,[sprite_get("mark"),0,0,0,0,0,0,0,],[0,0]]], //cell, [room_format]
 []); //Actions to start on exit
 
 ////3: Temple Inside 
@@ -585,7 +592,7 @@ action_add(3, 6, 3, ACT.TRANS_MUSIC,
 //4: Temple Basement
 //Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
 action_add(4, 0, 1, ACT.SET,  
-[2, "bg_color", $888888], //article_group, variable, value, ease_type, ease_length
+[2, "bg_color", $333333], //article_group, variable, value, ease_type, ease_length
 [8]); //Actions to start on exit
 
 //NGuard Killbox
@@ -666,33 +673,33 @@ action_add(5, 0, 8, ACT.SET,
 // []); //Actions to start on exit
 
 //Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
-action_add(5, 3, 1, ACT.SET,  
-[2, "bg_color", $718ae1, 0, 60], //article_group, variable, value, ease_type, ease_length
-[2]); //Actions to start on exit
+// action_add(5, 3, 1, ACT.SET,  
+// [2, "bg_color", $718ae1, 0, 60], //article_group, variable, value, ease_type, ease_length
+// [2]); //Actions to start on exit
 
-action_add(5, 3, 2, ACT.TRANS_MUSIC, 
-["Hallowflame_Night"], //music_name
-// [3,6]); //Actions to start on exit //DEBUG Events
-[]); //Actions to start on exit
+// action_add(5, 3, 2, ACT.TRANS_MUSIC, 
+// ["Hallowflame_Night"], //music_name
+// // [3,6]); //Actions to start on exit //DEBUG Events
+// []); //Actions to start on exit
 
 //Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
 action_add(5, 4, 1, ACT.SET,  
-[2, "bg_color", $813030, 0, 60], //article_group, variable, value, ease_type, ease_length
-[2]); //Actions to start on exit
-
-action_add(5, 4, 2, ACT.TRANS_MUSIC, 
-["Hallowflame_Night"], //music_name
-// [3,6]); //Actions to start on exit //DEBUG Events
+[2, "bg_color", $718ae1 , 0, 60], //article_group, variable, value, ease_type, ease_length
 []); //Actions to start on exit
+
+// action_add(5, 4, 2, ACT.TRANS_MUSIC, 
+// ["Hallowflame_Night"], //music_name
+// // [3,6]); //Actions to start on exit //DEBUG Events
+// []); //Actions to start on exit
 
 //Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
 action_add(5, 5, 1, ACT.SET,  
 [2, "bg_color", $813030, 0, 60], //article_group, variable, value, ease_type, ease_length
-[2]); //Actions to start on exit
+[]); //Actions to start on exit
 
-action_add(5, 5, 2, ACT.TRANS_MUSIC, 
-["Hallowflame_Night"], //music_name
-// [3,6]); //Actions to start on exit //DEBUG Events
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
+action_add(5, 6, 1, ACT.SET,  
+[2, "bg_color", $813030, 0, 60], //article_group, variable, value, ease_type, ease_length
 []); //Actions to start on exit
 
 
@@ -701,7 +708,7 @@ action_add(5, 5, 2, ACT.TRANS_MUSIC,
 //Despawn one note, to let the other through
 action_add(6, 0, 5, ACT.DESPAWN,  
 [2], //article_group
-[8]); //Actions to start on exit
+[]); //Actions to start on exit
 
 action_add(6, 0, 6, ACT.WINDOW, 
 [7, 0, 0, [[sprite_get("note_wood")]]], //window_type, x, y, [contentoverride]?
@@ -711,10 +718,10 @@ action_add(6, 0, 7, ACT.WINDOW,
 [7, 0, 0, [[sprite_get("note_marble")]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
 
-action_add(6, 0, 8, ACT.TRANS_MUSIC, 
-["Hallowflame_Calm"], //music_name
-// [3,6]); //Actions to start on exit //DEBUG Events
-[]); //Actions to start on exit
+// action_add(6, 0, 8, ACT.TRANS_MUSIC, 
+// ["Hallowflame_Calm"], //music_name
+// // [3,6]); //Actions to start on exit //DEBUG Events
+// []); //Actions to start on exit
 
 ////7: Sewer
 
@@ -806,37 +813,41 @@ action_add(9, 0, 1, ACT.TRANS_MUSIC,
 //Wind Hitbox
 action_add(9, 0, 2, ACT.HITBOX,
 [AT_JAB, 9], //window_type, x, y, [id]
+[4]); //Actions to start on exit
+
+action_add(9, 0, 3, ACT.WINDOW, 
+[7, 0, 0, [[sprite_get("note_monster")]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
 
-//Set the player VSP
-// action_add(9, 0, 2, ACT.SET_RELATIVE,  
-// ["vsp", -16, 0, 1], //variable, value, ease_type, ease_length
-// [3]); //Actions to start on exit
+//Steam woosh - gonna be always relative
+action_add(9, 0, 4, ACT.EMIT_PARTICLE,  
+[0, 0, sprite_get("puff"), 30, 1, 1], //x,y, sprite, vfx_time, disable_movement, alpha
+[]); //Actions to start on exit
 
-// action_add(9, 0, 3, ACT.SET_RELATIVE,  
-// ["free", true, 0, 1], //variable, value, ease_type, ease_length
-// []); //Actions to start on exit
-
-// action_add(9, 0, 4, ACT.SET_RELATIVE,  
-// ["free", true, 0, 5], //variable, value, ease_type, ease_length
-// []); //Actions to start on exit
-
+action_add(9, 0, 7, ACT.HITBOX,
+[AT_JAB, 8], //window_type, x, y, [id]
+[]); //Actions to start on exit
 
 ////10: Staging Grounds
 action_add(10, 0, 1, ACT.TRANS_MUSIC, 
 ["sewer_ambience"], //music_name
-[]); //Actions to start on exit
+[3]); //Actions to start on exit
 //Worry Note
 action_add(10, 0, 2, ACT.WINDOW, 
 [7, 0, 0, [[sprite_get("note_worry")]]], //window_type, x, y, [contentoverride]?
 []); //Actions to start on exit
 
+//Set the Room Lighting - $718ae1 for evening, $813030 for night, $888888 for dark
+action_add(10, 0, 3, ACT.SET,  
+[2, "bg_color", $888888], //article_group, variable, value, ease_type, ease_length
+[]); //Actions to start on exit
+
 ////11: Mage House
 
-//Mage Lacuna dialog
-action_add(11, 4, 1, ACT.WINDOW, 
-[6, dialog_x, hdialog_y, [[11,1]]], //window_type, x, y, [id, progress, freeze_player]
-[2,4]); //Actions to start on exit
+action_add(11, 4, 1, ACT.TRANS_MUSIC, 
+["music_loop"], //music_name
+// [3,6]); //Actions to start on exit //DEBUG Events
+[4]); //Actions to start on exit
 
 //Lacuna Question - to find house
 action_add(11, 4, 2, ACT.QUEST_PROG, 
@@ -848,12 +859,13 @@ action_add(11, 4, 3, ACT.SCENE,
 [0, 5], //[0:set,1:add, scene id]
 []); //Actions to start on exit
 
-action_add(11, 4, 4, ACT.TRANS_MUSIC, 
-["music_loop"], //music_name
-// [3,6]); //Actions to start on exit //DEBUG Events
-[]); //Actions to start on exit
+action_add(11, 4, 4, ACT.WINDOW, 
+[6, dialog_x, hdialog_y, [[11,1]]], //window_type, x, y, [id, progress, freeze_player]
+[2]); //Actions to start on exit
 
-////12: Lacuna House (skippable)
+
+////12: Lacuna House
+
 action_add(12, 0, 2, ACT.WINDOW, 
 [7, 0, 0, [[sprite_get("note_lacuna")]]], //window_type, x, y, [contentoverride]?
 [3]); //Actions to start on exit
@@ -913,7 +925,7 @@ action_add(14, 0, 5, ACT.WINDOW,
 //DEBUG - Get A Full Heal
 action_add(14, 0, 7, ACT.SPAWN_ART,
 // [[0,0],[10, 78, 31, 0, 0, [3, asset_get("empty_sprite"), 500, 2, 0, "", 0, 0], [0,0]],], //cell, [room_format]
-[[0,0],[10, 78, 31, 0, 10, [3, sprite_get("black"), 500, 2, 0, "", 0, 0], [0,0]],], //cell, [room_format]
+[[0,0],[10, 78, 31, 0, 10, [3, sprite_get("black"), 500, 50, 0, "", 0, 0], [0,0]],], //cell, [room_format]
 []); //Actions to start on exit
 
 action_add(14, 0, 8, ACT.HITBOX,
@@ -921,10 +933,19 @@ action_add(14, 0, 8, ACT.HITBOX,
 []); //Actions to start on exit
 
 
+action_add(16, 0, 3, ACT.WINDOW, 
+[7, 0, 0, [[sprite_get("note_aqueduct")]]], //window_type, x, y, [contentoverride]?
+[]); //Actions to start on exit
+
+
 ////17: Boss Room
 
 action_add(17, 0, 1, ACT.TRANS_MUSIC, 
 ["sewer_ambience"], //music_name
+[2]); //Actions to start on exit
+
+action_add(17, 0, 2, ACT.QUEST_PROG, 
+[6, 1, 10], //quest_id, action_type[0:set forward, 1:set override, 2:add/sub], amount
 []); //Actions to start on exit
 
 //Ryken Dialog
@@ -1027,8 +1048,7 @@ action_add(20, 0, 6, ACT.SW_ROOM,
 []); //Actions to start on exit
 
 
-
-//Dialog Init
+////Dialog Init
 //1: Quick Test
 // dialog_add(1,1,["Hello! These are the default sprites...."]);
 // dialog_add(1,2,["...And Here's some Override!",sprite_get("face_default2")]);
@@ -1132,9 +1152,6 @@ dialog_add(9,_i++,["Rykie's got you on trash duty huh?"]); //Mage
 dialog_add(9,_i++,["I think I've got something that may *actually* interest you."]); //Mage
 dialog_add(9,_i++,["We can't talk about it out here - my house is the one in the east on the raised platform. Hard to miss!"]); //Mage
 
-// dialog_add(9,_i++,["This is the end of the demo! Feel free to explore elsewhere you haven't been!"]); //Mage
-// dialog_add(9,_i++,["Thank you for making it this far and be sure to check out the full version on Workshop when it releases!"]); //Mage
-
 //10: Hunter
 _i = 1;
 if fp.am_is_not dialog_add(10,_i++,["*You* shouldn't be here, yet you are. Kindred spirits, in that way."]); //Hunter
@@ -1149,7 +1166,7 @@ dialog_add(10,_i++,["Would you like to share the night?"]); //Hunter
 
 //11: Mage House Dialog
 _i = 1;
-dialog_add(11,_i++,["Now that we are away from the eyes of the gaurd..."]); //Mage
+dialog_add(11,_i++,["Now that we are away from the eyes of the guard..."]); //Mage
 dialog_add(11,_i++,["There's hushed rumors going around - about Dr. Lacuna. They're a royal researcher stationed here from the Capital."]); //Mage
 dialog_add(11,_i++,["Sent to 'survey the outskirts in the wake of the successional crisis.' That is well above their status."]); //Mage
 dialog_add(11,_i++,["I always see them pass by my window and decend in the Abandoned Aqueduct."]); //Mage
@@ -1161,6 +1178,7 @@ else if fp.am_is_insane dialog_add(11,_i++,["...You two will hit it off nicely I
 else if fp.am_is_not dialog_add(11,_i++,["...Perhaps you could BLEED THEM DRY AND FEAST 
 ON  THEIR            BONE             MARROW."]); //Mage
 else dialog_add(11,_i++,["...Perhaps you could talk with them and gleam something?"]); //Mage
+dialog_add(11,_i++,["They should be on the left side of town, right next to the old shrine."]); //Mage
 dialog_add(11,_i++,["It's looking to be nighttime soon. A perfect time for snooping!"]); //Mage
 dialog_add(11,_i++,["But be careful, people disappear durring the night..."]); //Mage
 
@@ -1188,7 +1206,7 @@ dialog_add(14,_i++,["If this wisdom is not shining upon you..."]); //Ryken
 _i = 1;
 dialog_add(15,_i++,["May a trial by fire light up the truth!"]); //Ryken
 
-//Quest Init
+////Quest Init
 
 //1: Kei Rescue
 quest_add(1,1,"Rescue","Defend from an unknown threat!",asset_get("empty_sprite"));
@@ -1197,7 +1215,7 @@ quest_add(1,1,"Rescue","Defend from an unknown threat!",asset_get("empty_sprite"
 quest_add(2,1,"Get to Safety","Go to a safe(r) place.",asset_get("empty_sprite"));
 
 //3: Supplier Gather
-quest_add(3,1,"Food for Thought","Find the missing shipment in the Meadows",asset_get("empty_sprite"));
+quest_add(3,1,"Food for Thought","Find the missing shipment in the Meadows to the south",asset_get("empty_sprite"));
 quest_add(3,2,"Food for Thought","Find the missing crates in the Meadows (0/3)",asset_get("empty_sprite"));
 quest_add(3,3,"Food for Thought","Find the missing crates in the Meadows (1/3)",asset_get("empty_sprite"));
 quest_add(3,4,"Food for Thought","Find the missing crates in the Meadows (2/3)",asset_get("empty_sprite"));
@@ -1209,8 +1227,8 @@ if fp.am_is_evil quest_add(3,5,"Food for Thought","Return To Rykenburn for your 
 quest_add(4,1,"Civil Duties","Collect Rubbish (0/52)",asset_get("empty_sprite"));
 
 //5: The Lacuna Question
-quest_add(5,1,"Inquiry","Find this helper and listen to what she has to say.",asset_get("empty_sprite"));
-quest_add(5,2,"The Lacuna Question","Visit Dr Lacuna.",asset_get("empty_sprite"));
+quest_add(5,1,"Inquiry","Find this helper in her home on the south side of town.",asset_get("empty_sprite"));
+quest_add(5,2,"The Lacuna Question","Visit Dr Lacuna, who lives next to the shrine on the north side of town.",asset_get("empty_sprite"));
 quest_add(5,3,"The Lacuna Question","Find clues for what has been going on.",asset_get("empty_sprite"));
 quest_add(5,4,"The Lacuna Question","Get to the Temple Archives.",asset_get("empty_sprite"));
 quest_add(5,5,"The Lacuna Question","Open the entrance to the Underground Aqueduct.",asset_get("empty_sprite"));
@@ -1219,28 +1237,6 @@ quest_add(5,5,"The Lacuna Question","Open the entrance to the Underground Aquedu
 quest_add(6,1,"Decend into Darkness","Search in the Underground Aqueduct.",asset_get("empty_sprite"));
 quest_add(6,2,"Decend into Darkness","Defeat Rykenburn.",asset_get("empty_sprite"));
 
-// quest_add(2,1,"Test Quest2","This is a test quest also!",sprite_get("torch"));
-// quest_add(2,2,"Test Quest2.1","This is a test quest also also!",sprite_get("torch"));
-// quest_add(2,3,"Different Title!2.2","Completely different text again!",sprite_get("torch"));
-// quest_add(3,1,"Test Quest1.1","This is a test quest!",sprite_get("borgar"));
-// quest_add(3,2,"Test Quest1.2","This is a test quest! Part 2!",sprite_get("borgar"));
-// quest_add(3,3,"Different Title!1.3","Completely different text!",sprite_get("borgar"));
-
-// music_add(0,"Hallowflame_Calm");
-// music_add(1,"Hallowflame_Night_Theme");
-// music_add(2,"Hallowflame_Sewers_Complex");
-// music_add(3,"Main_Battle_Theme");
-// music_add(4,"Vs_Rykenburn");
-// music_add(5,"Credits_Theme");
-
-
-
-//Functions DO NOT EDIT BELLOW
-/*if debug {
-    print_debug("LOADED ARRAYS:");
-    print_debug(string(action_array));
-    print_debug(string(scene_array));
-}*/
 
 #define action_add(_room_id, _scene_id, _action_id, _action_type, _param, _on_exit)
 while _room_id >= array_length_1d(action_array) array_push(action_array, []);
@@ -1282,273 +1278,3 @@ while _progress >= array_length_1d(dialog_array[_id]) array_push(dialog_array[_i
 dialog_array[@_id][@0] = noone; //Save dialog progress
 dialog_array[@_id][@_progress] = _data; //Save dialog progress
 return true;
-
-// #define music_add(_music_id,_music_index)
-// while array_length_1d(music_array) < _music_id array_push(music_array, []);
-// music_array[_music_id] = [_music_index];
-
-// #define music_find_length(_music_id)
-// if array_length_1d(music_array) < _music_id return noone;
-// return music_array[_music_id][1];
-
-// #define control(_dir,_but)
-// return [_dir,_but];
-//Global Scenes
-
-/*scene_add(1,[
-    [2,2, 1, [sprite_get("dialog_border"), 6, -16, -16, sprite_get("squdia_idle"), 6]], //window 0, animated sprite
-    [150,2, 0, [asset_get("empty_sprite"), 6, 20, 16, "roundFont", "Shabadap bo bop!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    //[TG_COMPLETE, 2,  tutorial_default_scroll]);
-    [TG_COMPLETE, -1,  999999999999999]);
-
-scene_add(2,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It's been a hot minute, but a lot of work has been done and discoveries made!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 3, tutorial_default_scroll]);
-scene_add(3,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We have a debug console now - with custom commands that can be added pretty quickly!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 4, tutorial_default_scroll]);
-scene_add(4,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It let's you set variables, toggle/change debug information, etc.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 5, tutorial_default_scroll]);
-scene_add(5,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_idle"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "For example, we can switch scenes pretty easily...", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    //[TG_COMPLETE, 6, tutorial_default_scroll]);
-    [TG_COMPLETE, -1,  999999999999999]);
-scene_add(6,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We also discovered that precise collision on articles is possible!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 7, tutorial_default_scroll*2]);
-scene_add(7,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_sideglance"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "It works pretty well for solid articles, but platforms have issues.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 8, tutorial_default_scroll]);
-scene_add(8,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_happy"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "This still means that we can make it easier on every front AND save processing resources.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 9, tutorial_default_scroll]);
-scene_add(9,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_sideglance"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We've also been working on the example level. But, I want to keep that a secret until we're ready.", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 10, tutorial_default_scroll]);
-scene_add(10,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "@CptTechnicality in the background has been working on the tools - can't wait to show it off!", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 11, tutorial_default_scroll]);
-scene_add(11,[
-    [50,400, 1, [asset_get("empty_sprite"), 6, -16, -16, sprite_get("archeio_estatic"), 6]], //window 0, animated sprite
-    [150,400, 0, [sprite_get("bordertext4"), 6, 20, 16, "roundFont", "We plan on getting the engine finished and enter the beta phase soon! - Archytas", 680, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-    
-    ],
-    [TG_COMPLETE, 12, tutorial_default_scroll]);*/
-    
-/*switch cur_room { //Room Specific Scenes
-    case 1:
-        scene_add(1,[],[TG_COMPLETE, -1,  999999999999999]);
-        scene_add(2,[
-            [300,400, 1, [sprite_get("dialog_borderbg"), 6, 0, 0, sprite_get("squdia_flap"), 8]], //window 0, animated sprite
-            [300,400, 1, [sprite_get("dialog_border"), 6, 0, 0, asset_get("empty_sprite"), 8]], //window 0, animated sprite
-            [300+64,400, 0, [sprite_get("dialog_text"), 6, 12, 4, "roundFont", "Hmmm... "+player_name+" is it? I've got something you can help me with...", 300, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-            ],
-            [TG_COMPLETE, 3,  tutorial_default_scroll]);
-            //[TG_COMPLETE, 2,  999999999999999]);
-        scene_add(3,[
-            [300,400, 1, [sprite_get("dialog_borderbg"), 6, 0, 0, sprite_get("squdia_hap"), 8]], //window 0, animated sprite
-            [300,400, 1, [sprite_get("dialog_border"), 6, 0, 0, asset_get("empty_sprite"), 8]], //window 0, animated sprite
-            [300+64,400, 0, [sprite_get("dialog_text"), 6, 12, 4, "roundFont", "I forgot my lunch in my house to the right. Could you go fetch it?", 300, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-            ],
-            [TG_COMPLETE, 4,  tutorial_default_scroll]);
-        scene_add(4,[
-            [300,400, 1, [sprite_get("dialog_borderbg"), 6, 0, 0, sprite_get("squdia_flap"), 8]], //window 0, animated sprite
-            [300,400, 1, [sprite_get("dialog_border"), 6, 0, 0, asset_get("empty_sprite"), 8]], //window 0, animated sprite
-            [300+64,400, 0, [sprite_get("dialog_text"), 6, 12, 4, "roundFont", "I've got a stall to run! Chop Chop!", 300, tutorial_default_text_speed, asset_get("mfx_hp")]] //window 1, textbox
-            ],
-            [TG_COMPLETE, 5,  tutorial_default_scroll]);
-        break;
-    case 2:
-        scene_add(1,[],[TG_COMPLETE, -1,  999999999999999]);
-    case -1:
-        break;
-}*/
-
-//
-
-//DO NOT EDIT BELOW
-
-
-/*
-################################################################################
-CHEAT SHEET
-################################################################################
-
-
-#############
-scene_add(scene_id, [window_data], [trigger_data]);
-scene_id: The unique numerical ID of the scene.
-
-window_data: The initialization data of each window in the scene, in order. Instanced as window 0, 1, 2, etc.
-    [x,y,content_type, [window_arguments]]
-
-trigger_data: The data that determines when the current scene transitions to the provided.
-    [trigger_type, next_scene, delay/extra arguments]
-    macros:
-        TG_CUSTOM //Run custom trigger code
-        TG_COMPLETE //Trigger upon 'completion' (defined per window type: Animation completion [> image_index], Full text display [vis_chars > full_text length])
-        TG_BUTTON //Triggers upon button press (any button, attack, shield, taunt, etc)
-        TG_TIME //Triggers after a frame count
-
-#############
-SCENE WINDOW VARIABLES
-default values are shown after a ':'. 
-[#] means the array argument index in the last argument of windows.
-
-HUD Textbox:
-    _x,
-    _y,
-    content_type,
-    bg_sprite_index: [0],
-    bg_sprite_speed: [1],
-    _in_x: [2],
-    _in_y: [3],
-    font: [4],
-    text_full: [5],
-    text_spacing: [6],
-    scroll_speed: [7],
-    scroll_sound: [8],
-    bg_image_index,
-    vis_chars: 0,
-    move_time: 30,
-    move_timer: 0,
-    move_type: 1,
-    visibl: true,
-    path: [_x,_y],
-    init_pos: [_x,_y]
-    
-HUD Sprite:
-    _x:,
-    _y:,
-    content_type,
-    bg_sprite_index: [0],
-    bg_sprite_speed: [1],
-    _in_x: [2],
-    _in_y: [3],
-    _sprite_index: [4],
-    sprite_speed: [5],
-    bg_image_index: [6],
-    _image_index: [7],
-    move_time: 30,
-    move_timer: 0,
-    move_type: 1,
-    visibl: true,
-    path: [x,y],
-    init_pos: [x,y]
-    
-Draw Sprite, Synced with an object:
-    _x,
-    _y,
-    content_type,
-    bg_sprite_index: [0],
-    bg_sprite_speed: [1],
-    _in_x: [2],
-    _in_y: [3],
-    _sprite_index: [4],
-    sprite_speed: [5],
-    obj_name: [6],
-    synced: [7],
-    bg_image_index: [8],
-    _image_index: [9],
-    move_time: 30,
-    move_timer: 0,
-    move_type: 1,
-    visibl: true,
-    path: [x,y],
-    init_pos: [x,y]
-
-Camera Controller: *USE ONLY IN CUTSCENES*
-    _x: __x,
-    _y: __y,
-    content_type,
-    visibl: false, //Keep false, nothing to draw
-    follow_type: [0],
-    follow_var: [1], //Object, bounded or not, depends on follow_type
-    move_speed: [2],
-    cam_offset: [3]
-    
-World Drawn Textbox:
-    _x,
-    _y,
-    content_type,
-    bg_sprite_index: [0],
-    bg_sprite_speed: [1],
-    _in_x: [2],
-    _in_y: [3],
-    font: [4],
-    text_full: [5],
-    text_spacing: [6],
-    scroll_speed: [7],
-    scroll_sound: [8],
-    bg_image_index: 0,
-    vis_chars: 0,
-    move_time: 30,
-    move_timer: 0,
-    move_type: 1,
-    visibl: true,
-    path: [x,y],
-    init_pos: [x,y]
-    
-World Drawn Animated Sprite: 
-    _x,
-    _y,
-    content_type,
-    bg_sprite_index: [0],
-    bg_sprite_speed: [1],
-    _in_x: [2],
-    _in_y: [3],
-    _sprite_index: [4],
-    sprite_speed: [5],
-    bg_image_index: [6],
-    _image_index: [7],
-    move_time: 30,
-    move_timer: 0,
-    move_type: 1,
-    visibl: true,
-    path: [x,y],
-    init_pos: [x,y]
-#############
-*/
-/*#define scene_add(_scene_id, scene_data, scene_triggers) //Adds a new scene to the scenespace
-var _scene_id_ind = array_find_index(array_scene_ID,_scene_id);
-if _scene_id_ind == -1 {
-    array_push(array_scene_data,scene_data);
-    array_push(array_scene_ID, _scene_id);
-    array_push(array_scene_triggers,scene_triggers);
-    open_scene_id++;
-} else {
-    array_scene_data[_scene_id_ind] = scene_data;
-    array_scene_ID[_scene_id_ind] = _scene_id;
-    array_scene_triggers[_scene_id_ind] = scene_triggers;
-}*/
-

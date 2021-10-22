@@ -52,6 +52,7 @@ crouch_timer = 0;
 hitpoints_max = 0; //If this is zero, percentage knockback will be used. - Harbige
 enemy_class = 0; //0 = grounded; 1 = flying
 destroyed = 0;
+battle_music_override = false;
 
 //Boss variables
 is_boss = 0; //If this enemy's a boss, it will show the healthbar on the hud.

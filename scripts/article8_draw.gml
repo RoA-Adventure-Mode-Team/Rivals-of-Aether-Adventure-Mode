@@ -26,6 +26,10 @@ if collis_obj != noone && (item_needed == 0 || (collis_obj.item_id != noone && c
     && (active_scene == 0 || (active_scene > 0 && cur_scene >= active_scene) || (active_scene < 0 && cur_scene <= abs(active_scene))) with collis_obj {
     //draw_debug_text(x,y,"TESTING PROMPT");
     draw_sprite(asset_get("lead_arrow_spr"),0,x,y+10);
+    // draw_sprite(other.dir_arrow,0,x,y-char_height-50);
+    // draw_sprite_ext(other.dir_arrow,0,x-64,y-char_height/2,1,1,90,c_white,0.2);
+    // draw_sprite_ext(other.dir_arrow,0,x,y+20,1,1,180,c_white,0.2);
+    // draw_sprite_ext(other.dir_arrow,0,x+64,y-char_height/2,1,1,270,c_white,0.2);
 }
 
 if !debug_info exit; //Debug info; check user_event2 draw_debug_info

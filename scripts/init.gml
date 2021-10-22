@@ -6,8 +6,8 @@ _init = 0;
 am_vers = "v0.9";
 
 //Debug Vars
-debug = true;
-debug_info = true;
+debug = false;
+debug_info = false;
 down_down = 0;
 up_down = 0;
 last_ID = 0;
@@ -32,7 +32,9 @@ blastzone_y = 100;
 // print([cam_width,cam_height]);
 
 cam_state = 0;
-cam_smooth = 5;
+cam_smooth = 1;
+cam_state_time = 0;
+old_cam_state = 0;
 g_cam_pos = [cam_x_left,cam_y_left];
 cam_offset = [0,-96];
 cam_vel_influence = 20;
@@ -191,7 +193,7 @@ cmd_char = '>';
 cmd_output = "Type 'help' for command list.
 "; //Parsed string for storing command log
 cmd_save_output = false; // If the output is saved, or overwritten with every command (VERY LAGGY)
-cmd_title = "LUCID DREAM v0.7";
+cmd_title = "LUCID DREAM v1.0";
 cmd_freecam = false;
 
 

@@ -43,6 +43,8 @@ collis_obj = noone;
 destroy_on_trigger = false;
 destroy_effect = asset_get("sfx_ice_shatter_big");
 
+dir_arrow = asset_get("lead_arrow_spr");
+
 switch trigger_obj_type {
     case 0:
         trigger_obj_type = oPlayer;
