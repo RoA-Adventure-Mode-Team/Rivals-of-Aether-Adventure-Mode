@@ -481,20 +481,95 @@ There are a plethora of basic actions which perform all sorts of tasks which all
 
 **action_type** - (enum) (0) set the quest progress forward to the value, (1) set the quest progress to the value - overriding the previous, (2) add or subtract from the quest progress
 
-**amount** - (int) the value to apply to the above named variable in the above above named article group
+**amount** - (int) the number to adjust the quest progress to/by
 
+### ACT.ON_QUEST_PROG
+*Conditional*  Exits if the quest progresses to a certain point
+
+#### Arguments
+`[quest_id, progress_prog, type],`
+
+**quest_id** - (int) the quest id to read the progress of
+
+**progress_prog** - (int) the number to check the quest progress against
+
+**type** - (enum) (0) the quest progress is exactly equal (1) if the quest has progressed to or beyond this point (1) if the quest has not progressed to or beyond this point
+
+### ACT.SUS
+*Instant*  Suspend an action. Suspending an action makes it no longer process, you must call ACT.SUS on it again for it to unsuspend.
+
+#### Arguments
+`[suspend_bool, action_id],`
+
+**suspend_bool** - (bool) (0) does this action suspend or (1) unsuspend the action 
+
+**action_id** - (int) the action ID to suspend
+
+### ACT.KILL
+*Instant*  Murders an action by id. You monster.
+
+#### Arguments
+`[action_id],`
+
+**action_id** - (int) the action ID to spill the guts of
+
+### ACT.SPAWN_ART
+*Instant*  Spawn an article using the room format.
+
+#### Arguments
+`[room_format],`
+
+**room_format** - (array[room_article]) The same format as an article entry in a room - see the above section on room articles for more details.
+
+### ACT.CHECK
+*Conditional* Checks an article group for any instance of a variable being a value
+
+#### Arguments
+`[article_group, variable, value],`
+
+**article_group** - (int) the article group to check values in
+
+**variable** - (string) the variable in the group to check
+
+**value** - (var) the value to check for
+
+### ACT.ART_COUNT
+*Conditional* Checks how many articles are in a group. Exits depending on the count and equality
+
+#### Arguments
+`[article_group, count, equality],`
+
+**article_group** - (int) the article group to check values in
+
+**count** - (int) the ammount to check for
+
+**equality** - (enum) exit upon (0) less than or equal, (1) greater than or equal
+
+### ACT.SCENE
+*Instant* Changes the scene to the given scene id
+
+#### Arguments
+`[set_add, scene_id],`
+
+**set_add** - (enum) (0) set or (1) add the scene id value
+ 
+**scene_id** - (int) the scene id to change to/add
+
+## Misc Additions
+### Dialog
+Dialog is read by the 
 
 ## Player/Character Options
 
-AM Features a few mostly lore options to make sure characters are properly addressed and to offer some customization to make stories make a bit more sense from a character's PoV.
+AM Features a few mostly lore options to make sure characters are properly addressed and to offer some customization to make stories make a bit more sense from a character's point of view.
 
 AM Devs keep in mind how these are set, I highly recommend formatting dialog to utilize these features (can be called via the `follow_player` object, the local player). 
 
 ### Pronouns & Nicknames
 
-You can customize which pronouns a character gets addressed as via the `pronouns` variable in the character's `init.gml` file. AM Devs can customize the default pronouns via `other_init.gml`. 
+You can customize which pronouns a character gets addressed as via the `pronouns` variable in the character's `init.gml` file.
 
-Nicknames are something the character goes by if people do not know their name - generally this is customized by the level (as we assume npcs do not know them and have their own ideas on what to call this new person), however a default value can be provided by a character in the case the level creator does not wish to make nicknames. Use `nick` in `other_init.gml` for this feature.
+Nicknames are something the character goes by if people do not know their name - generally this is customized by the level (as we assume npcs do not know them and have their own ideas on what to call this new person), however a default value can be provided by a character in the case the level creator does not wish to impose nicknames. Use `nick` in `other_init.gml` for this feature.
 
 ### Character Attributes
 
