@@ -1488,7 +1488,7 @@ with _hbox {
         }
         other.percent += damage*other.percent_adj;
         other.kb_power = kb_value+other.percent*0.12*kb_scale*other.knockback_adj;
-        other.hitpause = hitpause + other.percent*hitpause_growth*0.05;
+        other.hitpause = hitpause + other.percent*hitpause_growth*0.05 + extra_hitpause;
         other.old_hsp = other.hsp;
         other.old_vsp = other.vsp;
         if no_other_hit != 0 other.hit_lockout = no_other_hit;
@@ -1519,12 +1519,14 @@ kb_angle = get_hitbox_angle(_hbox) + di_angle_max - random_func(floor(x) % 200, 
 if _hbox.player_id != 0 with _hbox.player_id {
     has_hit = 1;
     has_hbox = other.id;
-    old_vsp = vsp;
-    old_hsp = hsp;
-    hitstop = other.hitpause;
-    hitpause = 1;
-    hsp = 0;
-    vsp = 0;
+    if(_hbox.type == 1) {
+	    old_vsp = vsp;
+	    old_hsp = hsp;
+	    hitstop = min(1, other.hitpause - _hbox.extra_hitpause);
+	    hitpause = 1;
+	    hsp = 0;
+	    vsp = 0;
+    }
 }
 
 
