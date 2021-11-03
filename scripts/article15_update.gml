@@ -41,12 +41,16 @@ if !_init {
             sound_play(sound_effect);
             spawn_hit_fx(x+hit_effect_x,y+hit_effect_y,hit_effect);
             with player_id {
-                old_hsp = hsp;
-                old_vsp = vsp;
                 
                 has_hit = true;
-                hitstop = other.hitpause+other.damage*other.hitpause_growth*.05-2;
-                hitpause = true;
+                
+                if(collis.type == 1) {
+	                old_hsp = hsp;
+	                old_vsp = vsp;
+	                hsp = 0; vsp = 0;
+	                hitstop = other.hitpause+other.damage*other.hitpause_growth*.05-2;
+	                hitpause = true;
+                }
             }
         }
         destroyed = true;
