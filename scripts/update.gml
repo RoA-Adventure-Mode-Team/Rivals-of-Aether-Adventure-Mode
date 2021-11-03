@@ -45,6 +45,13 @@ if !_init {
 	}
 	if get_gameplay_time() == 3 with oPlayer {
 		
+		//Fix Sylvanos's hitboxes (if we do this in other_init.gml, the game crashes??)
+		//Might as well do it here...
+		if url == CH_SYLVANOS {
+			set_hitbox_value(AT_NSPECIAL, 1, HG_PROJECTILE_GROUND_BEHAVIOR, 0);
+			set_hitbox_value(AT_FTILT, 1, HG_PROJECTILE_GROUND_BEHAVIOR, 0);
+		}
+		
 		// if taunt_down {
 		// 	with other {
 		// 		debug = true;
@@ -92,6 +99,23 @@ if !_init {
 		//if taunt_held == 10 other.debug_console = !other.debug_console;
 	}
 	var wall_here;
+	
+	with pHitBox if type == 2 && grounds != 1 && vsp > 0 { //Make projectiles respond correctly to floors
+		//Save the old size & mask, then switch to the ones appropriate for collisons with terrain
+		var saved_mask = mask_index, saved_xscale = image_xscale, saved_yscale = image_yscale;
+		mask_index = (collision_sprite == 0)?sprite_index:collision_sprite;
+		image_xscale = 1; image_yscale = 1;
+		
+		//Check for collisions; if we're about to hit a floor then spawn a temporary rectangular floor
+		if place_meeting(x, y + vsp + 2, asset_get("par_block")) {
+			instance_create(floor(x + hsp), floor(y), "obj_stage_article_solid", 19);
+		}
+		
+		//Reset size and mask to normal values
+		image_xscale = saved_xscale; image_yscale = saved_yscale; mask_index = saved_mask; 
+	}
+	
+	
 	with oPlayer { //Fixes for various things due to article solids
 		if god {
 			invincible = true;
