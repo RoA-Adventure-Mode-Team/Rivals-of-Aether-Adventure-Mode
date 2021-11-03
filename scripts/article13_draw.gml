@@ -30,7 +30,7 @@ switch(type)
         
         with(oPlayer)
         {
-            draw_sprite_ext(sprite_index, image_index, x, y, spr_dir*visible*(1+small_sprites), visible*(1+small_sprites), image_angle+spr_angle, c_white, 1);
+            draw_sprite_ext(sprite_index, image_index, x + draw_x, y + draw_y, spr_dir*visible*(1+small_sprites), visible*(1+small_sprites), image_angle+spr_angle, c_white, 1);
         }
         with(obj_stage_article)
         {
