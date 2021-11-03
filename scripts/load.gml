@@ -15,6 +15,8 @@ sprite_change_offset("stall",27, 48);
 sprite_change_offset("marble_ground",-32, 0);
 sprite_change_offset("black",-32, 0);
 
+sprite_change_offset("projectile_supporter", 1, 0);
+
 //Need to set sprite collisions here!
 //Ouside Left
 sprite_change_collision_mask("g_ground",true,0,0,0,0,0,0);
