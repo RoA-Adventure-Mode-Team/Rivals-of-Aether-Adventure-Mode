@@ -759,14 +759,43 @@ if hit_player_id != noone && hit_player_id.object_index == oPlayer.object_index 
     hit_player_id = noone;
 }
 
-if invincible == 0 {
+if invincible == 0 && hit_lockout == 0 {
     last_hitbox = hit_id;
     mask_index = hurtbox_spr;
     hit_id = instance_place(x,y,pHitBox);
+    
+    //code copied over from FQF's get_attacked_data() function, modified to suit enemy
+    var found_hitbox = noone, found_priority = -1;
+	if hit_id != noone with(pHitBox) {
+		//Cancel if its priority is too low
+		if(hit_priority <= found_priority) continue;
+		
+		//Cancel if the hitbox owner isn't allowed to hit me
+		if(player == other.player_id.player) continue;
+		
+		//Cancel if hitbox group shenanigans say so
+		if(hbox_group == other.hbox_group && hbox_group != -1) continue;
+		
+		//Cancel if the hitbox can only hit from above, and it wouldn't be hitting from above (this is for Qua Mario)
+		if(!other.free && "only_hit_below" in self && only_hit_below)
+			if(!place_meeting(x + hsp - other.hsp, y + vsp - other.vsp, other) || place_meeting(x + hsp - other.hsp, y + vsp - other.vsp - 20, other))
+				continue;
+		
+		//Cancel if the hitbox doesn't match our groundedness
+		if((groundedness == 1 && other.free) || (groundedness == 2 && !other.free)) continue;
+		
+		//Remember this hitbox if it can hit the object
+		if(place_meeting(x + hsp - other.hsp, y + vsp - other.vsp, other)) {
+			found_hitbox = id;
+			found_priority = hit_priority;
+		}
+	}
+    hit_id = found_hitbox;
+    
     mask_index = collision_box;
     if hit_id == noone has_hit = 0;
-    if hit_lockout > 0 hit_lockout--;
-    if instance_exists(hit_id) && hit_id.player != player_id.player && hit_lockout == 0 && last_hitbox != hit_id && (hit_id.hbox_group == -1 || hit_id.hbox_group != hbox_group) {
+    
+    if instance_exists(hit_id) && last_hitbox != hit_id {
         enemy_got_hit(hit_id);
         if (health_share_mode == 0) {
             if (array_length(health_children) > 0) {
@@ -780,7 +809,10 @@ if invincible == 0 {
             }
         }
     }
-} else invincible--;
+} else {
+	if invincible > 0 invincible--;
+	if hit_lockout > 0 hit_lockout--;
+}
 
 //Attached article update
 for (var _i = 0; _i < array_length(loaded_articles); _i++) {
