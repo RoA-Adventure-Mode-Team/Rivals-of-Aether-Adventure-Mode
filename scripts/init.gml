@@ -43,6 +43,7 @@ cam_vel_influence = 20;
 game_paused = false;
 counter = 0;
 
+dynamic_lights = ds_list_create();
 
 debug_console = false;
 debug_x = 650;

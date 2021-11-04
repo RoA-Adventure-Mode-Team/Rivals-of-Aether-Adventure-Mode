@@ -792,6 +792,57 @@ Hallowflame and the empty AM template come with the base cast pre-set!
 
 Feel free to reach out and suggest additional options!
 
+### Glowing Objects
+You can configure your character, their projectiles, their articles, or any other object to glow in dark areas. Adding dynamic lights to your objects requires a little bit of setup, but you'll only have to do it once. Just put these two lines into your `init.gml` file:
+
+```gml
+dynamic_lights = undefined;
+with(obj_stage_main) if("dynamic_lights" in self) other.dynamic_lights = dynamic_lights;
+```
+
+Now you can make any object you'd like glow when your character is in an Adventure Mode stage that supports dynamic lighting. For instance, to make Sandbert's NSpecial glow, you could put this in his `hitbox_create.gml` file:
+
+```gml
+if(attack == AT_NSPECIAL) {
+	if(dynamic_lights != undefined) ds_list_add(dynamic_lights, {
+		on_instance: id,
+		burnout_speed: 0.15,
+		darkness_threshold: 200,
+		sprite: sprite_get("glow"),
+		image: 0,
+		x: x,
+		y: y,
+		xscale: 1,
+		yscale: 1,
+		x_offset: 0,
+		y_offset: 0,
+		angle: 0,
+		blend: c_pink,
+		alpha: 0.6,
+	});
+}
+```
+
+All of these values are required or you'll end up with errors. Here are what they all do:
+
+```
+on_instance			- The Instance ID of the object this light source is attached to.
+burnout_speed		- How fast the light goes out when the object it's attached to disappears. Higher values disappear faster.
+darkness_threshold	- How dark a room's ambient lighting has to be before the object will glow. Ranges from 1 (only glows in complete darkness) to 256 (always glows).
+sprite				- The sprite that the glow will use. Generally this should be a circular gradient. The strength of the glow is affected by the Alpha channel of each pixel.
+image				- Which subimage to use of the sprite.
+x & y				- The position that the glow will be at on its first frame.
+xscale & yscale		- The visual size of the glow.
+x_offset & y_offset	- The glow will be automatically placed at the on_instance object's position, offset with these variables' values.
+angle				- The angle at which the glow sprite displays. More useful for something like a flashlight, as opposed to a typical round glow.
+blend				- The image_blend that will be applied to the glow sprite. Keep in mind that colour blending can only make an image darker, not lighter.
+alpha				- How transparent the glow will be. Lower values make the glow fainter. Ranges from 0 (no glow) to 1 (maximum glow).
+```
+
+Once all of these are applied, you're done! The stage will automatically handle moving the light around, keeping the list clean, etc.
+
+If you're familiar with manipulating Lightweight Objects, also known as Structs, that's all these are. You can save the index of the LWO before passing it into the `dynamic_lights` list if you'd like to modify it later. Doing so can allow you to change any of its properties. Changing the glow's `on_instance` to `noone` is a good way to make it fizzle out immediately.
+
 ## Optimization Strategies
 
 The RoAAM team will continue to do our best optimizing the engine over time, however as stated in Limitations there is a lot of overhead to account for, and the mod will not run well on lower end computers. Here are a list of optimization strategies figured out during the development of Hallowflame to help lift the computational burden.
