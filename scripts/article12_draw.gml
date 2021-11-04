@@ -19,7 +19,6 @@ if(!cant_root && draw)
     var i = 0, drawing_light;
     repeat ds_list_size(player_id.dynamic_lights) {
     	drawing_light = player_id.dynamic_lights[| i];
-    	print(`color value: ${colour_get_value(bg_color_true)}`);
     	if(colour_get_value(bg_color_true) < drawing_light.darkness_threshold)
 			draw_sprite_ext(drawing_light.sprite, drawing_light.image, drawing_light.x, drawing_light.y, drawing_light.xscale, drawing_light.yscale, drawing_light.angle, drawing_light.blend, drawing_light.alpha);
         i++;
