@@ -804,7 +804,7 @@ Now you can make any object you'd like glow when your character is in an Adventu
 
 ```gml
 if(attack == AT_NSPECIAL) {
-	if(dynamic_lights != undefined) ds_list_add(dynamic_lights, {
+	if(player_id.dynamic_lights != undefined) ds_list_add(player_id.dynamic_lights, {
 		on_instance: id,
 		burnout_speed: 0.15,
 		darkness_threshold: 200,
