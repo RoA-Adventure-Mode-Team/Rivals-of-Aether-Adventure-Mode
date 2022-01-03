@@ -116,6 +116,7 @@ sprite_change_offset("well",24, 70);
 sprite_change_offset("light", 39, 46);
 sprite_change_offset("light_dimver", 40, 49);
 sprite_change_offset("light_dimver_larg", 40*4, 49*3+25);
+sprite_change_offset("light_sein", 40*4, 49*3+25);
 sprite_change_offset("enemy_10_vision", 0, 84);
 sprite_change_offset("house_main_inside",15, 111);
 sprite_change_offset("house_main_insideb",15, 111);

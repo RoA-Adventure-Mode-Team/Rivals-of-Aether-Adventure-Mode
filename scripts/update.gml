@@ -186,16 +186,60 @@ if !_init {
 		// if state != PS_AIR_DODGE old_pos = [x,y];
 		
 		// if state == PS_RESPAWN print("[update:player] completed check");
+		
+		if(url == CH_FORSBURN) {
+			if(spewing_smoke) {
+				dynamic_glow.xscale *= 0.8;
+				dynamic_glow.yscale *= 0.8;
+			}
+			else {
+				dynamic_glow.xscale = 1.6;
+				dynamic_glow.yscale = 1.6;
+			}
+		}
+		else if(url == CH_ORI) {
+			if((state == PS_ATTACK_GROUND || state == PS_ATTACK_AIR) && (attack == 20 || attack == 21 || attack == 22))
+				dynamic_glow.on_instance = id; //Sein's glow comes from Ori's position when using a team-up attack
+			else if dynamic_glow.on_instance == id with(asset_get("orb_obj")) {
+				other.dynamic_glow.on_instance = self;
+			}
+		}
 	}
 	
 	
 	var i = 0;
-	
 	repeat ds_list_size(active_bosses) {
 		if (!instance_exists(active_bosses[| i]))
         	ds_list_remove(active_bosses,active_bosses[| i]);
         i++;
 	}
+	i = 0;
+	repeat ds_list_size(dynamic_lights) {
+		if (!instance_exists(dynamic_lights[| i].on_instance)) {
+			if(dynamic_lights[| i].burnout_speed != undefined) {
+				//initialize burning out
+				dynamic_lights[| i].burnout_sign = -1 * sign(dynamic_lights[| i].xscale);
+				dynamic_lights[| i].burnout_xspeed = dynamic_lights[| i].burnout_sign * dynamic_lights[| i].burnout_speed;
+				dynamic_lights[| i].height_ratio = dynamic_lights[| i].yscale / dynamic_lights[| i].xscale;
+				dynamic_lights[| i].burnout_speed = undefined;
+			}
+			dynamic_lights[| i].xscale += dynamic_lights[| i].burnout_xspeed;
+			dynamic_lights[| i].yscale = dynamic_lights[| i].height_ratio * dynamic_lights[| i].xscale;
+			
+			// dynamic_lights[| i].alpha -= 2 * sign(dynamic_lights[| i].burnout_xspeed);
+			
+			if(sign(dynamic_lights[| i].xscale) == dynamic_lights[| i].burnout_sign) {
+				ds_list_remove(dynamic_lights,dynamic_lights[| i]);
+        		i--;
+			}
+		}
+		else {
+			dynamic_lights[| i].x = get_instance_x(dynamic_lights[| i].on_instance) + dynamic_lights[| i].x_offset;
+			dynamic_lights[| i].y = get_instance_y(dynamic_lights[| i].on_instance) + dynamic_lights[| i].y_offset;
+		}
+        i++;
+	}
+	
 	//Window Update Call
 	win_call = 2;
 	user_event(2);

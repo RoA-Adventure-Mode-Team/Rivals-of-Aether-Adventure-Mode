@@ -96,6 +96,24 @@ switch p_name {
         // am_is_clothed = false; LOINCLOTH
         am_is_guest = false; 
         pronouns = ["he","him","his","is"];
+        
+        //Zetterburn glows
+        with(obj_stage_main) ds_list_add(dynamic_lights, {
+			on_instance: other,
+			burnout_speed: 0.15,
+			darkness_threshold: 200,
+			sprite: sprite_get("light"),
+			image: 0,
+			x: x,
+			y: y,
+			xscale: 2,
+			yscale: 2,
+			x_offset: 0,
+			y_offset: -30,
+			angle: 0,
+			blend: c_red,
+			alpha: 0.6,
+		});
         break;
     //Bastard turned good boi
     case "Forsburn":
@@ -104,6 +122,28 @@ switch p_name {
         // am_is_experienced = true;
         am_is_guest = false; 
         pronouns = ["he","him","his","is"];
+        
+        //Forsburn glows, but only when he's not emitting smoke
+        dynamic_glow = {
+			on_instance: id,
+			burnout_speed: 0.15,
+			darkness_threshold: 170,
+			sprite: asset_get("empty_sprite"),
+			image: 0,
+			x: x,
+			y: y,
+			xscale: 1.6,
+			yscale: 1.6,
+			x_offset: 0,
+			y_offset: -30,
+			angle: 0,
+			blend: c_orange,
+			alpha: 0.3,
+		};
+        with(obj_stage_main) {
+        	other.dynamic_glow.sprite = sprite_get("light"); //give Forsburn the sprite index (he can't use sprite_get)
+        	ds_list_add(dynamic_lights, other.dynamic_glow);
+        }
         break;
     //Protagonist Prime
     case "Clairen":
@@ -241,13 +281,37 @@ switch p_name {
         pronouns = ["she","her","hers","is"];
         break;
     //Upair is a kill move
-    case "Ori":
+    case "Ori & Sein":
         am_is_aether = true;
         am_is_verbal = false;
         am_is_magic = true;
         am_is_small = true; //Cannon Ori is tiny
         am_is_experienced = true;
         //They are a leaf and I don't think we get cannonical pronouns
+        
+        //Sein glows (i think??)
+        var sein_id = id;
+        with(asset_get("orb_obj")) sein_id = self;
+        dynamic_glow = {
+			on_instance: sein_id,
+			burnout_speed: 0.15,
+			darkness_threshold: 245,
+			sprite: asset_get("empty_sprite"),
+			image: 0,
+			x: x,
+			y: y,
+			xscale: 0.75,
+			yscale: 0.75,
+			x_offset: 0,
+			y_offset: 15,
+			angle: 0,
+			blend: c_white,
+			alpha: 0.2,
+		};
+        with(obj_stage_main) {
+        	other.dynamic_glow.sprite = sprite_get("light_sein"); //give Ori the sprite index
+        	ds_list_add(dynamic_lights, other.dynamic_glow);
+        }
         break;
     //????
     case "Shovel Knight":

@@ -16,6 +16,13 @@ if(!cant_root && draw)
             draw = false;
         }
     }
+    var i = 0, drawing_light;
+    repeat ds_list_size(player_id.dynamic_lights) {
+    	drawing_light = player_id.dynamic_lights[| i];
+    	if(colour_get_value(bg_color_true) < drawing_light.darkness_threshold)
+			draw_sprite_ext(drawing_light.sprite, drawing_light.image, drawing_light.x, drawing_light.y, drawing_light.xscale, drawing_light.yscale, drawing_light.angle, drawing_light.blend, drawing_light.alpha);
+        i++;
+	}
     gpu_set_blendenable(true);
     gpu_set_alphatestenable(true);
     gpu_set_colorwriteenable(true,true,true,true);
@@ -31,6 +38,13 @@ if(!cant_root && draw)
             //if val_limit < color_get_value(other.bg_color_true) draw_sprite_ext(render_sprite, render_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
         }
     }
+    i = 0;
+    repeat ds_list_size(player_id.dynamic_lights) {
+    	drawing_light = player_id.dynamic_lights[| i];
+    	if(colour_get_value(bg_color_true) < drawing_light.darkness_threshold)
+    		draw_sprite_ext(drawing_light.sprite, drawing_light.image, drawing_light.x, drawing_light.y, drawing_light.xscale, drawing_light.yscale, drawing_light.angle, drawing_light.blend, drawing_light.alpha);
+        i++;
+	}
     gpu_set_blendmode(bm_normal);
     gpu_set_alphatestenable(false);
     draw_set_alpha(1);
